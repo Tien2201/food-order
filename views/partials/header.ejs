@@ -1,0 +1,28 @@
+<nav class="app-header">
+    <a href="/" class="brand logo-brand">
+        <img src="/images/logo.jpg" class="site-logo">
+
+        <div>
+            <div class="logo-title">
+                Đậu Hũ Thúi Nhà Họ La
+            </div>
+
+            <div class="logo-sub">
+                Traditional Chinese Street Food
+            </div>
+        </div>
+    </a>
+    <div class="nav-links">
+        <a href="/">Menu</a>
+        <a href="/about">About</a>
+        <a href="/cart">🛒 Giỏ hàng</a>
+
+        <% if (user) { %>
+            <a href="/profile">👤 Cá nhân</a>
+            <a href="/logout" class="logout-btn">Đăng xuất</a>
+            <% } else { %>
+                <a href="/login">Đăng nhập</a>
+                <a href="/register" class="register-btn">Đăng ký</a>
+                <% } %>
+    </div>
+</nav>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Giỏ hàng</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<%- include("partials/header", { user: user }) %>
+
+<div class="container py-5">
+
+  <div class="cart-hero mb-4">
+    <div>
+      <h1>Giỏ hàng của bạn</h1>
+      <p>Kiểm tra món ăn, ghi chú và thông tin giao hàng trước khi đặt.</p>
+    </div>
+
+    <a href="/" class="btn btn-main">
+      🍜 Tiếp tục chọn món
+    </a>
+  </div>
+
+  <% if (cart.length === 0) { %>
+
+    <div class="empty-cart-card text-center">
+      <div class="empty-icon">🛒</div>
+      <h3>Giỏ hàng đang trống</h3>
+      <p>Hãy quay lại menu và thêm món bạn yêu thích.</p>
+
+      <a href="/" class="btn btn-main mt-3">
+        Xem menu
+      </a>
+    </div>
+
+  <% } else { %>
+
+    <div class="row g-4">
+      <div class="col-lg-7">
+        <% cart.forEach((item, index) => { %>
+          <div class="cart-item-card">
+            <div>
+              <h4><%= item.name %></h4>
+              <p class="mb-1">Số lượng: <strong><%= item.quantity %></strong></p>
+              <p class="text-muted mb-2">Ghi chú: <%= item.note || "Không có" %></p>
+              <h5 class="price"><%= (item.price * item.quantity).toLocaleString() %> VNĐ</h5>
+            </div>
+
+            <form action="/cart/remove/<%= index %>" method="POST">
+              <button class="btn btn-outline-danger">
+                🗑 Xóa
+              </button>
+            </form>
+          </div>
+        <% }) %>
+      </div>
+
+      <div class="col-lg-5">
+        <div class="checkout-card">
+          <h3>Thông tin đặt món</h3>
+
+          <div class="total-box">
+            <span>Tổng tiền</span>
+            <strong><%= totalPrice.toLocaleString() %> VNĐ</strong>
+          </div>
+
+          <form action="/checkout" method="POST">
+            <input name="customerName" class="form-control mb-3" placeholder="Tên khách hàng" required>
+            <input name="phone" class="form-control mb-3" placeholder="Số điện thoại" required>
+            <input name="address" class="form-control mb-3" placeholder="Địa chỉ giao hàng" required>
+
+            <button class="btn btn-main w-100">
+              Đặt món ngay
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+  <% } %>
+
+</div>
+
+<%- include("partials/footer") %>
+
+</body>
+</html>
