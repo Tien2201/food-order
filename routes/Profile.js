@@ -23,3 +23,15 @@ router.post("/profile", async (req, res) => {
     res.redirect("/profile");
 
 });
+router.get("/my-orders", async (req,res)=>{
+
+    const orders = await Order.find({
+        user:req.session.user._id
+    }).sort({createdAt:-1});
+
+    res.render("my-orders",{
+        orders,
+        user:req.session.user
+    });
+
+});
