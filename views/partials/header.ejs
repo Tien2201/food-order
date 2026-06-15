@@ -1,28 +1,66 @@
-<nav class="app-header">
-    <a href="/" class="brand logo-brand">
-        <img src="/images/logo.jpg" class="site-logo">
+<nav class="navbar navbar-expand-lg bg-white shadow-sm sticky-top">
+  <div class="container">
 
-        <div>
-            <div class="logo-title">
-                Đậu Hũ Thúi Nhà Họ La
-            </div>
+    <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+      <img src="/images/logo.jpg" class="site-logo">
 
-            <div class="logo-sub">
-                Traditional Chinese Street Food
-            </div>
+      <div>
+        <div class="logo-title">
+          Đậu Hũ Thúi Nhà Họ La
         </div>
+
+        <div class="logo-sub">
+          Traditional Chinese Street Food
+        </div>
+      </div>
     </a>
-    <div class="nav-links">
-        <a href="/">Menu</a>
-        <a href="/about">About</a>
-        <a href="/cart">🛒 Giỏ hàng</a>
+
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarMain">
+
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarMain">
+
+      <div class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
+
+        <a class="nav-link" href="/">Menu</a>
+
+        <a class="nav-link" href="/about">About</a>
+
+        <a class="nav-link" href="/cart">
+          🛒 Giỏ hàng
+        </a>
 
         <% if (user) { %>
-            <a href="/profile">👤 Cá nhân</a>
-            <a href="/logout" class="logout-btn">Đăng xuất</a>
-            <% } else { %>
-                <a href="/login">Đăng nhập</a>
-                <a href="/register" class="register-btn">Đăng ký</a>
-                <% } %>
+
+          <a class="nav-link" href="/profile">
+            👤 Cá nhân
+          </a>
+
+          <a href="/logout" class="btn btn-danger">
+            Đăng xuất
+          </a>
+
+        <% } else { %>
+
+          <a class="nav-link" href="/login">
+            Đăng nhập
+          </a>
+
+          <a href="/register" class="btn btn-main">
+            Đăng ký
+          </a>
+
+        <% } %>
+
+      </div>
+
     </div>
+
+  </div>
 </nav>
