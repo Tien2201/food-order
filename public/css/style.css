@@ -2,13 +2,19 @@
 box-sizing:border-box;
 }
 
-body{
-margin:0;
-background:#f6f7fb;
-font-family:'Segoe UI',sans-serif;
-color:#1f2937;
-}
+body {
+  margin: 0;
+  background: #f6f7fb;
+  font-family: Arial, sans-serif;
+  color: #1f2937;
 
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+main{
+    flex:1;
+}
 /* Container */
 .custom-container{
 max-width:1200px;
@@ -93,7 +99,7 @@ border-radius:12px !important;
 
 /* Footer */
 .app-footer{
-margin-top:80px;
+margin-top:auto;
 padding:40px;
 background:#111827;
 color:white;
