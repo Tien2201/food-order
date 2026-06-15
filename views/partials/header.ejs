@@ -1,66 +1,101 @@
-<nav class="navbar navbar-expand-lg bg-white shadow-sm sticky-top">
-  <div class="container">
+<nav class="navbar navbar-expand-lg navbar-light custom-navbar sticky-top">
 
-    <a class="navbar-brand d-flex align-items-center gap-2" href="/">
-      <img src="/images/logo.jpg" class="site-logo">
+```
+<div class="container-fluid px-4">
 
-      <div>
-        <div class="logo-title">
-          Đậu Hũ Thúi Nhà Họ La
+    <a class="navbar-brand d-flex align-items-center gap-3" href="/">
+
+        <img
+            src="/images/logo.jpg"
+            class="site-logo">
+
+        <div>
+
+            <div class="logo-title">
+                Đậu Hũ Thúi Nhà Họ La
+            </div>
+
+            <div class="logo-sub">
+                Traditional Chinese Street Food
+            </div>
+
         </div>
 
-        <div class="logo-sub">
-          Traditional Chinese Street Food
-        </div>
-      </div>
     </a>
 
     <button
-      class="navbar-toggler"
-      type="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#navbarMain">
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarMain">
 
-      <span class="navbar-toggler-icon"></span>
+        <span class="navbar-toggler-icon"></span>
+
     </button>
 
-    <div class="collapse navbar-collapse" id="navbarMain">
+    <div
+        class="collapse navbar-collapse"
+        id="navbarMain">
 
-      <div class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
+        <ul class="navbar-nav mx-auto">
 
-        <a class="nav-link" href="/">Menu</a>
+            <li class="nav-item">
+                <a class="nav-link" href="/">
+                    Menu
+                </a>
+            </li>
 
-        <a class="nav-link" href="/about">About</a>
+            <li class="nav-item">
+                <a class="nav-link" href="/about">
+                    Giới thiệu
+                </a>
+            </li>
 
-        <a class="nav-link" href="/cart">
-          🛒 Giỏ hàng
-        </a>
+            <li class="nav-item">
+                <a class="nav-link" href="/cart">
+                    🛒 Giỏ hàng
+                </a>
+            </li>
 
-        <% if (user) { %>
+        </ul>
 
-          <a class="nav-link" href="/profile">
-            👤 Cá nhân
-          </a>
+        <div>
 
-          <a href="/logout" class="btn btn-danger">
-            Đăng xuất
-          </a>
+            <% if(user){ %>
 
-        <% } else { %>
+                <a
+                    href="/profile"
+                    class="btn btn-outline-dark">
 
-          <a class="nav-link" href="/login">
-            Đăng nhập
-          </a>
+                    👤 Tài khoản
 
-          <a href="/register" class="btn btn-main">
-            Đăng ký
-          </a>
+                </a>
 
-        <% } %>
+            <% }else{ %>
 
-      </div>
+                <a
+                    href="/login"
+                    class="btn btn-outline-dark me-2">
+
+                    Đăng nhập
+
+                </a>
+
+                <a
+                    href="/register"
+                    class="btn btn-main">
+
+                    Đăng ký
+
+                </a>
+
+            <% } %>
+
+        </div>
 
     </div>
 
-  </div>
+</div>
+```
+
 </nav>
