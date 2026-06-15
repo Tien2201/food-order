@@ -66,11 +66,7 @@ overflow:hidden;
 box-shadow:0 15px 40px rgba(0,0,0,.08);
 }
 
-.food-img{
-width:100%;
-height:260px;
-object-fit:cover;
-}
+
 
 .price{
 color:#ff5f2e;
@@ -212,7 +208,7 @@ color:#ff5f2e;
 
 .food-img{
     width:100%;
-    height:260px;
+    height:220px;
     object-fit:cover;
     display:block;
 }
@@ -327,7 +323,7 @@ color:#ff5f2e !important;
 @media(max-width:768px){
 
     .food-img{
-        height:200px;
+        height:180px;
     }
 
 }

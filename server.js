@@ -16,7 +16,7 @@ app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static("public"));
-
+app.use("/uploads", express.static("uploads"));
 app.use(
   session({
     secret: process.env.SESSION_SECRET || "food_order_secret",
