@@ -52,26 +52,7 @@
       </div>
 
     </div>
-    <h2 class="mb-4">Thông tin cá nhân</h2>
-
-    <form action="/profile" method="POST">
-      <label>Họ tên</label>
-      <input name="fullname" class="form-control mb-3" value="<%= user.fullname %>" required>
-
-      <label>Email</label>
-      <input class="form-control mb-3" value="<%= user.email %>" disabled>
-
-      <label>Số điện thoại</label>
-      <input name="phone" class="form-control mb-3" value="<%= user.phone || '' %>">
-
-      <label>Địa chỉ</label>
-      <input name="address" class="form-control mb-3" value="<%= user.address || '' %>">
-
-      <button class="btn btn-main w-100">
-        Cập nhật thông tin
-      </button>
-    </form>
-    </div>
+    
     </div>
 
     <%- include("partials/footer") %>
