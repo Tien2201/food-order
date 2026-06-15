@@ -211,7 +211,10 @@ color:#ff5f2e;
 }
 
 .food-img{
-    height:220px;
+    width:100%;
+    height:260px;
+    object-fit:cover;
+    display:block;
 }
 
 .auth-card{
@@ -319,5 +322,12 @@ color:#ff5f2e !important;
     display:none;
 }
 
+
+}
+@media(max-width:768px){
+
+    .food-img{
+        height:200px;
+    }
 
 }
