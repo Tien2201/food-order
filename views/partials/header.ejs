@@ -1,101 +1,92 @@
 <nav class="navbar navbar-expand-lg navbar-light custom-navbar sticky-top">
 
-```
-<div class="container-fluid px-4">
+    ```
+    <div class="container-fluid px-4">
 
-    <a class="navbar-brand d-flex align-items-center gap-3" href="/">
+        <a class="navbar-brand d-flex align-items-center gap-3" href="/">
 
-        <img
-            src="/images/logo.jpg"
-            class="site-logo">
+            <img src="/images/logo.jpg" class="site-logo">
 
-        <div>
+            <div>
 
-            <div class="logo-title">
-                Đậu Hũ Thúi Nhà Họ La
+                <div class="logo-title">
+                    Đậu Hũ Thúi Nhà Họ La
+                </div>
+
+                <div class="logo-sub">
+                    Traditional Chinese Street Food
+                </div>
+
             </div>
 
-            <div class="logo-sub">
-                Traditional Chinese Street Food
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+
+            <span class="navbar-toggler-icon"></span>
+
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarMain">
+
+            <ul class="navbar-nav mx-auto">
+
+                <li class="nav-item">
+                    <a class="nav-link" href="/">
+                        Menu
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="/about">
+                        Giới thiệu
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="/cart">
+                        🛒 Giỏ hàng
+                    </a>
+                </li>
+
+            </ul>
+
+            <div>
+
+                <% if(user){ %>
+
+                    <a href="/profile" class="btn btn-outline-dark">
+
+                        👤 Tài khoản
+
+                    </a>
+                    <a href="/logout" class="btn btn-danger">
+
+                        Đăng xuất
+
+                    </a>
+
+                    <% }else{ %>
+
+                        <a href="/login" class="btn btn-outline-dark me-2">
+
+                            Đăng nhập
+
+                        </a>
+
+                        <a href="/register" class="btn btn-main">
+
+                            Đăng ký
+
+                        </a>
+
+                        <% } %>
+
             </div>
-
-        </div>
-
-    </a>
-
-    <button
-        class="navbar-toggler"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#navbarMain">
-
-        <span class="navbar-toggler-icon"></span>
-
-    </button>
-
-    <div
-        class="collapse navbar-collapse"
-        id="navbarMain">
-
-        <ul class="navbar-nav mx-auto">
-
-            <li class="nav-item">
-                <a class="nav-link" href="/">
-                    Menu
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link" href="/about">
-                    Giới thiệu
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link" href="/cart">
-                    🛒 Giỏ hàng
-                </a>
-            </li>
-
-        </ul>
-
-        <div>
-
-            <% if(user){ %>
-
-                <a
-                    href="/profile"
-                    class="btn btn-outline-dark">
-
-                    👤 Tài khoản
-
-                </a>
-
-            <% }else{ %>
-
-                <a
-                    href="/login"
-                    class="btn btn-outline-dark me-2">
-
-                    Đăng nhập
-
-                </a>
-
-                <a
-                    href="/register"
-                    class="btn btn-main">
-
-                    Đăng ký
-
-                </a>
-
-            <% } %>
 
         </div>
 
     </div>
-
-</div>
 
 
 </nav>
