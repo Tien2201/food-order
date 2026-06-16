@@ -1,92 +1,229 @@
-<nav class="navbar navbar-expand-lg navbar-light custom-navbar sticky-top">
+<style>
+    .custom-navbar {
+        background: #fff;
+        border-bottom: 1px solid #f0ece8;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        padding: 10px 0;
+    }
 
-    
+    .site-logo {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #f0ece8;
+    }
+
+    .logo-title {
+        font-size: 15px;
+        font-weight: 600;
+        color: #1a1a1a;
+        line-height: 1.3;
+    }
+
+    .logo-sub {
+        font-size: 11px;
+        color: #9e9e9e;
+        letter-spacing: 0.3px;
+    }
+
+    .custom-navbar .nav-link {
+        font-size: 14px;
+        color: #555;
+        font-weight: 500;
+        padding: 6px 14px !important;
+        border-radius: 8px;
+        transition: background 0.15s, color 0.15s;
+    }
+
+    .custom-navbar .nav-link:hover,
+    .custom-navbar .nav-link.active {
+        color: #D85A30;
+        background: #fdf2ee;
+    }
+
+    .btn-cart {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        background: #D85A30;
+        color: #fff !important;
+        border: none;
+        border-radius: 10px;
+        padding: 8px 16px;
+        font-size: 14px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: background 0.15s;
+        position: relative;
+    }
+
+    .btn-cart:hover {
+        background: #c44e26;
+        color: #fff !important;
+    }
+
+    .btn-cart .cart-badge {
+        position: absolute;
+        top: -6px;
+        right: -6px;
+        background: #1a1a1a;
+        color: #fff;
+        font-size: 10px;
+        font-weight: 600;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #fff;
+    }
+
+    .btn-account {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: transparent;
+        color: #333 !important;
+        border: 1px solid #e0dbd6;
+        border-radius: 10px;
+        padding: 7px 14px;
+        font-size: 14px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: border-color 0.15s, background 0.15s;
+    }
+
+    .btn-account:hover {
+        border-color: #D85A30;
+        color: #D85A30 !important;
+        background: #fdf2ee;
+    }
+
+    .btn-logout {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: transparent;
+        color: #c0392b !important;
+        border: 1px solid #f5c6c0;
+        border-radius: 10px;
+        padding: 7px 14px;
+        font-size: 14px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: background 0.15s;
+    }
+
+    .btn-logout:hover {
+        background: #fdf2ee;
+        border-color: #c0392b;
+    }
+
+    .btn-login {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: transparent;
+        color: #333 !important;
+        border: 1px solid #e0dbd6;
+        border-radius: 10px;
+        padding: 7px 14px;
+        font-size: 14px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: border-color 0.15s;
+    }
+
+    .btn-login:hover {
+        border-color: #D85A30;
+        color: #D85A30 !important;
+    }
+
+    .btn-register {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #1a1a1a;
+        color: #fff !important;
+        border: 1px solid #1a1a1a;
+        border-radius: 10px;
+        padding: 7px 16px;
+        font-size: 14px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: background 0.15s;
+    }
+
+    .btn-register:hover {
+        background: #333;
+    }
+
+    .navbar-nav-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    @media (max-width: 991px) {
+        .navbar-nav-actions {
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+    }
+</style>
+
+<nav class="navbar navbar-expand-lg custom-navbar sticky-top">
     <div class="container-fluid px-4">
 
         <a class="navbar-brand d-flex align-items-center gap-3" href="/">
-
-            <img src="/images/logo.jpg" class="site-logo">
-
+            <img src="/images/logo.jpg" class="site-logo" alt="Logo">
             <div>
-
-                <div class="logo-title">
-                    Đậu Hũ Thúi Nhà Họ La
-                </div>
-
-                <div class="logo-sub">
-                    Traditional Chinese Street Food
-                </div>
-
+                <div class="logo-title">Đậu Hũ Thúi Nhà Họ La</div>
+                <div class="logo-sub">Traditional Chinese Street Food</div>
             </div>
-
         </a>
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
-
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false">
             <span class="navbar-toggler-icon"></span>
-
         </button>
 
         <div class="collapse navbar-collapse" id="navbarMain">
 
-            <ul class="navbar-nav mx-auto">
-
+            <ul class="navbar-nav mx-auto gap-1">
                 <li class="nav-item">
-                    <a class="nav-link" href="/">
-                        Menu
-                    </a>
+                    <a class="nav-link" href="/">Menu</a>
                 </li>
-
                 <li class="nav-item">
-                    <a class="nav-link" href="/about">
-                        Giới thiệu
-                    </a>
+                    <a class="nav-link" href="/about">Giới thiệu</a>
                 </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="/cart">
-                        🛒 Giỏ hàng
-                    </a>
-                </li>
-
             </ul>
 
-            <div>
+            <div class="navbar-nav-actions">
 
-                <% if(user){ %>
+                <a href="/cart" class="btn-cart">
+                    🛒 Giỏ hàng
+                    <% if (typeof cartCount !== 'undefined' && cartCount > 0) { %>
+                        <span class="cart-badge"><%= cartCount %></span>
+                    <% } %>
+                </a>
 
-                    <a href="/profile" class="btn btn-outline-dark">
-
-                        👤 Tài khoản
-
+                <% if (user) { %>
+                    <a href="/profile" class="btn-account">
+                        👤 <%= user.name || 'Tài khoản' %>
                     </a>
-                    <a href="/logout" class="btn btn-danger">
-
+                    <a href="/logout" class="btn-logout">
                         Đăng xuất
-
                     </a>
-
-                    <% }else{ %>
-
-                        <a href="/login" class="btn btn-outline-dark me-2">
-
-                            Đăng nhập
-
-                        </a>
-
-                        <a href="/register" class="btn btn-main">
-
-                            Đăng ký
-
-                        </a>
-
-                        <% } %>
+                <% } else { %>
+                    <a href="/login" class="btn-login">Đăng nhập</a>
+                    <a href="/register" class="btn-register">Đăng ký</a>
+                <% } %>
 
             </div>
 
         </div>
 
     </div>
-
-
 </nav>
