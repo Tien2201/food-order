@@ -5,12 +5,23 @@ const Food = require("../models/Food");
 const Order = require("../models/Order");
 
 router.get("/", async (req, res) => {
-  const foods = await Food.find({ status: true }).sort({ createdAt: -1 });
+
+  const foods = await Food.find({
+    status: true,
+    category: "food"
+  }).sort({ createdAt: -1 });
+
+  const drinks = await Food.find({
+    status: true,
+    category: "drink"
+  }).sort({ createdAt: -1 });
 
   res.render("index", {
     foods,
+    drinks,
     user: req.session.user
   });
+
 });
 
 router.post("/cart/add/:id", async (req, res) => {

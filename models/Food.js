@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
 const foodSchema = new mongoose.Schema({
+
   name: {
     type: String,
     required: true
@@ -20,10 +21,17 @@ const foodSchema = new mongoose.Schema({
     default: "https://via.placeholder.com/300x200"
   },
 
+  category: {
+    type: String,
+    enum: ["food", "drink"],
+    default: "food"
+  },
+
   status: {
     type: Boolean,
     default: true
   }
+
 }, {
   timestamps: true
 });
