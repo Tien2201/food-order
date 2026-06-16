@@ -13,148 +13,147 @@
 
 <body>
 
-  <body>
 
-    <%- include("partials/header", { user: user }) %>
 
-      <div class="container py-5">
+  <%- include("partials/header", { user: user }) %>
 
-        
-        <h1 class="page-title mb-4">
-          Menu hôm nay
-        </h1>
+    <div class="container py-5">
 
-        <!-- MENU ĐỒ ĂN -->
 
-        <h2 class="mb-4">
-          🍜 Đồ ăn
-        </h2>
+      <h1 class="page-title mb-4">
+        Menu hôm nay
+      </h1>
 
-        <div class="row g-4">
+      <!-- MENU ĐỒ ĂN -->
 
-          <% foods.forEach(food=> { %>
+      <h2 class="mb-4">
+        🍜 Đồ ăn
+      </h2>
 
-            <div class="col-md-4">
-              <div class="card h-100">
+      <div class="row g-4">
 
-                <img src="<%= food.image %>" class="food-img" alt="<%= food.name %>">
+        <% foods.forEach(food=> { %>
 
-                <div class="card-body">
+          <div class="col-md-4">
+            <div class="card h-100">
 
-                  <h4>
-                    <%= food.name %>
-                  </h4>
+              <img src="<%= food.image %>" class="food-img" alt="<%= food.name %>">
 
-                  <p class="text-muted">
-                    <%= food.description %>
-                  </p>
+              <div class="card-body">
 
-                  <p class="price">
-                    <%= food.price.toLocaleString() %> VNĐ
-                  </p>
+                <h4>
+                  <%= food.name %>
+                </h4>
 
-                  <form action="/cart/add/<%= food._id %>" method="POST">
+                <p class="text-muted">
+                  <%= food.description %>
+                </p>
 
-                    <input type="number" name="quantity" value="1" min="1" class="form-control mb-2">
+                <p class="price">
+                  <%= food.price.toLocaleString() %> VNĐ
+                </p>
 
-                    <input type="text" name="note" class="form-control mb-3" placeholder="Ghi chú">
+                <form action="/cart/add/<%= food._id %>" method="POST">
 
-                    <button class="btn btn-main w-100">
-                      Thêm vào giỏ
-                    </button>
+                  <input type="number" name="quantity" value="1" min="1" class="form-control mb-2">
 
-                  </form>
+                  <input type="text" name="note" class="form-control mb-3" placeholder="Ghi chú">
 
-                </div>
+                  <button class="btn btn-main w-100">
+                    Thêm vào giỏ
+                  </button>
+
+                </form>
 
               </div>
+
             </div>
+          </div>
 
-            <% }) %>
-
-        </div>
-
-        <hr class="my-5">
-
-        <!-- MENU ĐỒ UỐNG -->
-
-        <h2 class="mb-4">
-          🥤 Đồ uống
-        </h2>
-
-        <div class="row g-4">
-
-          <% drinks.forEach(food=> { %>
-
-            <div class="col-md-4">
-              <div class="card h-100">
-
-                <img src="<%= food.image %>" class="food-img" alt="<%= food.name %>">
-
-                <div class="card-body">
-
-                  <h4>
-                    <%= food.name %>
-                  </h4>
-
-                  <p class="text-muted">
-                    <%= food.description %>
-                  </p>
-
-                  <p class="price">
-                    <%= food.price.toLocaleString() %> VNĐ
-                  </p>
-
-                  <form action="/cart/add/<%= food._id %>" method="POST">
-
-                    <input type="number" name="quantity" value="1" min="1" class="form-control mb-2">
-
-                    <input type="text" name="note" class="form-control mb-3" placeholder="Ghi chú">
-
-                    <button class="btn btn-main w-100">
-                      Thêm vào giỏ
-                    </button>
-
-                  </form>
-
-                </div>
-
-              </div>
-            </div>
-
-            <% }) %>
-
-        </div>
-       
+          <% }) %>
 
       </div>
 
-      <script>
-        async function checkCustomerNotification() {
-          const res = await fetch("/notifications");
-          const data = await res.json();
+      <hr class="my-5">
 
-          const bell = document.getElementById("customerBell");
+      <!-- MENU ĐỒ UỐNG -->
 
-          if (bell) {
-            bell.innerText = data.count;
-          }
+      <h2 class="mb-4">
+        🥤 Đồ uống
+      </h2>
+
+      <div class="row g-4">
+
+        <% drinks.forEach(food=> { %>
+
+          <div class="col-md-4">
+            <div class="card h-100">
+
+              <img src="<%= food.image %>" class="food-img" alt="<%= food.name %>">
+
+              <div class="card-body">
+
+                <h4>
+                  <%= food.name %>
+                </h4>
+
+                <p class="text-muted">
+                  <%= food.description %>
+                </p>
+
+                <p class="price">
+                  <%= food.price.toLocaleString() %> VNĐ
+                </p>
+
+                <form action="/cart/add/<%= food._id %>" method="POST">
+
+                  <input type="number" name="quantity" value="1" min="1" class="form-control mb-2">
+
+                  <input type="text" name="note" class="form-control mb-3" placeholder="Ghi chú">
+
+                  <button class="btn btn-main w-100">
+                    Thêm vào giỏ
+                  </button>
+
+                </form>
+
+              </div>
+
+            </div>
+          </div>
+
+          <% }) %>
+
+      </div>
+
+
+    </div>
+
+    <script>
+      async function checkCustomerNotification() {
+        const res = await fetch("/notifications");
+        const data = await res.json();
+
+        const bell = document.getElementById("customerBell");
+
+        if (bell) {
+          bell.innerText = data.count;
         }
+      }
 
-        setInterval(checkCustomerNotification, 5000);
-        checkCustomerNotification();
-      </script>
+      setInterval(checkCustomerNotification, 5000);
+      checkCustomerNotification();
+    </script>
 
-      <%- include("partials/footer") %>
+    <%- include("partials/footer") %>
 
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-        <script src="/js/main.js"></script>
+      <script src="/js/main.js"></script>
 
-  </body>
+</body>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
-<script src="/js/main.js"></script>
