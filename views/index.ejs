@@ -25,59 +25,114 @@
       </h2>
 
       <div class="row g-4">
-        <% foods.forEach(food=> { %>
+        <div class="container py-5">
 
-          <!-- giữ nguyên card hiện tại -->
+          <h1 class="page-title mb-4">
+            Menu hôm nay
+          </h1>
 
-          <% }) %>
-      </div>
+          <h2 class="mb-4">
+            🍜 Đồ ăn
+          </h2>
 
-      <hr class="my-5">
+          <div class="row g-4">
+            
+            <% foods.forEach(food=> { %>
 
-      <h2 class="mb-4">
-        🥤 Đồ uống
-      </h2>
+              <div class="col-md-4">
+                <div class="card h-100">
 
-      <div class="row g-4">
-        <% drinks.forEach(food=> { %>
+                  <img src="<%= food.image %>" class="food-img" alt="<%= food.name %>">
 
-          <div class="col-md-4">
-            <div class="card h-100">
+                  <div class="card-body">
 
-              <img src="<%= food.image %>" class="food-img" alt="<%= food.name %>">
+                    <h4>
+                      <%= food.name %>
+                    </h4>
 
-              <div class="card-body">
+                    <p class="text-muted">
+                      <%= food.description %>
+                    </p>
 
-                <h4>
-                  <%= food.name %>
-                </h4>
+                    <p class="price">
+                      <%= food.price.toLocaleString() %> VNĐ
+                    </p>
 
-                <p class="text-muted">
-                  <%= food.description %>
-                </p>
+                    <form action="/cart/add/<%= food._id %>" method="POST">
 
-                <p class="price">
-                  <%= food.price.toLocaleString() %> VNĐ
-                </p>
+                      <input type="number" name="quantity" value="1" min="1" class="form-control mb-2">
 
-                <form action="/cart/add/<%= food._id %>" method="POST">
+                      <input type="text" name="note" class="form-control mb-3" placeholder="Ghi chú">
 
-                  <input type="number" name="quantity" value="1" min="1" class="form-control mb-2">
+                      <button class="btn btn-main w-100">
+                        Thêm vào giỏ
+                      </button>
 
-                  <input type="text" name="note" class="form-control mb-3" placeholder="Ghi chú">
+                    </form>
 
-                  <button class="btn btn-main w-100">
-                    Thêm vào giỏ
-                  </button>
+                  </div>
 
-                </form>
-
+                </div>
               </div>
 
-            </div>
+              <% }) %>
+                
+
           </div>
 
-          <% }) %>
+          <hr class="my-5">
+
+          <h2 class="mb-4">
+            🥤 Đồ uống
+          </h2>
+
+          <div class="row g-4">
+            
+            <% drinks.forEach(food=> { %>
+
+              <div class="col-md-4">
+                <div class="card h-100">
+
+                  <img src="<%= food.image %>" class="food-img" alt="<%= food.name %>">
+
+                  <div class="card-body">
+
+                    <h4>
+                      <%= food.name %>
+                    </h4>
+
+                    <p class="text-muted">
+                      <%= food.description %>
+                    </p>
+
+                    <p class="price">
+                      <%= food.price.toLocaleString() %> VNĐ
+                    </p>
+
+                    <form action="/cart/add/<%= food._id %>" method="POST">
+
+                      <input type="number" name="quantity" value="1" min="1" class="form-control mb-2">
+
+                      <input type="text" name="note" class="form-control mb-3" placeholder="Ghi chú">
+
+                      <button class="btn btn-main w-100">
+                        Thêm vào giỏ
+                      </button>
+
+                    </form>
+
+                  </div>
+
+                </div>
+              </div>
+
+              <% }) %>
+              
+
+          </div>
+
+        </div>
+
       </div>
       <div class="col-md-4">
         <div class="card h-100">
