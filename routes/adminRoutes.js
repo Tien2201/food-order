@@ -37,10 +37,12 @@ router.post("/foods/add", isAdmin, upload.single("image"), async (req, res) => {
   const image = req.file ? "/uploads/foods/" + req.file.filename : "";
 
   await Food.create({
-    name,
-    price,
-    description,
-    image
+    name: req.body.name,
+    price: req.body.price,
+    description: req.body.description,
+    image: imagePath,
+    category: req.body.category,
+    status: true
   });
 
   res.redirect("/admin/foods");

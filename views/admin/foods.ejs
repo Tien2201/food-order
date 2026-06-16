@@ -43,7 +43,14 @@
                         <input type="file" name="image" class="form-control" accept="image/*" required>
                     </div>
 
-                    <div class="col-12">
+                    <div class="col-md-6">
+                        <select name="category" class="form-control" required>
+                            <option value="food">🍜 Đồ ăn</option>
+                            <option value="drink">🥤 Đồ uống</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12 mt-3">
                         <button class="btn btn-main">Thêm món</button>
                     </div>
                 </form>
@@ -64,6 +71,14 @@
                                 </p>
                                 <p class="price">
                                     <%= food.price.toLocaleString() %> VNĐ
+                                </p>
+
+                                <p>
+                                    <% if(food.category==="drink" ){ %>
+                                        <span class="badge bg-primary">🥤 Đồ uống</span>
+                                        <% } else { %>
+                                            <span class="badge bg-success">🍜 Đồ ăn</span>
+                                            <% } %>
                                 </p>
 
                                 <a href="/admin/foods/edit/<%= food._id %>" class="btn btn-warning w-100 mb-2">
