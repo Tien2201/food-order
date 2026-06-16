@@ -3,81 +3,387 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Giỏ hàng</title>
+  <title>Giỏ hàng - Đậu Hũ Thúi Nhà Họ La</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="/images/logo.jpg">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: #faf9f7;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    /* ── Page header ── */
+    .cart-hero {
+      background: linear-gradient(135deg, #1a1a1a 0%, #2d1a0e 100%);
+      padding: 40px 0 32px;
+    }
+
+    .cart-hero h1 {
+      font-size: 26px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+
+    .cart-hero p {
+      color: #b0a89e;
+      font-size: 14px;
+      margin-bottom: 0;
+    }
+
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.1);
+      color: #fff !important;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 10px;
+      padding: 9px 18px;
+      font-size: 13px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+
+    .btn-back:hover { background: rgba(255,255,255,0.18); }
+
+    /* ── Empty state ── */
+    .empty-cart-card {
+      background: #fff;
+      border-radius: 20px;
+      border: 1px solid #f0ece8;
+      padding: 64px 24px;
+      text-align: center;
+      margin-top: 32px;
+    }
+
+    .empty-cart-card .empty-icon { font-size: 56px; margin-bottom: 16px; }
+    .empty-cart-card h3 { font-size: 20px; font-weight: 600; color: #1a1a1a; margin-bottom: 8px; }
+    .empty-cart-card p { font-size: 14px; color: #9e9e9e; }
+
+    /* ── Cart items ── */
+    .cart-section-title {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #D85A30;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .cart-section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #f0ece8;
+    }
+
+    .cart-item-card {
+      background: #fff;
+      border-radius: 16px;
+      border: 1px solid #f0ece8;
+      padding: 16px 20px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: box-shadow 0.15s;
+    }
+
+    .cart-item-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+
+    .cart-item-img {
+      width: 72px;
+      height: 72px;
+      border-radius: 12px;
+      object-fit: cover;
+      background: #f0ece8;
+      flex-shrink: 0;
+    }
+
+    .cart-item-info { flex: 1; min-width: 0; }
+
+    .cart-item-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .cart-item-note {
+      font-size: 12px;
+      color: #9e9e9e;
+      margin-bottom: 6px;
+    }
+
+    .cart-item-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .cart-item-qty {
+      font-size: 12px;
+      color: #666;
+      background: #f9f6f3;
+      border-radius: 6px;
+      padding: 3px 10px;
+    }
+
+    .cart-item-price {
+      font-size: 15px;
+      font-weight: 700;
+      color: #D85A30;
+    }
+
+    .btn-remove {
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      border: 1px solid #f5c6c0;
+      background: transparent;
+      color: #c0392b;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+    }
+
+    .btn-remove:hover { background: #fdf2ee; }
+
+    /* ── Order summary card ── */
+    .summary-card {
+      background: #fff;
+      border-radius: 20px;
+      border: 1px solid #f0ece8;
+      padding: 24px;
+      position: sticky;
+      top: 90px;
+    }
+
+    .summary-card h3 {
+      font-size: 17px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #f0ece8;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 10px;
+    }
+
+    .summary-total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 0;
+      border-top: 1px solid #f0ece8;
+      border-bottom: 1px solid #f0ece8;
+      margin: 14px 0 20px;
+    }
+
+    .summary-total span { font-size: 14px; font-weight: 600; color: #1a1a1a; }
+    .summary-total strong { font-size: 20px; font-weight: 700; color: #D85A30; }
+
+    /* ── Form inputs ── */
+    .form-label-custom {
+      font-size: 12px;
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 5px;
+      display: block;
+    }
+
+    .form-input-custom {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid #e8e2dc;
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: 'Poppins', sans-serif;
+      color: #1a1a1a;
+      background: #faf9f7;
+      outline: none;
+      transition: border-color 0.15s;
+      margin-bottom: 14px;
+    }
+
+    .form-input-custom:focus { border-color: #D85A30; background: #fff; }
+    .form-input-custom::placeholder { color: #bbb; }
+
+    /* ── Submit button ── */
+    .btn-order {
+      width: 100%;
+      background: #D85A30;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .btn-order:hover { background: #c44e26; }
+
+    .btn-menu {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #1a1a1a;
+      color: #fff !important;
+      border-radius: 10px;
+      padding: 9px 18px;
+      font-size: 13px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: background 0.15s;
+    }
+
+    .btn-menu:hover { background: #333; }
+  </style>
 </head>
 <body>
 
 <%- include("partials/header", { user: user }) %>
 
-<div class="container py-5">
-
-  <div class="cart-hero mb-4">
-    <div>
-      <h1>Giỏ hàng của bạn</h1>
-      <p>Kiểm tra món ăn, ghi chú và thông tin giao hàng trước khi đặt.</p>
+<!-- Hero -->
+<div class="cart-hero">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+      <div>
+        <h1>🛒 Giỏ hàng của bạn</h1>
+        <p>Kiểm tra món ăn và điền thông tin giao hàng trước khi đặt</p>
+      </div>
+      <a href="/" class="btn-back">🍜 Tiếp tục chọn món</a>
     </div>
-
-    <a href="/" class="btn btn-main">
-      🍜 Tiếp tục chọn món
-    </a>
   </div>
+</div>
+
+<div class="container py-5">
 
   <% if (cart.length === 0) { %>
 
-    <div class="empty-cart-card text-center">
+    <div class="empty-cart-card">
       <div class="empty-icon">🛒</div>
       <h3>Giỏ hàng đang trống</h3>
-      <p>Hãy quay lại menu và thêm món bạn yêu thích.</p>
-
-      <a href="/" class="btn btn-main mt-3">
-        Xem menu
-      </a>
+      <p>Hãy quay lại menu và thêm món bạn yêu thích nhé!</p>
+      <a href="/" class="btn-menu mt-3">🍜 Xem menu</a>
     </div>
 
   <% } else { %>
 
     <div class="row g-4">
+
+      <!-- Danh sách món -->
       <div class="col-lg-7">
+        <div class="cart-section-title">Món đã chọn (<%= cart.length %> món)</div>
+
         <% cart.forEach((item, index) => { %>
           <div class="cart-item-card">
-            <div>
-              <h4><%= item.name %></h4>
-              <p class="mb-1">Số lượng: <strong><%= item.quantity %></strong></p>
-              <p class="text-muted mb-2">Ghi chú: <%= item.note || "Không có" %></p>
-              <h5 class="price"><%= (item.price * item.quantity).toLocaleString() %> VNĐ</h5>
+            <img
+              src="<%= item.image || '/images/background.jpg' %>"
+              class="cart-item-img"
+              alt="<%= item.name %>"
+              onerror="this.src='/images/background.jpg'"
+            >
+            <div class="cart-item-info">
+              <div class="cart-item-name"><%= item.name %></div>
+              <div class="cart-item-note">
+                <% if (item.note) { %>
+                  📝 <%= item.note %>
+                <% } else { %>
+                  Không có ghi chú
+                <% } %>
+              </div>
+              <div class="cart-item-meta">
+                <span class="cart-item-qty">x<%= item.quantity %></span>
+                <span class="cart-item-price"><%= (item.price * item.quantity).toLocaleString('vi-VN') %> VNĐ</span>
+              </div>
             </div>
-
             <form action="/cart/remove/<%= index %>" method="POST">
-              <button class="btn btn-outline-danger">
-                🗑 Xóa
-              </button>
+              <button type="submit" class="btn-remove" title="Xóa món">🗑</button>
             </form>
           </div>
         <% }) %>
       </div>
 
+      <!-- Order summary -->
       <div class="col-lg-5">
-        <div class="checkout-card">
-          <h3>Thông tin đặt món</h3>
+        <div class="summary-card">
+          <h3>📋 Thông tin đặt món</h3>
 
-          <div class="total-box">
+          <div class="summary-row">
+            <span>Số món</span>
+            <span><%= cart.length %> món</span>
+          </div>
+          <div class="summary-row">
+            <span>Tổng số lượng</span>
+            <span><%= cart.reduce((sum, i) => sum + i.quantity, 0) %> phần</span>
+          </div>
+
+          <div class="summary-total">
             <span>Tổng tiền</span>
-            <strong><%= totalPrice.toLocaleString() %> VNĐ</strong>
+            <strong><%= totalPrice.toLocaleString('vi-VN') %> VNĐ</strong>
           </div>
 
           <form action="/checkout" method="POST">
-            <input name="customerName" class="form-control mb-3" placeholder="Tên khách hàng" required>
-            <input name="phone" class="form-control mb-3" placeholder="Số điện thoại" required>
-            <input name="address" class="form-control mb-3" placeholder="Địa chỉ giao hàng" required>
+            <label class="form-label-custom">Tên khách hàng</label>
+            <input
+              name="customerName"
+              class="form-input-custom"
+              placeholder="Nguyễn Văn A"
+              value="<%= user && user.name ? user.name : '' %>"
+              required
+            >
 
-            <button class="btn btn-main w-100">
-              Đặt món ngay
+            <label class="form-label-custom">Số điện thoại</label>
+            <input
+              name="phone"
+              class="form-input-custom"
+              placeholder="0901 234 567"
+              type="tel"
+              value="<%= user && user.phone ? user.phone : '' %>"
+              required
+            >
+
+            <label class="form-label-custom">Địa chỉ giao hàng</label>
+            <input
+              name="address"
+              class="form-input-custom"
+              placeholder="123 Đường ABC, Quận 1, TP.HCM"
+              required
+            >
+
+            <button type="submit" class="btn-order">
+              🎉 Đặt món ngay — <%= totalPrice.toLocaleString('vi-VN') %> VNĐ
             </button>
           </form>
         </div>
       </div>
+
     </div>
 
   <% } %>

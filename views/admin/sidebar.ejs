@@ -1,0 +1,229 @@
+<style>
+  .admin-sidebar {
+    width: 240px;
+    min-height: 100vh;
+    background: #111827;
+    display: flex;
+    flex-direction: column;
+    padding: 24px 16px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px 24px;
+    border-bottom: 1px solid #1f2937;
+    margin-bottom: 16px;
+  }
+
+  .sidebar-brand-icon {
+    width: 36px;
+    height: 36px;
+    background: #D85A30;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .sidebar-brand-text {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.3;
+  }
+
+  .sidebar-brand-sub {
+    font-size: 10px;
+    color: #6b7280;
+    font-weight: 400;
+  }
+
+  .sidebar-section-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #4b5563;
+    padding: 0 12px;
+    margin: 16px 0 8px;
+  }
+
+  .sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    color: #9ca3af;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 2px;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .sidebar-link:hover {
+    background: #1f2937;
+    color: #fff;
+  }
+
+  .sidebar-link.active {
+    background: #D85A30;
+    color: #fff;
+  }
+
+  .sidebar-link .icon {
+    font-size: 17px;
+    width: 20px;
+    text-align: center;
+  }
+
+  .sidebar-footer {
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid #1f2937;
+  }
+
+  .sidebar-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    margin-bottom: 8px;
+  }
+
+  .sidebar-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #374151;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: #d1d5db;
+    flex-shrink: 0;
+  }
+
+  .sidebar-user-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #e5e7eb;
+    line-height: 1.2;
+  }
+
+  .sidebar-user-role {
+    font-size: 10px;
+    color: #6b7280;
+  }
+
+  .btn-logout-sidebar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: transparent;
+    border: 1px solid #1f2937;
+    color: #ef4444;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .btn-logout-sidebar:hover {
+    background: #1f2937;
+    color: #ef4444;
+  }
+
+  /* Admin main content */
+  .admin-main {
+    flex: 1;
+    min-width: 0;
+    background: #f9fafb;
+    min-height: 100vh;
+  }
+
+  .admin-topbar {
+    background: #fff;
+    border-bottom: 1px solid #f0ece8;
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .admin-topbar-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #111827;
+  }
+
+  .admin-topbar-sub {
+    font-size: 13px;
+    color: #9ca3af;
+    margin-top: 2px;
+  }
+
+  .admin-content {
+    padding: 32px;
+  }
+</style>
+
+<div class="admin-sidebar">
+  <div class="sidebar-brand">
+    <div class="sidebar-brand-icon">🍜</div>
+    <div>
+      <div class="sidebar-brand-text">Food Order</div>
+      <div class="sidebar-brand-sub">Admin Panel</div>
+    </div>
+  </div>
+
+  <div class="sidebar-section-label">Tổng quan</div>
+  <a href="/admin/dashboard" class="sidebar-link <%= typeof activePage !== 'undefined' && activePage === 'dashboard' ? 'active' : '' %>">
+    <span class="icon">📊</span> Dashboard
+  </a>
+  <a href="/admin/statistics" class="sidebar-link <%= typeof activePage !== 'undefined' && activePage === 'statistics' ? 'active' : '' %>">
+    <span class="icon">📈</span> Thống kê
+  </a>
+
+  <div class="sidebar-section-label">Quản lý</div>
+  <a href="/admin/foods" class="sidebar-link <%= typeof activePage !== 'undefined' && activePage === 'foods' ? 'active' : '' %>">
+    <span class="icon">🍽️</span> Món ăn
+  </a>
+  <a href="/admin/orders" class="sidebar-link <%= typeof activePage !== 'undefined' && activePage === 'orders' ? 'active' : '' %>">
+    <span class="icon">📋</span> Đơn hàng
+  </a>
+  <a href="/admin/users" class="sidebar-link <%= typeof activePage !== 'undefined' && activePage === 'users' ? 'active' : '' %>">
+    <span class="icon">👥</span> Tài khoản
+  </a>
+
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="sidebar-avatar">
+        <%= typeof user !== 'undefined' && user ? user.fullname.charAt(0).toUpperCase() : 'A' %>
+      </div>
+      <div>
+        <div class="sidebar-user-name"><%= typeof user !== 'undefined' && user ? user.fullname : 'Admin' %></div>
+        <div class="sidebar-user-role">Administrator</div>
+      </div>
+    </div>
+    <a href="/logout" class="btn-logout-sidebar">
+      <span class="icon">🚪</span> Đăng xuất
+    </a>
+  </div>
+</div>
