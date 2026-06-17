@@ -17,18 +17,42 @@ router.get("/dashboard", isAdmin, async (req, res) => {
   const orderCount = await Order.countDocuments();
   const userCount = await User.countDocuments();
 
+  // Tổng doanh thu
+  const revenueData = await Order.aggregate([
+    { $group: { _id: null, total: { $sum: "$totalPrice" } } }
+  ]);
+  const totalRevenue = revenueData.length > 0 ? revenueData[0].total : 0;
+
+  // 5 đơn hàng mới nhất
+  const recentOrders = await Order.find().sort({ createdAt: -1 }).limit(5);
+
+  // Đơn hàng theo ngày - 7 ngày gần nhất
+  const ordersByDay = [];
+  for (let i = 6; i >= 0; i--) {
+    const start = new Date();
+    start.setDate(start.getDate() - i);
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(start);
+    end.setHours(23, 59, 59, 999);
+    const count = await Order.countDocuments({ createdAt: { $gte: start, $lte: end } });
+    ordersByDay.push(count);
+  }
+
   res.render("admin/dashboard", {
     user: req.session.user,
     foodCount,
     orderCount,
-    userCount
+    userCount,
+    totalRevenue,
+    recentOrders,
+    ordersByDay
   });
 });
 
 router.get("/foods", isAdmin, async (req, res) => {
   const foods = await Food.find().sort({ createdAt: -1 });
 
-  res.render("admin/foods", { foods });
+  res.render("admin/foods", { foods, user: req.session.user });
 });
 
 router.post("/foods/add", isAdmin, upload.single("image"), async (req, res) => {
@@ -52,7 +76,7 @@ router.post("/foods/add", isAdmin, upload.single("image"), async (req, res) => {
 router.get("/foods/edit/:id", isAdmin, async (req, res) => {
   const food = await Food.findById(req.params.id);
 
-  res.render("admin/edit-food", { food });
+  res.render("admin/edit-food", { food, user: req.session.user });
 });
 
 router.post("/foods/edit/:id", isAdmin, upload.single("image"), async (req, res) => {
@@ -85,13 +109,13 @@ router.get("/orders", isAdmin, async (req, res) => {
     .populate("confirmedBy", "fullname email")
     .sort({ createdAt: -1 });
 
-  res.render("admin/orders", { orders });
+  res.render("admin/orders", { orders, user: req.session.user });
 });
 
 router.get("/orders/edit/:id", isAdmin, async (req, res) => {
   const order = await Order.findById(req.params.id);
 
-  res.render("admin/edit-order", { order });
+  res.render("admin/edit-order", { order, user: req.session.user });
 });
 
 router.post("/orders/edit/:id", isAdmin, async (req, res) => {
@@ -117,7 +141,7 @@ router.post("/orders/delete/:id", isAdmin, async (req, res) => {
 router.get("/users", isAdmin, async (req, res) => {
   const users = await User.find().sort({ createdAt: -1 });
 
-  res.render("admin/users", { users });
+  res.render("admin/users", { users, user: req.session.user });
 });
 
 router.post("/users/role/:id", isAdmin, async (req, res) => {
@@ -216,7 +240,7 @@ router.get("/statistics", isAdmin, async (req, res) => {
   const totalRevenue =
     totalRevenueData.length > 0 ? totalRevenueData[0].totalRevenue : 0;
 
-  res.render("admin/statistics", {
+  res.render("admin/statistics", { user: req.session.user,
     totalOrders,
     totalRevenue,
     foodStats

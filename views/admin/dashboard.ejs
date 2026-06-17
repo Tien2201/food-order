@@ -8,174 +8,68 @@
   <link rel="stylesheet" href="/css/style.css">
   <link rel="icon" href="/images/logo.jpg">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    body { font-family: 'Poppins', sans-serif; background: #f9fafb; margin: 0; }
-
-    /* Stat cards */
-    .stat-card {
-      background: #fff;
-      border-radius: 16px;
-      border: 1px solid #f0ece8;
-      padding: 24px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      transition: box-shadow 0.15s;
-    }
-
-    .stat-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.07); }
-
-    .stat-icon {
-      width: 52px;
-      height: 52px;
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      flex-shrink: 0;
-    }
-
-    .stat-icon.orange { background: #fff3ee; }
-    .stat-icon.blue   { background: #eff6ff; }
-    .stat-icon.green  { background: #f0fdf4; }
-    .stat-icon.purple { background: #f5f3ff; }
-
-    .stat-label {
-      font-size: 12px;
-      color: #9ca3af;
-      font-weight: 500;
-      margin-bottom: 4px;
-    }
-
-    .stat-value {
-      font-size: 28px;
-      font-weight: 700;
-      color: #111827;
-      line-height: 1;
-    }
-
-    .stat-sub {
-      font-size: 12px;
-      color: #6b7280;
-      margin-top: 4px;
-    }
-
-    /* Chart card */
-    .chart-card {
-      background: #fff;
-      border-radius: 16px;
-      border: 1px solid #f0ece8;
-      padding: 24px;
-    }
-
-    .chart-card-title {
-      font-size: 15px;
-      font-weight: 700;
-      color: #111827;
-      margin-bottom: 4px;
-    }
-
-    .chart-card-sub {
-      font-size: 12px;
-      color: #9ca3af;
-      margin-bottom: 20px;
-    }
-
-    /* Recent orders table */
-    .table-card {
-      background: #fff;
-      border-radius: 16px;
-      border: 1px solid #f0ece8;
-      overflow: hidden;
-    }
-
-    .table-card-header {
-      padding: 18px 24px;
-      border-bottom: 1px solid #f0ece8;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .table-card-title {
-      font-size: 15px;
-      font-weight: 700;
-      color: #111827;
-    }
-
-    .table-card table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    .table-card th {
-      font-size: 11px;
-      font-weight: 600;
-      color: #9ca3af;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      padding: 12px 24px;
-      border-bottom: 1px solid #f9fafb;
-      background: #f9fafb;
-    }
-
-    .table-card td {
-      padding: 14px 24px;
-      font-size: 13px;
-      color: #374151;
-      border-bottom: 1px solid #f9fafb;
-    }
-
-    .table-card tr:last-child td { border-bottom: none; }
-
-    .badge-pending  { background: #fef3c7; color: #92400e; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
-    .badge-confirmed { background: #d1fae5; color: #065f46; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
-
-    .btn-view {
-      font-size: 12px;
-      color: #D85A30;
-      text-decoration: none;
-      font-weight: 600;
-    }
-
-    .btn-view:hover { text-decoration: underline; }
-
-    /* Quick actions */
-    .action-card {
-      background: #fff;
-      border-radius: 16px;
-      border: 1px solid #f0ece8;
-      padding: 20px;
-      text-decoration: none;
-      display: block;
-      transition: box-shadow 0.15s, transform 0.15s;
-    }
-
-    .action-card:hover {
-      box-shadow: 0 8px 24px rgba(0,0,0,0.07);
-      transform: translateY(-2px);
-    }
-
-    .action-icon { font-size: 28px; margin-bottom: 10px; }
-    .action-title { font-size: 14px; font-weight: 600; color: #111827; }
-    .action-sub { font-size: 12px; color: #9ca3af; margin-top: 2px; }
-
-    .topbar-date { font-size: 13px; color: #9ca3af; }
-  </style>
 </head>
 <body>
 
 <div class="d-flex">
-  <%- include("partials/sidebar", { user, activePage: "dashboard" }) %>
 
-  <div class="admin-main">
+<div class="admin-overlay" id="adminOverlay" onclick="closeSidebar()"></div>
+
+  <!-- SIDEBAR -->
+  <div class="admin-sidebar" id="adminSidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-icon">🍜</div>
+      <div>
+        <div class="sidebar-brand-text">Food Order</div>
+        <div class="sidebar-brand-sub">Admin Panel</div>
+      </div>
+    </div>
+
+    <div class="sidebar-section-label">Tổng quan</div>
+    <a href="/admin/dashboard" class="sidebar-link active">
+      <span class="icon">📊</span> Dashboard
+    </a>
+    <a href="/admin/statistics" class="sidebar-link ">
+      <span class="icon">📈</span> Thống kê
+    </a>
+
+    <div class="sidebar-section-label">Quản lý</div>
+    <a href="/admin/foods" class="sidebar-link ">
+      <span class="icon">🍽️</span> Món ăn
+    </a>
+    <a href="/admin/orders" class="sidebar-link ">
+      <span class="icon">📋</span> Đơn hàng
+    </a>
+    <a href="/admin/users" class="sidebar-link ">
+      <span class="icon">👥</span> Tài khoản
+    </a>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar">
+          <%= user ? user.fullname.charAt(0).toUpperCase() : 'A' %>
+        </div>
+        <div>
+          <div class="sidebar-user-name"><%= user ? user.fullname : 'Admin' %></div>
+          <div class="sidebar-user-role">Administrator</div>
+        </div>
+      </div>
+      <a href="/logout" class="btn-logout-sidebar">
+        <span class="icon">🚪</span> Đăng xuất
+      </a>
+    </div>
+  </div>
+
+<div class="admin-main">
 
     <!-- Topbar -->
     <div class="admin-topbar">
-      <div>
-        <div class="admin-topbar-title">Xin chào, <%= user.fullname %> 👋</div>
-        <div class="admin-topbar-sub">Trang quản trị hệ thống đặt món</div>
+      <div class="d-flex align-items-center gap-2">
+        <button class="admin-hamburger" onclick="openSidebar()">☰</button>
+        <div>
+          <div class="admin-topbar-title">Xin chào, <%= user.fullname %> 👋</div>
+          <div class="admin-topbar-sub">Trang quản trị hệ thống đặt món</div>
+        </div>
       </div>
       <div class="topbar-date" id="currentDate"></div>
     </div>
@@ -310,6 +204,16 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
+  // Mobile sidebar toggle
+  function openSidebar() {
+    document.getElementById('adminSidebar').classList.add('open');
+    document.getElementById('adminOverlay').classList.add('show');
+  }
+  function closeSidebar() {
+    document.getElementById('adminSidebar').classList.remove('open');
+    document.getElementById('adminOverlay').classList.remove('show');
+  }
+
   // Hiện ngày giờ
   const d = new Date();
   document.getElementById('currentDate').textContent =
@@ -319,9 +223,9 @@
   const labels = [];
   const today = new Date();
   for (let i = 6; i >= 0; i--) {
-    const d = new Date(today);
-    d.setDate(today.getDate() - i);
-    labels.push(d.toLocaleDateString('vi-VN', { month: 'numeric', day: 'numeric' }));
+    const dd = new Date(today);
+    dd.setDate(today.getDate() - i);
+    labels.push(dd.toLocaleDateString('vi-VN', { month: 'numeric', day: 'numeric' }));
   }
 
   const orderData = <%- typeof ordersByDay !== 'undefined' ? JSON.stringify(ordersByDay) : '[0,0,0,0,0,0,0]' %>;
@@ -340,23 +244,13 @@
     },
     options: {
       responsive: true,
-      plugins: {
-        legend: { display: false }
-      },
+      plugins: { legend: { display: false } },
       scales: {
-        y: {
-          beginAtZero: true,
-          ticks: { stepSize: 1, font: { size: 11 } },
-          grid: { color: '#f3f4f6' }
-        },
-        x: {
-          ticks: { font: { size: 11 } },
-          grid: { display: false }
-        }
+        y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 11 } }, grid: { color: '#f3f4f6' } },
+        x: { ticks: { font: { size: 11 } }, grid: { display: false } }
       }
     }
   });
 </script>
-
 </body>
 </html>
