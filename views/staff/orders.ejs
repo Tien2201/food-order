@@ -2,80 +2,131 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nhân viên - Đơn hàng</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="/images/logo.jpg">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-<nav class="app-header">
-  <a href="/staff/orders" class="brand">👨‍🍳 Staff Order</a>
-
-  <div class="nav-links">
-    <button class="btn btn-light position-relative" onclick="checkStaffNotification()">
+<div class="staff-header">
+  <a href="/staff/orders" class="staff-brand">
+    <div class="staff-brand-icon">👨‍🍳</div>
+    <span>Staff Order</span>
+  </a>
+  <div class="staff-actions">
+    <a href="/staff/dashboard" class="staff-nav-link">Dashboard</a>
+    <a href="/staff/orders" class="staff-nav-link active">Đơn hàng</a>
+    <button class="btn-bell" onclick="checkStaffNotification()">
       🔔
-      <span id="staffBell" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-        0
-      </span>
+      <span id="staffBell" class="bell-badge">0</span>
     </button>
-
-    <a href="/logout" class="logout-btn">Đăng xuất</a>
-  </div>
-</nav>
-
-<div class="container py-5">
-  <h1 class="page-title">Danh sách đơn hàng</h1>
-
-  <div class="card p-4">
-    <table class="table table-hover align-middle">
-      <thead>
-        <tr>
-          <th>Khách hàng</th>
-          <th>SĐT</th>
-          <th>Tổng tiền</th>
-          <th>Trạng thái</th>
-          <th>Mã thanh toán</th>
-          <th>Thao tác</th>
-        </tr>
-      </thead>
-
-      <tbody>
-        <% orders.forEach(order => { %>
-          <tr>
-            <td><%= order.customerName %></td>
-            <td><%= order.phone %></td>
-            <td class="price"><%= order.totalPrice.toLocaleString() %> VNĐ</td>
-            <td>
-              <% if (order.paymentCode) { %>
-                <span class="badge bg-success">Đã xác nhận</span>
-              <% } else { %>
-                <span class="badge bg-warning text-dark">Đơn mới</span>
-              <% } %>
-            </td>
-            <td><%= order.paymentCode || "Chưa có" %></td>
-            <td>
-              <a href="/staff/orders/<%= order._id %>" class="btn btn-main btn-sm">
-                Xem chi tiết
-              </a>
-            </td>
-          </tr>
-        <% }) %>
-      </tbody>
-    </table>
+    <a href="/logout" class="btn-staff-logout">🚪 Đăng xuất</a>
   </div>
 </div>
 
-<script>
-async function checkStaffNotification() {
-  const res = await fetch("/staff/notifications");
-  const data = await res.json();
-  document.getElementById("staffBell").innerText = data.count;
-}
+<div class="staff-content">
 
-setInterval(checkStaffNotification, 5000);
-checkStaffNotification();
+  <div class="welcome-banner">
+    <h1>📋 Danh sách đơn hàng</h1>
+    <p>Xem và xác nhận đơn hàng của khách</p>
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-md-3 col-sm-6">
+      <div class="stat-card">
+        <div class="stat-icon blue">📋</div>
+        <div>
+          <div class="stat-label">Tổng đơn</div>
+          <div class="stat-value"><%= orders.length %></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+      <div class="stat-card">
+        <div class="stat-icon orange">⏳</div>
+        <div>
+          <div class="stat-label">Chờ xác nhận</div>
+          <div class="stat-value"><%= orders.filter(o => !o.paymentCode).length %></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+      <div class="stat-card">
+        <div class="stat-icon green">✅</div>
+        <div>
+          <div class="stat-label">Đã xác nhận</div>
+          <div class="stat-value"><%= orders.filter(o => o.paymentCode).length %></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+      <div class="stat-card">
+        <div class="stat-icon purple">💰</div>
+        <div>
+          <div class="stat-label">Doanh thu</div>
+          <div class="stat-value"><%= (orders.reduce((s,o) => s + o.totalPrice, 0)/1000).toFixed(0) %>K</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <% if (orders.length === 0) { %>
+    <div class="empty-state">
+      <div style="font-size:48px; margin-bottom:12px;">📋</div>
+      <p>Chưa có đơn hàng nào.</p>
+    </div>
+  <% } else { %>
+    <div class="table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>Khách hàng</th>
+            <th>SĐT</th>
+            <th>Tổng tiền</th>
+            <th>Trạng thái</th>
+            <th>Mã thanh toán</th>
+            <th>Thao tác</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% orders.forEach(order => { %>
+            <tr>
+              <td><strong style="color:#111827"><%= order.customerName %></strong></td>
+              <td><%= order.phone %></td>
+              <td style="color:#D85A30; font-weight:700;"><%= order.totalPrice.toLocaleString('vi-VN') %> VNĐ</td>
+              <td>
+                <% if (order.paymentCode) { %>
+                  <span class="badge-confirmed">✅ Đã xác nhận</span>
+                <% } else { %>
+                  <span class="badge-pending">⏳ Đơn mới</span>
+                <% } %>
+              </td>
+              <td style="font-family:monospace; font-size:11px; color:#9ca3af;"><%= order.paymentCode || "Chưa có" %></td>
+              <td><a href="/staff/orders/<%= order._id %>" class="btn-detail">Xem chi tiết</a></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } %>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  async function checkStaffNotification() {
+    try {
+      const res = await fetch("/staff/notifications");
+      const data = await res.json();
+      document.getElementById("staffBell").innerText = data.count;
+    } catch (e) {}
+  }
+  setInterval(checkStaffNotification, 5000);
+  checkStaffNotification();
 </script>
 
 </body>
 </html>
-<script src="/js/main.js"></script>

@@ -80,22 +80,28 @@ router.get("/foods/edit/:id", isAdmin, async (req, res) => {
 });
 
 router.post("/foods/edit/:id", isAdmin, upload.single("image"), async (req, res) => {
-  const { name, price, description, status } = req.body;
+  try {
+    const { name, price, description, status, category } = req.body;
 
-  const updateData = {
-    name,
-    price,
-    description,
-    status: status === "true"
-  };
+    const updateData = {
+      name,
+      price,
+      description,
+      category,
+      status: status === "true"
+    };
 
-  if (req.file) {
-    updateData.image = "/uploads/foods/" + req.file.filename;
+    if (req.file) {
+      updateData.image = "/uploads/foods/" + req.file.filename;
+    }
+
+    await Food.findByIdAndUpdate(req.params.id, updateData);
+
+    res.redirect("/admin/foods");
+  } catch (err) {
+    console.error(err);
+    res.redirect("/admin/foods");
   }
-
-  await Food.findByIdAndUpdate(req.params.id, updateData);
-
-  res.redirect("/admin/foods");
 });
 
 router.post("/foods/delete/:id", isAdmin, async (req, res) => {

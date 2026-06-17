@@ -8,7 +8,262 @@
   <link rel="stylesheet" href="/css/style.css">
   <link rel="icon" href="/images/logo.jpg">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
+  <style>
+    body {
+      background: #faf9f7;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    /* ── Page header ── */
+    .cart-hero {
+      background: linear-gradient(135deg, #1a1a1a 0%, #2d1a0e 100%);
+      padding: 40px 0 32px;
+    }
+
+    .cart-hero h1 {
+      font-size: 26px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+
+    .cart-hero p {
+      color: #b0a89e;
+      font-size: 14px;
+      margin-bottom: 0;
+    }
+
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.1);
+      color: #fff !important;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 10px;
+      padding: 9px 18px;
+      font-size: 13px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+
+    .btn-back:hover { background: rgba(255,255,255,0.18); }
+
+    /* ── Empty state ── */
+    .empty-cart-card {
+      background: #fff;
+      border-radius: 20px;
+      border: 1px solid #f0ece8;
+      padding: 64px 24px;
+      text-align: center;
+      margin-top: 32px;
+    }
+
+    .empty-cart-card .empty-icon { font-size: 56px; margin-bottom: 16px; }
+    .empty-cart-card h3 { font-size: 20px; font-weight: 600; color: #1a1a1a; margin-bottom: 8px; }
+    .empty-cart-card p { font-size: 14px; color: #9e9e9e; }
+
+    /* ── Cart items ── */
+    .cart-section-title {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #D85A30;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .cart-section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #f0ece8;
+    }
+
+    .cart-item-card {
+      background: #fff;
+      border-radius: 16px;
+      border: 1px solid #f0ece8;
+      padding: 16px 20px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: box-shadow 0.15s;
+    }
+
+    .cart-item-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+
+    .cart-item-img {
+      width: 72px;
+      height: 72px;
+      border-radius: 12px;
+      object-fit: cover;
+      background: #f0ece8;
+      flex-shrink: 0;
+    }
+
+    .cart-item-info { flex: 1; min-width: 0; }
+
+    .cart-item-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .cart-item-note {
+      font-size: 12px;
+      color: #9e9e9e;
+      margin-bottom: 6px;
+    }
+
+    .cart-item-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .cart-item-qty {
+      font-size: 12px;
+      color: #666;
+      background: #f9f6f3;
+      border-radius: 6px;
+      padding: 3px 10px;
+    }
+
+    .cart-item-price {
+      font-size: 15px;
+      font-weight: 700;
+      color: #D85A30;
+    }
+
+    .btn-remove {
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      border: 1px solid #f5c6c0;
+      background: transparent;
+      color: #c0392b;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+    }
+
+    .btn-remove:hover { background: #fdf2ee; }
+
+    /* ── Order summary card ── */
+    .summary-card {
+      background: #fff;
+      border-radius: 20px;
+      border: 1px solid #f0ece8;
+      padding: 24px;
+      position: sticky;
+      top: 90px;
+    }
+
+    .summary-card h3 {
+      font-size: 17px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #f0ece8;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 10px;
+    }
+
+    .summary-total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 0;
+      border-top: 1px solid #f0ece8;
+      border-bottom: 1px solid #f0ece8;
+      margin: 14px 0 20px;
+    }
+
+    .summary-total span { font-size: 14px; font-weight: 600; color: #1a1a1a; }
+    .summary-total strong { font-size: 20px; font-weight: 700; color: #D85A30; }
+
+    /* ── Form inputs ── */
+    .form-label-custom {
+      font-size: 12px;
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 5px;
+      display: block;
+    }
+
+    .form-input-custom {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid #e8e2dc;
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: 'Poppins', sans-serif;
+      color: #1a1a1a;
+      background: #faf9f7;
+      outline: none;
+      transition: border-color 0.15s;
+      margin-bottom: 14px;
+    }
+
+    .form-input-custom:focus { border-color: #D85A30; background: #fff; }
+    .form-input-custom::placeholder { color: #bbb; }
+
+    /* ── Submit button ── */
+    .btn-order {
+      width: 100%;
+      background: #D85A30;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .btn-order:hover { background: #c44e26; }
+
+    .btn-menu {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #1a1a1a;
+      color: #fff !important;
+      border-radius: 10px;
+      padding: 9px 18px;
+      font-size: 13px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: background 0.15s;
+    }
+
+    .btn-menu:hover { background: #333; }
+  </style>
 </head>
 <body>
 
@@ -94,13 +349,19 @@
             <strong><%= totalPrice.toLocaleString('vi-VN') %> VNĐ</strong>
           </div>
 
+          <% if (!user) { %>
+            <div style="background:#fff3ee; border:1px solid #ffd9c2; border-radius:10px; padding:12px 14px; margin-bottom:16px; font-size:12.5px; color:#9a4a1f;">
+              🔒 Bạn cần <a href="/login?next=/cart" style="color:#D85A30; font-weight:700; text-decoration:underline;">đăng nhập</a> để hoàn tất đặt món.
+            </div>
+          <% } %>
+
           <form action="/checkout" method="POST">
             <label class="form-label-custom">Tên khách hàng</label>
             <input
               name="customerName"
               class="form-input-custom"
               placeholder="Nguyễn Văn A"
-              value="<%= user && user.name ? user.name : '' %>"
+              value="<%= user && user.fullname ? user.fullname : '' %>"
               required
             >
 
@@ -122,9 +383,15 @@
               required
             >
 
-            <button type="submit" class="btn-order">
-              🎉 Đặt món ngay — <%= totalPrice.toLocaleString('vi-VN') %> VNĐ
-            </button>
+            <% if (user) { %>
+              <button type="submit" class="btn-order">
+                🎉 Đặt món ngay — <%= totalPrice.toLocaleString('vi-VN') %> VNĐ
+              </button>
+            <% } else { %>
+              <button type="submit" class="btn-order">
+                🔒 Đăng nhập để đặt món
+              </button>
+            <% } %>
           </form>
         </div>
       </div>

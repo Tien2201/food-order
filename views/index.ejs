@@ -9,7 +9,6 @@
   <link rel="stylesheet" href="/css/style.css">
   <link rel="icon" href="/images/logo.jpg">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
 </head>
 
 <body>
@@ -21,6 +20,39 @@
     <div class="container">
       <h1>Menu hôm nay 🍜</h1>
       <p>Khám phá các món ăn đặc trưng của chúng tôi</p>
+
+      <% if (featuredFoods && featuredFoods.length > 0) { %>
+        <div class="featured-slideshow" id="featuredSlideshow">
+          <% featuredFoods.forEach((food, i) => { %>
+            <div class="featured-slide <%= i === 0 ? 'active' : '' %>">
+              <img src="<%= food.image %>" class="featured-slide-bg" alt="<%= food.name %>" onerror="this.src='/images/background.jpg'">
+              <div class="featured-slide-overlay"></div>
+              <div class="featured-slide-content">
+                <span class="featured-badge"><%= food.badge %></span>
+                <h2><%= food.name %></h2>
+                <div class="featured-desc"><%= food.description || '' %></div>
+                <div class="featured-price"><%= food.price.toLocaleString('vi-VN') %> VNĐ</div>
+                <% if (food.ratingCount > 0) { %>
+                  <div class="featured-rating">⭐ <%= food.avgRating %> (<%= food.ratingCount %> đánh giá)</div>
+                <% } %>
+              </div>
+            </div>
+          <% }) %>
+
+          <% if (featuredFoods.length > 1) { %>
+            <div class="slideshow-arrows">
+              <button class="slideshow-arrow-btn" id="slidePrevBtn" aria-label="Trước">‹</button>
+              <button class="slideshow-arrow-btn" id="slideNextBtn" aria-label="Sau">›</button>
+            </div>
+            <div class="slideshow-dots">
+              <% featuredFoods.forEach((food, i) => { %>
+                <button class="slideshow-dot <%= i === 0 ? 'active' : '' %>" data-i="<%= i %>" aria-label="Slide <%= i+1 %>"></button>
+              <% }) %>
+            </div>
+          <% } %>
+        </div>
+      <% } %>
+
       <div class="search-wrap">
         <span class="search-icon">🔍</span>
         <input
@@ -58,7 +90,9 @@
               <img src="<%= food.image %>" class="food-img" alt="<%= food.name %>">
               <div class="card-body">
                 <div class="food-name"><%= food.name %></div>
-                <div class="food-desc"><%= food.description || '' %></div>
+                <% if (food.description) { %>
+                  <div class="food-desc"><%= food.description %></div>
+                <% } %>
                 <div class="food-price"><%= food.price.toLocaleString('vi-VN') %> VNĐ</div>
                 <form action="/cart/add/<%= food._id %>" method="POST">
                   <div class="qty-control">
@@ -94,7 +128,9 @@
               <img src="<%= food.image %>" class="food-img" alt="<%= food.name %>">
               <div class="card-body">
                 <div class="food-name"><%= food.name %></div>
-                <div class="food-desc"><%= food.description || '' %></div>
+                <% if (food.description) { %>
+                  <div class="food-desc"><%= food.description %></div>
+                <% } %>
                 <div class="food-price"><%= food.price.toLocaleString('vi-VN') %> VNĐ</div>
                 <form action="/cart/add/<%= food._id %>" method="POST">
                   <div class="qty-control">
@@ -198,6 +234,39 @@
 
     setInterval(checkCustomerNotification, 5000);
     checkCustomerNotification();
+
+    // ── Featured slideshow ──
+    (function() {
+      const wrap = document.getElementById('featuredSlideshow');
+      if (!wrap) return;
+
+      const slides = wrap.querySelectorAll('.featured-slide');
+      const dots = wrap.querySelectorAll('.slideshow-dot');
+      const prevBtn = document.getElementById('slidePrevBtn');
+      const nextBtn = document.getElementById('slideNextBtn');
+      let current = 0;
+      let timer;
+
+      function show(i) {
+        slides.forEach((s, idx) => s.classList.toggle('active', idx === i));
+        dots.forEach((d, idx) => d.classList.toggle('active', idx === i));
+        current = i;
+      }
+
+      function next() { show((current + 1) % slides.length); }
+      function prev() { show((current - 1 + slides.length) % slides.length); }
+
+      function restart() {
+        clearInterval(timer);
+        if (slides.length > 1) timer = setInterval(next, 4000);
+      }
+
+      if (nextBtn) nextBtn.addEventListener('click', () => { next(); restart(); });
+      if (prevBtn) prevBtn.addEventListener('click', () => { prev(); restart(); });
+      dots.forEach(d => d.addEventListener('click', () => { show(parseInt(d.dataset.i)); restart(); }));
+
+      restart();
+    })();
   </script>
 
 </body>

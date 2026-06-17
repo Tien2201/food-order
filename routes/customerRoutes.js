@@ -4,6 +4,8 @@ const router = express.Router();
 const Food = require("../models/Food");
 const Order = require("../models/Order");
 const User = require("../models/User");
+const Review = require("../models/Review");
+const mongoose = require("mongoose");
 
 // ── Trang chủ / Menu ──
 router.get("/", async (req, res) => {
@@ -11,9 +13,24 @@ router.get("/", async (req, res) => {
     const foods = await Food.find({ status: true, category: "food" }).sort({ createdAt: -1 });
     const drinks = await Food.find({ status: true, category: "drink" }).sort({ createdAt: -1 });
 
+    // 3 món nổi bật cho slideshow: bán chạy nhất / mới nhất / đánh giá cao nhất
+    const bestSeller = await Food.findOne({ status: true }).sort({ soldCount: -1 }).lean();
+    const newest = await Food.findOne({ status: true }).sort({ createdAt: -1 }).lean();
+    const topRated = await Food.findOne({ status: true, ratingCount: { $gt: 0 } })
+      .sort({ avgRating: -1, ratingCount: -1 })
+      .lean();
+
+    const featuredMap = new Map();
+    if (bestSeller) featuredMap.set(String(bestSeller._id), { ...bestSeller, badge: "🔥 Bán chạy nhất" });
+    if (newest && !featuredMap.has(String(newest._id))) featuredMap.set(String(newest._id), { ...newest, badge: "✨ Món mới" });
+    if (topRated && !featuredMap.has(String(topRated._id))) featuredMap.set(String(topRated._id), { ...topRated, badge: "⭐ Được khen nhiều" });
+
+    const featuredFoods = Array.from(featuredMap.values());
+
     res.render("index", {
       foods,
       drinks,
+      featuredFoods,
       user: req.session.user || null
     });
   } catch (err) {
@@ -28,11 +45,9 @@ router.get("/about", (req, res) => {
 });
 
 // ── Thêm vào giỏ hàng ──
-// FIX: lưu thêm food.image để hiện ảnh trong trang cart
 router.post("/cart/add/:id", async (req, res) => {
   try {
     const food = await Food.findById(req.params.id);
-
     if (!food) return res.redirect("/");
 
     if (!req.session.cart) req.session.cart = [];
@@ -41,7 +56,7 @@ router.post("/cart/add/:id", async (req, res) => {
       foodId: food._id,
       name: food.name,
       price: food.price,
-      image: food.image,         // ← FIX: thêm image
+      image: food.image,
       category: food.category,
       quantity: Number(req.body.quantity) || 1,
       note: req.body.note || ""
@@ -57,32 +72,29 @@ router.post("/cart/add/:id", async (req, res) => {
 // ── Xem giỏ hàng ──
 router.get("/cart", (req, res) => {
   const cart = req.session.cart || [];
-
   const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-  res.render("cart", {
-    cart,
-    totalPrice,
-    user: req.session.user || null
-  });
+  res.render("cart", { cart, totalPrice, user: req.session.user || null });
 });
 
 // ── Xóa món khỏi giỏ ──
 router.post("/cart/remove/:index", (req, res) => {
   const index = parseInt(req.params.index);
-
   if (req.session.cart && index >= 0 && index < req.session.cart.length) {
     req.session.cart.splice(index, 1);
   }
-
   res.redirect("/cart");
 });
 
 // ── Đặt hàng / Checkout ──
 router.post("/checkout", async (req, res) => {
   try {
-    const cart = req.session.cart || [];
+    if (!req.session.user) {
+      req.session.redirectAfterLogin = "/cart";
+      return res.redirect("/login?next=/cart");
+    }
 
+    const cart = req.session.cart || [];
     if (cart.length === 0) return res.redirect("/cart");
 
     const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -92,7 +104,8 @@ router.post("/checkout", async (req, res) => {
       phone: req.body.phone,
       address: req.body.address,
       items: cart,
-      totalPrice
+      totalPrice,
+      placedBy: req.session.user._id
     });
 
     if (!req.session.orderIds) req.session.orderIds = [];
@@ -111,28 +124,22 @@ router.post("/checkout", async (req, res) => {
 router.get("/order-success/:id", async (req, res) => {
   try {
     const order = await Order.findById(req.params.id);
-
     if (!order) return res.redirect("/");
 
-    res.render("order-success", {
-      order,
-      user: req.session.user || null
-    });
+    res.render("order-success", { order, user: req.session.user || null });
   } catch (err) {
     res.redirect("/");
   }
 });
 
-// ── Thông báo đơn hàng đã xác nhận (polling mỗi 5s từ client) ──
+// ── Thông báo đơn hàng đã xác nhận ──
 router.get("/notifications", async (req, res) => {
   try {
     const orderIds = req.session.orderIds || [];
-
     const confirmedOrders = await Order.find({
       _id: { $in: orderIds },
       paymentCode: { $ne: "" }
     });
-
     res.json({ count: confirmedOrders.length, orders: confirmedOrders });
   } catch (err) {
     res.json({ count: 0, orders: [] });
@@ -142,7 +149,6 @@ router.get("/notifications", async (req, res) => {
 // ── Trang cá nhân ──
 router.get("/profile", async (req, res) => {
   if (!req.session.user) return res.redirect("/login");
-
   try {
     const user = await User.findById(req.session.user._id);
     res.render("profile", { user });
@@ -151,27 +157,99 @@ router.get("/profile", async (req, res) => {
   }
 });
 
-// FIX: chỉ giữ 1 route POST /profile (bỏ route trùng cũ)
 router.post("/profile", async (req, res) => {
   if (!req.session.user) return res.redirect("/login");
-
   try {
     const { fullname, phone, address } = req.body;
-
     const updatedUser = await User.findByIdAndUpdate(
       req.session.user._id,
       { fullname, phone, address },
       { new: true }
     );
-
-    // Cập nhật session để header hiện tên mới
     req.session.user.fullname = updatedUser.fullname;
     req.session.user.phone = updatedUser.phone;
-
     res.redirect("/profile");
   } catch (err) {
     console.error(err);
     res.redirect("/profile");
+  }
+});
+
+// ── Lịch sử đơn hàng của tôi (để đánh giá món) ──
+router.get("/my-orders", async (req, res) => {
+  if (!req.session.user) return res.redirect("/login");
+
+  try {
+    // Ưu tiên tìm theo placedBy (chính xác). Một số đơn cũ trước khi có
+    // trường này được tạo chỉ có phone, nên gộp thêm điều kiện phone để
+    // không bỏ sót đơn hàng cũ của khách.
+    const orConditions = [{ placedBy: req.session.user._id }];
+    if (req.session.user.phone) {
+      orConditions.push({ phone: req.session.user.phone });
+    }
+
+    const orders = await Order.find({ $or: orConditions }).sort({ createdAt: -1 });
+
+    const reviews = await Review.find({ user: req.session.user._id });
+    const reviewedKeys = reviews.map(r => `${r.order}_${r.food}`);
+
+    res.render("my-orders", {
+      orders,
+      reviewedKeys,
+      user: req.session.user
+    });
+  } catch (err) {
+    console.error(err);
+    res.redirect("/");
+  }
+});
+
+// ── Gửi đánh giá cho 1 món trong 1 đơn hàng cụ thể ──
+router.post("/review/:orderId/:foodId", async (req, res) => {
+  if (!req.session.user) return res.redirect("/login");
+
+  try {
+    const { orderId, foodId } = req.params;
+    const rating = Number(req.body.rating);
+    const comment = req.body.comment || "";
+
+    if (!rating || rating < 1 || rating > 5) {
+      return res.redirect("/my-orders");
+    }
+
+    const order = await Order.findById(orderId);
+    const isOwner = order && (
+      (order.placedBy && String(order.placedBy) === String(req.session.user._id)) ||
+      (!order.placedBy && order.phone === req.session.user.phone)
+    );
+    if (!order || !isOwner || !order.paymentCode) {
+      return res.redirect("/my-orders");
+    }
+
+    await Review.create({
+      food: foodId,
+      order: orderId,
+      user: req.session.user._id,
+      rating,
+      comment
+    });
+
+    const stats = await Review.aggregate([
+      { $match: { food: new mongoose.Types.ObjectId(foodId) } },
+      { $group: { _id: null, avg: { $avg: "$rating" }, count: { $sum: 1 } } }
+    ]);
+
+    if (stats.length > 0) {
+      await Food.findByIdAndUpdate(foodId, {
+        avgRating: Math.round(stats[0].avg * 10) / 10,
+        ratingCount: stats[0].count
+      });
+    }
+
+    res.redirect("/my-orders");
+  } catch (err) {
+    console.error(err);
+    res.redirect("/my-orders");
   }
 });
 
