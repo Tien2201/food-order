@@ -139,7 +139,7 @@
               };
               const currentColor = statusColors[order.status] || 'background:#f3f4f6; color:#374151';
             %>
-            <span class="badge-status" style="<%= currentColor %>"><%= order.status %></span>
+            <span class="badge-status" style=<"<%= currentColor %>"><%= order.status %></span>
 
             <form action="/admin/orders/edit/<%= order._id %>" method="POST">
 
