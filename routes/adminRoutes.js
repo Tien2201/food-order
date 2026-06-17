@@ -58,7 +58,7 @@ router.get("/foods", isAdmin, async (req, res) => {
 router.post("/foods/add", isAdmin, upload.single("image"), async (req, res) => {
 
   const image = req.file
-    ? "/uploads/foods/" + req.file.filename
+    ? "/images/" + req.file.filename
     : "";
 
   await Food.create({
