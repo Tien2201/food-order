@@ -152,6 +152,7 @@
                 <tr
                   data-status="<%= order.paymentCode ? 'confirmed' : 'pending' %>"
                   data-search="<%= (order.customerName + ' ' + order.phone).toLowerCase() %>"
+                  data-order-id="<%= order._id %>"
                 >
                   <td><strong style="color:#111827"><%= order.customerName %></strong></td>
                   <td><%= order.phone %></td>
@@ -224,9 +225,8 @@
   const searchInput = document.getElementById('searchInput');
   if (searchInput) searchInput.addEventListener('input', applyFilters);
 
-  // ── Notification sound ──
+  // ── Notification sound + Auto-update table (không cần F5) ──
   const notifySound = document.getElementById("notifySound");
-  let lastCount = parseInt(sessionStorage.getItem("lastOrderCount")) || 0;
   let isMuted = localStorage.getItem("staffSoundMuted") === "true";
 
   function updateMuteBtn() {
@@ -240,19 +240,70 @@
     updateMuteBtn();
   }
 
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function buildOrderRow(order) {
+    const status = order.paymentCode
+      ? '<span class="badge-confirmed">✅ Đã xác nhận</span>'
+      : '<span class="badge-pending">⏳ Đơn mới</span>';
+
+    const payCode = order.paymentCode
+      ? escapeHtml(order.paymentCode)
+      : 'Chưa có';
+
+    const searchKey = (order.customerName + ' ' + order.phone).toLowerCase();
+
+    const tr = document.createElement('tr');
+    tr.dataset.status = order.paymentCode ? 'confirmed' : 'pending';
+    tr.dataset.search = searchKey;
+    tr.dataset.orderId = order._id;
+    tr.innerHTML = `
+      <td><strong style="color:#111827">${escapeHtml(order.customerName)}</strong></td>
+      <td>${escapeHtml(order.phone)}</td>
+      <td style="color:#D85A30; font-weight:700;">${Number(order.totalPrice).toLocaleString('vi-VN')} VNĐ</td>
+      <td>${status}</td>
+      <td style="font-family:monospace; font-size:11px; color:#9ca3af;">${escapeHtml(payCode)}</td>
+      <td><a href="/staff/orders/${order._id}" class="btn-detail">Xem chi tiết</a></td>
+    `;
+    return tr;
+  }
+
   async function checkStaffNotification() {
     try {
       const res = await fetch("/staff/notifications");
       const data = await res.json();
+
       document.getElementById("staffBell").innerText = data.count;
 
-      if (data.count > lastCount && !isMuted) {
-        notifySound.currentTime = 0;
-        notifySound.play().catch(() => {});
-      }
+      const tableBody = document.getElementById('orderTable');
+      if (!tableBody) return;
 
-      lastCount = data.count;
-      sessionStorage.setItem("lastOrderCount", lastCount);
+      // Lấy danh sách ID đơn hiện đang hiển thị trên bảng
+      const existingIds = new Set(
+        Array.from(tableBody.querySelectorAll('tr[data-order-id]')).map(tr => tr.dataset.orderId)
+      );
+
+      // Lọc ra các đơn mới (chưa từng xuất hiện trên bảng)
+      const newOnes = (data.orders || []).filter(o => !existingIds.has(String(o._id)));
+
+      if (newOnes.length > 0) {
+        // Chèn đơn mới nhất lên đầu bảng
+        newOnes.forEach(order => {
+          const row = buildOrderRow(order);
+          tableBody.prepend(row);
+        });
+
+        applyFilters();
+
+        if (!isMuted) {
+          notifySound.currentTime = 0;
+          notifySound.play().catch(() => {});
+        }
+      }
     } catch (e) {}
   }
 
