@@ -7,6 +7,11 @@
 /* ── Reset & Base ── */
 *, *::before, *::after { box-sizing: border-box; }
 
+html {
+  overflow-x: hidden;
+  width: 100%;
+}
+
 body {
   margin: 0;
   font-family: 'Poppins', Arial, sans-serif;
@@ -16,6 +21,7 @@ body {
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
+  width: 100%;
 }
 
 main { flex: 1; }
@@ -379,6 +385,14 @@ input, select, textarea, button {
 }
 
 .search-input::placeholder { color: #888; }
+
+.search-input.light {
+  background: #fff;
+  border: 1px solid #e8e2dc;
+  color: #1a1a1a;
+}
+
+.search-input.light::placeholder { color: #aaa; }
 .search-input:focus { background: rgba(255,255,255,0.15); }
 
 /* Filter tabs */
@@ -1404,6 +1418,7 @@ input, select, textarea, button {
   position: sticky;
   top: 0;
   z-index: 100;
+  border-bottom: 1px solid #1f2937;
 }
 
 .staff-brand {
@@ -1490,7 +1505,7 @@ input, select, textarea, button {
 
 .btn-staff-logout:hover { background: #1f2937; }
 
-.staff-content { padding: 28px; max-width: 1100px; margin: 0 auto; }
+.staff-content { padding: 28px; max-width: 1100px; margin: 0 auto; overflow-x: hidden; }
 
 .welcome-banner {
   background: linear-gradient(135deg, #1a1a1a 0%, #2d1a0e 100%);
@@ -1660,7 +1675,7 @@ input, select, textarea, button {
   .stat-pill { padding: 10px 14px; font-size: 12px; }
   .stat-pill strong { font-size: 15px; }
 
-  .table-card { overflow-x: auto; }
+  .table-card { overflow-x: auto; max-width: 100%; }
   .table-card table { min-width: 640px; }
 
   .chart-card canvas { max-width: 100%; }

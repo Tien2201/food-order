@@ -11,122 +11,196 @@
 </head>
 <body>
 
-<div class="staff-header">
-  <a href="/staff/dashboard" class="staff-brand">
-    <div class="staff-brand-icon">👨‍🍳</div>
-    <span>Staff Order</span>
-  </a>
-  <div class="d-flex align-items-center">
-    <a href="/staff/dashboard" class="staff-nav-link active">Dashboard</a>
-    <a href="/staff/orders" class="staff-nav-link">Đơn hàng</a>
-    <button class="btn-bell" onclick="checkStaffNotification()">
-      🔔
-      <span id="staffBell" class="bell-badge">0</span>
-    </button>
-    <a href="/logout" class="btn-staff-logout ms-2">🚪 Đăng xuất</a>
-  </div>
-</div>
+<div class="d-flex">
 
-<div class="staff-content">
+<div class="admin-overlay" id="adminOverlay" onclick="closeSidebar()"></div>
 
-  <div class="welcome-banner">
-    <h1>Xin chào, <%= user.fullname %> 👋</h1>
-    <p>Chúc bạn một ca làm việc hiệu quả!</p>
-  </div>
-
-  <!-- Stat cards -->
-  <div class="row g-3 mb-4">
-    <div class="col-md-3 col-sm-6">
-      <div class="stat-card">
-        <div class="stat-icon blue">📋</div>
-        <div>
-          <div class="stat-label">Tổng đơn</div>
-          <div class="stat-value"><%= totalOrders %></div>
-        </div>
+  <!-- SIDEBAR -->
+  <div class="admin-sidebar" id="adminSidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-icon">👨‍🍳</div>
+      <div>
+        <div class="sidebar-brand-text">Staff Order</div>
+        <div class="sidebar-brand-sub">Nhân viên</div>
       </div>
     </div>
-    <div class="col-md-3 col-sm-6">
-      <div class="stat-card">
-        <div class="stat-icon orange">⏳</div>
+
+    <div class="sidebar-section-label">Tổng quan</div>
+    <a href="/staff/dashboard" class="sidebar-link active">
+      <span class="icon">📊</span> Dashboard
+    </a>
+    <a href="/staff/orders" class="sidebar-link">
+      <span class="icon">📋</span> Đơn hàng
+    </a>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar">
+          <%= user ? user.fullname.charAt(0).toUpperCase() : 'N' %>
+        </div>
         <div>
-          <div class="stat-label">Chờ xác nhận</div>
-          <div class="stat-value"><%= pendingOrders %></div>
+          <div class="sidebar-user-name"><%= user ? user.fullname : 'Nhân viên' %></div>
+          <div class="sidebar-user-role">Staff</div>
         </div>
       </div>
-    </div>
-    <div class="col-md-3 col-sm-6">
-      <div class="stat-card">
-        <div class="stat-icon green">✅</div>
-        <div>
-          <div class="stat-label">Đã xác nhận</div>
-          <div class="stat-value"><%= confirmedOrders %></div>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3 col-sm-6">
-      <div class="stat-card">
-        <div class="stat-icon purple">🧑‍💼</div>
-        <div>
-          <div class="stat-label">Bạn đã xử lý</div>
-          <div class="stat-value"><%= myConfirmedCount %></div>
-        </div>
-      </div>
+      <a href="/logout" class="btn-logout-sidebar">
+        <span class="icon">🚪</span> Đăng xuất
+      </a>
     </div>
   </div>
 
-  <!-- Recent orders -->
-  <div class="table-card">
-    <div class="table-card-header">
-      <div class="table-card-title">🕐 Đơn hàng mới nhất</div>
-      <a href="/staff/orders" style="font-size:13px; color:#D85A30; font-weight:600; text-decoration:none;">Xem tất cả →</a>
+  <!-- MAIN -->
+  <div class="admin-main">
+    <div class="admin-topbar">
+      <div class="d-flex align-items-center gap-2">
+        <button class="admin-hamburger" onclick="openSidebar()">☰</button>
+        <div>
+          <div class="admin-topbar-title">Xin chào, <%= user.fullname %> 👋</div>
+          <div class="admin-topbar-sub">Chúc bạn một ca làm việc hiệu quả!</div>
+        </div>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <button class="btn-bell" onclick="toggleMute()" id="muteBtn" title="Tắt/Mở âm thanh">🔊</button>
+        <button class="btn-bell" onclick="checkStaffNotification()">
+          🔔
+          <span id="staffBell" class="bell-badge">0</span>
+        </button>
+      </div>
     </div>
-    <table>
-      <thead>
-        <tr>
-          <th>Khách hàng</th>
-          <th>SĐT</th>
-          <th>Tổng tiền</th>
-          <th>Trạng thái</th>
-          <th>Mã thanh toán</th>
-          <th>Thao tác</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% if (recentOrders.length === 0) { %>
-          <tr><td colspan="6" style="text-align:center; color:#9ca3af; padding:32px;">Chưa có đơn hàng nào</td></tr>
-        <% } else { %>
-          <% recentOrders.forEach(order => { %>
+
+    <div class="admin-content">
+
+      <!-- Stat cards -->
+      <div class="row g-3 mb-4">
+        <div class="col-md-3 col-sm-6">
+          <div class="stat-card">
+            <div class="stat-icon blue">📋</div>
+            <div>
+              <div class="stat-label">Tổng đơn</div>
+              <div class="stat-value"><%= totalOrders %></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <div class="stat-card">
+            <div class="stat-icon orange">⏳</div>
+            <div>
+              <div class="stat-label">Chờ xác nhận</div>
+              <div class="stat-value"><%= pendingOrders %></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <div class="stat-card">
+            <div class="stat-icon green">✅</div>
+            <div>
+              <div class="stat-label">Đã xác nhận</div>
+              <div class="stat-value"><%= confirmedOrders %></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <div class="stat-card">
+            <div class="stat-icon purple">🧑‍💼</div>
+            <div>
+              <div class="stat-label">Bạn đã xử lý</div>
+              <div class="stat-value"><%= myConfirmedCount %></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent orders -->
+      <div class="table-card">
+        <div class="table-card-header">
+          <div class="table-card-title">🕐 Đơn hàng mới nhất</div>
+          <a href="/staff/orders" style="font-size:13px; color:#D85A30; font-weight:600; text-decoration:none;">Xem tất cả →</a>
+        </div>
+        <table>
+          <thead>
             <tr>
-              <td><strong style="color:#111827"><%= order.customerName %></strong></td>
-              <td><%= order.phone %></td>
-              <td style="color:#D85A30; font-weight:700;"><%= order.totalPrice.toLocaleString('vi-VN') %> VNĐ</td>
-              <td>
-                <% if (order.paymentCode) { %>
-                  <span class="badge-confirmed">✅ Đã xác nhận</span>
-                <% } else { %>
-                  <span class="badge-pending">⏳ Đơn mới</span>
-                <% } %>
-              </td>
-              <td style="font-family:monospace; font-size:11px; color:#9ca3af;"><%= order.paymentCode || "Chưa có" %></td>
-              <td><a href="/staff/orders/<%= order._id %>" class="btn-detail">Chi tiết</a></td>
+              <th>Khách hàng</th>
+              <th>SĐT</th>
+              <th>Tổng tiền</th>
+              <th>Trạng thái</th>
+              <th>Mã thanh toán</th>
+              <th>Thao tác</th>
             </tr>
-          <% }) %>
-        <% } %>
-      </tbody>
-    </table>
+          </thead>
+          <tbody>
+            <% if (recentOrders.length === 0) { %>
+              <tr><td colspan="6" style="text-align:center; color:#9ca3af; padding:32px;">Chưa có đơn hàng nào</td></tr>
+            <% } else { %>
+              <% recentOrders.forEach(order => { %>
+                <tr>
+                  <td><strong style="color:#111827"><%= order.customerName %></strong></td>
+                  <td><%= order.phone %></td>
+                  <td style="color:#D85A30; font-weight:700;"><%= order.totalPrice.toLocaleString('vi-VN') %> VNĐ</td>
+                  <td>
+                    <% if (order.paymentCode) { %>
+                      <span class="badge-confirmed">✅ Đã xác nhận</span>
+                    <% } else { %>
+                      <span class="badge-pending">⏳ Đơn mới</span>
+                    <% } %>
+                  </td>
+                  <td style="font-family:monospace; font-size:11px; color:#9ca3af;"><%= order.paymentCode || "Chưa có" %></td>
+                  <td><a href="/staff/orders/<%= order._id %>" class="btn-detail">Chi tiết</a></td>
+                </tr>
+              <% }) %>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
   </div>
 
 </div>
+
+<audio id="notifySound" src="/sounds/notification.mp3" preload="auto"></audio>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+  function openSidebar() {
+    document.getElementById('adminSidebar').classList.add('open');
+    document.getElementById('adminOverlay').classList.add('show');
+  }
+  function closeSidebar() {
+    document.getElementById('adminSidebar').classList.remove('open');
+    document.getElementById('adminOverlay').classList.remove('show');
+  }
+
+  const notifySound = document.getElementById("notifySound");
+  let lastCount = parseInt(sessionStorage.getItem("lastOrderCount")) || 0;
+  let isMuted = localStorage.getItem("staffSoundMuted") === "true";
+
+  function updateMuteBtn() {
+    document.getElementById("muteBtn").textContent = isMuted ? "🔇" : "🔊";
+  }
+  updateMuteBtn();
+
+  function toggleMute() {
+    isMuted = !isMuted;
+    localStorage.setItem("staffSoundMuted", isMuted);
+    updateMuteBtn();
+  }
+
   async function checkStaffNotification() {
     try {
       const res = await fetch("/staff/notifications");
       const data = await res.json();
       document.getElementById("staffBell").innerText = data.count;
+
+      if (data.count > lastCount && !isMuted) {
+        notifySound.currentTime = 0;
+        notifySound.play().catch(() => {});
+      }
+
+      lastCount = data.count;
+      sessionStorage.setItem("lastOrderCount", lastCount);
     } catch (e) {}
   }
+
   setInterval(checkStaffNotification, 5000);
   checkStaffNotification();
 </script>
