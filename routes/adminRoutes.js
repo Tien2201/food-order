@@ -2,33 +2,36 @@ const express = require("express");
 const router = express.Router();
 
 const bcrypt = require("bcryptjs");
-const fs = require("fs");
-const path = require("path");
 
 const Food = require("../models/Food");
 const Order = require("../models/Order");
 const User = require("../models/User");
 
 const upload = require("../config/upload");
+const cloudinary = require("../config/cloudinary");
 const sendOTPEmail = require("../config/mailer");
 
 const { isAdmin } = require("../middleware/auth");
 
-// Xóa file ảnh vật lý trong public/images/ nếu đường dẫn trỏ tới đó
-// (an toàn: không xóa nhầm ảnh mặc định hoặc URL bên ngoài)
-function deleteFoodImage(imagePath) {
-  if (!imagePath || !imagePath.startsWith("/images/")) return;
-  if (imagePath === "/images/background.jpg") return;
+// Xóa ảnh trên Cloudinary nếu đường dẫn là ảnh do hệ thống upload lên đó
+// (an toàn: không xóa nhầm ảnh mặc định /images/background.jpg hoặc URL khác)
+async function deleteFoodImage(imagePath) {
+  if (!imagePath || !imagePath.includes("res.cloudinary.com")) return;
 
-  const filename = imagePath.replace("/images/", "");
-  const fullPath = path.join(__dirname, "..", "public", "images", filename);
+  try {
+    // Trích public_id từ URL Cloudinary, ví dụ:
+    // https://res.cloudinary.com/xxx/image/upload/v123/food-order/foods/tramnhang.jpg
+    // -> public_id cần xóa là: food-order/foods/tramnhang
+    const parts = imagePath.split("/upload/")[1]; // v123/food-order/foods/tramnhang.jpg
+    const withoutVersion = parts.split("/").slice(1).join("/"); // food-order/foods/tramnhang.jpg
+    const publicId = withoutVersion.replace(/\.[a-zA-Z0-9]+$/, ""); // bỏ phần mở rộng .jpg
 
-  fs.unlink(fullPath, (err) => {
-    if (err && err.code !== "ENOENT") {
-      console.error("Không xóa được ảnh:", err.message);
-    }
-  });
+    await cloudinary.uploader.destroy(publicId);
+  } catch (err) {
+    console.error("Không xóa được ảnh trên Cloudinary:", err.message);
+  }
 }
+
 
 router.get("/dashboard", isAdmin, async (req, res) => {
   const foodCount = await Food.countDocuments();
@@ -74,21 +77,25 @@ router.get("/foods", isAdmin, async (req, res) => {
 });
 
 router.post("/foods/add", isAdmin, upload.single("image"), async (req, res) => {
+  try {
+    // req.file.path là URL đầy đủ trên Cloudinary (vd: https://res.cloudinary.com/...)
+    const image = req.file ? req.file.path : "";
 
-  const image = req.file
-    ? "/images/" + req.file.filename
-    : "";
+    await Food.create({
+      name: req.body.name,
+      price: req.body.price,
+      description: req.body.description,
+      image: image,
+      category: req.body.category,
+      status: true
+    });
 
-  await Food.create({
-    name: req.body.name,
-    price: req.body.price,
-    description: req.body.description,
-    image: image,
-    category: req.body.category,
-    status: true
-  });
-
-  res.redirect("/admin/foods");
+    res.redirect("/admin/foods");
+  } catch (err) {
+    console.error("LỖI THÊM MÓN:", err.message);
+    console.error(err);
+    res.status(500).send("Lỗi khi thêm món: " + err.message);
+  }
 });
 
 router.get("/foods/edit/:id", isAdmin, async (req, res) => {
@@ -110,11 +117,11 @@ router.post("/foods/edit/:id", isAdmin, upload.single("image"), async (req, res)
     };
 
     if (req.file) {
-      // Có ảnh mới -> xóa ảnh cũ để tránh tích rác trong public/images/
+      // Có ảnh mới -> xóa ảnh cũ trên Cloudinary để tránh tích rác
       const oldFood = await Food.findById(req.params.id);
-      if (oldFood) deleteFoodImage(oldFood.image);
+      if (oldFood) await deleteFoodImage(oldFood.image);
 
-      updateData.image = "/images/" + req.file.filename;
+      updateData.image = req.file.path;
     }
 
     await Food.findByIdAndUpdate(req.params.id, updateData);
@@ -129,7 +136,7 @@ router.post("/foods/edit/:id", isAdmin, upload.single("image"), async (req, res)
 router.post("/foods/delete/:id", isAdmin, async (req, res) => {
   try {
     const food = await Food.findById(req.params.id);
-    if (food) deleteFoodImage(food.image);
+    if (food) await deleteFoodImage(food.image);
 
     await Food.findByIdAndDelete(req.params.id);
 

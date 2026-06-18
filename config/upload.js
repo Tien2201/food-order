@@ -1,54 +1,33 @@
 const multer = require("multer");
 const path = require("path");
-const fs = require("fs");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const cloudinary = require("./cloudinary");
 
-const uploadDir = path.join(
-  __dirname,
-  "..",
-  "public",
-  "images"
-);
-
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, {
-    recursive: true
-  });
-}
-
-// Làm sạch tên file: bỏ dấu cách/ký tự đặc biệt, giữ chữ-số-gạch ngang-gạch dưới
+// Làm sạch tên file: bỏ dấu tiếng Việt + ký tự đặc biệt, giữ chữ-số-gạch ngang
 function sanitizeFilename(name) {
   return name
-    .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // bỏ dấu tiếng Việt
-    .replace(/[^a-zA-Z0-9.\-_]/g, "-") // ký tự lạ -> gạch ngang
-    .replace(/-+/g, "-"); // gộp nhiều gạch ngang liên tiếp
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9.\-_]/g, "-")
+    .replace(/-+/g, "-");
 }
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadDir);
-  },
-
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: (req, file) => {
+    const ext = path.extname(file.originalname).replace(".", "");
     const baseName = sanitizeFilename(
-      path.basename(file.originalname, ext)
+      path.basename(file.originalname, path.extname(file.originalname))
     );
 
-    let finalName = baseName + ext;
-    let counter = 1;
-
-    // Nếu file đã tồn tại, tự động thêm số phía sau để tránh đè ảnh cũ
-    while (fs.existsSync(path.join(uploadDir, finalName))) {
-      finalName = `${baseName}-${counter}${ext}`;
-      counter++;
-    }
-
-    cb(null, finalName);
+    return {
+      folder: "food-order/foods", // thư mục trên Cloudinary, không phải trên server
+      public_id: baseName,        // giữ tên gốc của ảnh (không có timestamp)
+      format: ext || "jpg",
+      overwrite: true             // nếu trùng tên, ghi đè ảnh cũ trên Cloudinary
+    };
   }
 });
 
-const upload = multer({
-  storage
-});
+const upload = multer({ storage });
 
 module.exports = upload;
