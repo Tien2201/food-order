@@ -32,9 +32,10 @@ status: {
     type: String,
 
     enum: [
-        "pending",
-        "confirmed",
-        "preparing",
+        "pending",            // chờ nhân viên xác nhận
+        "confirmed",          // đã xác nhận, đang chờ khách thanh toán (QR đã hiện cho khách)
+        "payment_submitted",  // khách đã upload ảnh chuyển khoản, chờ nhân viên xác minh
+        "preparing",          // nhân viên đã xác minh thanh toán, đang làm món
         "delivering",
         "completed",
         "cancelled"
@@ -48,6 +49,12 @@ paymentCode: {
     default: ""
 },
 
+// Ảnh chứng minh chuyển khoản do khách tự upload
+paymentProofImage: {
+    type: String,
+    default: ""
+},
+
 placedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
@@ -55,6 +62,13 @@ placedBy: {
 },
 
 confirmedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    default: null
+},
+
+// Nhân viên xác minh thanh toán hợp lệ (có thể khác người đã confirm đơn ban đầu)
+paymentVerifiedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     default: null

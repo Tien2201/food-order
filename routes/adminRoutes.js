@@ -6,6 +6,7 @@ const bcrypt = require("bcryptjs");
 const Food = require("../models/Food");
 const Order = require("../models/Order");
 const User = require("../models/User");
+const Setting = require("../models/Setting");
 
 const upload = require("../config/upload");
 const cloudinary = require("../config/cloudinary");
@@ -15,7 +16,7 @@ const { isAdmin } = require("../middleware/auth");
 
 // Xóa ảnh trên Cloudinary nếu đường dẫn là ảnh do hệ thống upload lên đó
 // (an toàn: không xóa nhầm ảnh mặc định /images/background.jpg hoặc URL khác)
-async function deleteFoodImage(imagePath) {
+async function deleteCloudinaryImage(imagePath) {
   if (!imagePath || !imagePath.includes("res.cloudinary.com")) return;
 
   try {
@@ -31,6 +32,8 @@ async function deleteFoodImage(imagePath) {
     console.error("Không xóa được ảnh trên Cloudinary:", err.message);
   }
 }
+
+const deleteFoodImage = deleteCloudinaryImage;
 
 
 router.get("/dashboard", isAdmin, async (req, res) => {
@@ -68,6 +71,35 @@ router.get("/dashboard", isAdmin, async (req, res) => {
     recentOrders,
     ordersByDay
   });
+});
+
+// ── Quản lý ảnh QR thanh toán ──
+router.get("/settings/qr", isAdmin, async (req, res) => {
+  try {
+    let setting = await Setting.findOne({ key: "general" });
+    if (!setting) setting = await Setting.create({ key: "general" });
+
+    res.render("admin/settings-qr", { setting, user: req.session.user });
+  } catch (err) {
+    console.error(err);
+    res.redirect("/admin/dashboard");
+  }
+});
+
+router.post("/settings/qr", isAdmin, upload.uploadQr.single("qrImage"), async (req, res) => {
+  try {
+    if (req.file) {
+      await Setting.findOneAndUpdate(
+        { key: "general" },
+        { paymentQrImage: req.file.path },
+        { upsert: true }
+      );
+    }
+    res.redirect("/admin/settings/qr");
+  } catch (err) {
+    console.error(err);
+    res.redirect("/admin/settings/qr");
+  }
 });
 
 router.get("/foods", isAdmin, async (req, res) => {

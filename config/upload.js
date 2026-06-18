@@ -30,4 +30,35 @@ const storage = new CloudinaryStorage({
 
 const upload = multer({ storage });
 
+// Upload riêng cho ảnh QR thanh toán của quán (admin) - luôn ghi đè ảnh QR cũ,
+// vì chỉ cần đúng 1 ảnh QR duy nhất tồn tại ở mọi thời điểm.
+const qrStorage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: () => ({
+    folder: "food-order/settings",
+    public_id: "payment-qr",
+    overwrite: true
+  })
+});
+
+const uploadQr = multer({ storage: qrStorage });
+
+// Upload riêng cho ảnh chứng minh chuyển khoản do khách gửi - mỗi ảnh cần
+// tên riêng (dùng timestamp) để không bị đè lẫn giữa các đơn khác nhau.
+const paymentProofStorage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: (req, file) => {
+    const ext = path.extname(file.originalname).replace(".", "");
+    return {
+      folder: "food-order/payment-proofs",
+      public_id: "proof-" + Date.now(),
+      format: ext || "jpg"
+    };
+  }
+});
+
+const uploadPaymentProof = multer({ storage: paymentProofStorage });
+
 module.exports = upload;
+module.exports.uploadQr = uploadQr;
+module.exports.uploadPaymentProof = uploadPaymentProof;

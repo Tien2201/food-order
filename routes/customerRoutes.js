@@ -5,6 +5,8 @@ const Food = require("../models/Food");
 const Order = require("../models/Order");
 const User = require("../models/User");
 const Review = require("../models/Review");
+const Setting = require("../models/Setting");
+const upload = require("../config/upload");
 const mongoose = require("mongoose");
 
 // ── Trang chủ / Menu ──
@@ -87,13 +89,10 @@ router.post("/cart/remove/:index", (req, res) => {
 });
 
 // ── Đặt hàng / Checkout ──
+// Cho phép khách vãng lai đặt món không cần đăng nhập.
+// Nếu khách đã đăng nhập, vẫn lưu placedBy để theo dõi qua /my-orders.
 router.post("/checkout", async (req, res) => {
   try {
-    if (!req.session.user) {
-      req.session.redirectAfterLogin = "/cart";
-      return res.redirect("/login?next=/cart");
-    }
-
     const cart = req.session.cart || [];
     if (cart.length === 0) return res.redirect("/cart");
 
@@ -105,7 +104,7 @@ router.post("/checkout", async (req, res) => {
       address: req.body.address,
       items: cart,
       totalPrice,
-      placedBy: req.session.user._id
+      placedBy: req.session.user ? req.session.user._id : null
     });
 
     if (!req.session.orderIds) req.session.orderIds = [];
@@ -126,9 +125,46 @@ router.get("/order-success/:id", async (req, res) => {
     const order = await Order.findById(req.params.id);
     if (!order) return res.redirect("/");
 
-    res.render("order-success", { order, user: req.session.user || null });
+    const setting = await Setting.findOne({ key: "general" });
+
+    res.render("order-success", {
+      order,
+      user: req.session.user || null,
+      qrImage: setting ? setting.paymentQrImage : ""
+    });
   } catch (err) {
     res.redirect("/");
+  }
+});
+
+// ── Kiểm tra trạng thái đơn hàng (dùng cho polling tự động trên trang order-success) ──
+router.get("/order-status/:id", async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+    if (!order) return res.json({ status: null });
+
+    res.json({
+      status: order.status,
+      paymentProofImage: order.paymentProofImage || ""
+    });
+  } catch (err) {
+    res.json({ status: null });
+  }
+});
+
+// ── Khách upload ảnh chứng minh đã chuyển khoản ──
+router.post("/order-payment-proof/:id", upload.uploadPaymentProof.single("paymentProof"), async (req, res) => {
+  try {
+    if (req.file) {
+      await Order.findByIdAndUpdate(req.params.id, {
+        paymentProofImage: req.file.path,
+        status: "payment_submitted"
+      });
+    }
+    res.redirect("/order-success/" + req.params.id);
+  } catch (err) {
+    console.error(err);
+    res.redirect("/order-success/" + req.params.id);
   }
 });
 

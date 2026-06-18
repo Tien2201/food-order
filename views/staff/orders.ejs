@@ -90,7 +90,7 @@
             <div class="stat-icon orange">⏳</div>
             <div>
               <div class="stat-label">Chờ xác nhận</div>
-              <div class="stat-value"><%= orders.filter(o => !o.paymentCode).length %></div>
+              <div class="stat-value"><%= orders.filter(o => o.status === 'pending').length %></div>
             </div>
           </div>
         </div>
@@ -98,8 +98,8 @@
           <div class="stat-card">
             <div class="stat-icon green">✅</div>
             <div>
-              <div class="stat-label">Đã xác nhận</div>
-              <div class="stat-value"><%= orders.filter(o => o.paymentCode).length %></div>
+              <div class="stat-label">Đang xử lý</div>
+              <div class="stat-value"><%= orders.filter(o => o.status !== 'pending').length %></div>
             </div>
           </div>
         </div>
@@ -126,10 +126,12 @@
             autocomplete="off"
           >
         </div>
-        <div class="d-flex gap-2">
+        <div class="d-flex gap-2 flex-wrap">
           <button class="filter-btn active" onclick="filterOrders('all', this)">Tất cả</button>
           <button class="filter-btn" onclick="filterOrders('pending', this)">⏳ Chờ xác nhận</button>
-          <button class="filter-btn" onclick="filterOrders('confirmed', this)">✅ Đã xác nhận</button>
+          <button class="filter-btn" onclick="filterOrders('confirmed', this)">💳 Chờ thanh toán</button>
+          <button class="filter-btn" onclick="filterOrders('payment_submitted', this)">📤 Chờ xác minh</button>
+          <button class="filter-btn" onclick="filterOrders('preparing', this)">👨‍🍳 Đang làm món</button>
         </div>
       </div>
 
@@ -152,22 +154,30 @@
               </tr>
             </thead>
             <tbody id="orderTable">
+              <%
+                const statusBadges = {
+                  pending: { cls: "badge-pending", text: "⏳ Chờ xác nhận" },
+                  confirmed: { cls: "badge-pending", text: "💳 Chờ thanh toán" },
+                  payment_submitted: { cls: "badge-pending", text: "📤 Chờ xác minh" },
+                  preparing: { cls: "badge-confirmed", text: "👨‍🍳 Đang làm món" },
+                  delivering: { cls: "badge-confirmed", text: "🛵 Đang giao" },
+                  completed: { cls: "badge-confirmed", text: "✅ Hoàn tất" },
+                  cancelled: { cls: "badge-pending", text: "❌ Đã hủy" }
+                };
+              %>
               <% orders.forEach(order => { %>
+                <%
+                  const badge = statusBadges[order.status] || statusBadges.pending;
+                %>
                 <tr
-                  data-status="<%= order.paymentCode ? 'confirmed' : 'pending' %>"
+                  data-status="<%= order.status %>"
                   data-search="<%= (order.customerName + ' ' + order.phone).toLowerCase() %>"
                   data-order-id="<%= order._id %>"
                 >
                   <td><strong style="color:#111827"><%= order.customerName %></strong></td>
                   <td><%= order.phone %></td>
                   <td style="color:#D85A30; font-weight:700;"><%= order.totalPrice.toLocaleString('vi-VN') %> VNĐ</td>
-                  <td>
-                    <% if (order.paymentCode) { %>
-                      <span class="badge-confirmed">✅ Đã xác nhận</span>
-                    <% } else { %>
-                      <span class="badge-pending">⏳ Đơn mới</span>
-                    <% } %>
-                  </td>
+                  <td><span class="<%= badge.cls %>"><%= badge.text %></span></td>
                   <td style="font-family:monospace; font-size:11px; color:#9ca3af;"><%= order.paymentCode || "Chưa có" %></td>
                   <td><a href="/staff/orders/<%= order._id %>" class="btn-detail">Xem chi tiết</a></td>
                 </tr>
@@ -276,9 +286,8 @@
   }
 
   function buildOrderRow(order) {
-    const status = order.paymentCode
-      ? '<span class="badge-confirmed">✅ Đã xác nhận</span>'
-      : '<span class="badge-pending">⏳ Đơn mới</span>';
+    // Đơn mới phát hiện qua polling luôn ở trạng thái "pending" (chưa xác nhận)
+    const status = '<span class="badge-pending">⏳ Chờ xác nhận</span>';
 
     const payCode = order.paymentCode
       ? escapeHtml(order.paymentCode)
@@ -287,7 +296,7 @@
     const searchKey = (order.customerName + ' ' + order.phone).toLowerCase();
 
     const tr = document.createElement('tr');
-    tr.dataset.status = order.paymentCode ? 'confirmed' : 'pending';
+    tr.dataset.status = order.status || 'pending';
     tr.dataset.search = searchKey;
     tr.dataset.orderId = order._id;
     tr.innerHTML = `

@@ -135,18 +135,24 @@
             <% if (recentOrders.length === 0) { %>
               <tr><td colspan="6" style="text-align:center; color:#9ca3af; padding:32px;">Chưa có đơn hàng nào</td></tr>
             <% } else { %>
+              <%
+                const statusBadges = {
+                  pending: { cls: "badge-pending", text: "⏳ Chờ xác nhận" },
+                  confirmed: { cls: "badge-pending", text: "💳 Chờ thanh toán" },
+                  payment_submitted: { cls: "badge-pending", text: "📤 Chờ xác minh" },
+                  preparing: { cls: "badge-confirmed", text: "👨‍🍳 Đang làm món" },
+                  delivering: { cls: "badge-confirmed", text: "🛵 Đang giao" },
+                  completed: { cls: "badge-confirmed", text: "✅ Hoàn tất" },
+                  cancelled: { cls: "badge-pending", text: "❌ Đã hủy" }
+                };
+              %>
               <% recentOrders.forEach(order => { %>
+                <% const badge = statusBadges[order.status] || statusBadges.pending; %>
                 <tr>
                   <td><strong style="color:#111827"><%= order.customerName %></strong></td>
                   <td><%= order.phone %></td>
                   <td style="color:#D85A30; font-weight:700;"><%= order.totalPrice.toLocaleString('vi-VN') %> VNĐ</td>
-                  <td>
-                    <% if (order.paymentCode) { %>
-                      <span class="badge-confirmed">✅ Đã xác nhận</span>
-                    <% } else { %>
-                      <span class="badge-pending">⏳ Đơn mới</span>
-                    <% } %>
-                  </td>
+                  <td><span class="<%= badge.cls %>"><%= badge.text %></span></td>
                   <td style="font-family:monospace; font-size:11px; color:#9ca3af;"><%= order.paymentCode || "Chưa có" %></td>
                   <td><a href="/staff/orders/<%= order._id %>" class="btn-detail">Chi tiết</a></td>
                 </tr>

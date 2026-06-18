@@ -349,12 +349,6 @@
             <strong><%= totalPrice.toLocaleString('vi-VN') %> VNĐ</strong>
           </div>
 
-          <% if (!user) { %>
-            <div style="background:#fff3ee; border:1px solid #ffd9c2; border-radius:10px; padding:12px 14px; margin-bottom:16px; font-size:12.5px; color:#9a4a1f;">
-              🔒 Bạn cần <a href="/login?next=/cart" style="color:#D85A30; font-weight:700; text-decoration:underline;">đăng nhập</a> để hoàn tất đặt món.
-            </div>
-          <% } %>
-
           <form action="/checkout" method="POST">
             <label class="form-label-custom">Tên khách hàng</label>
             <input
@@ -383,15 +377,9 @@
               required
             >
 
-            <% if (user) { %>
-              <button type="submit" class="btn-order">
-                🎉 Đặt món ngay — <%= totalPrice.toLocaleString('vi-VN') %> VNĐ
-              </button>
-            <% } else { %>
-              <button type="submit" class="btn-order">
-                🔒 Đăng nhập để đặt món
-              </button>
-            <% } %>
+            <button type="submit" class="btn-order">
+              🎉 Đặt món ngay — <%= totalPrice.toLocaleString('vi-VN') %> VNĐ
+            </button>
           </form>
         </div>
       </div>
