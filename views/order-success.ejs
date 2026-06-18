@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,141 +10,155 @@
   <link rel="icon" href="/images/logo.jpg">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
 
-<div class="auth-page" style="min-height:100vh; align-items:flex-start; padding:40px 16px;">
-  <div class="auth-card" style="max-width:520px; margin-top:20px;">
+  <div class="auth-page" style="min-height:100vh; align-items:flex-start; padding:40px 16px;">
+    <div class="auth-card" style="max-width:520px; margin-top:20px;">
 
-    <div class="text-center mb-3" id="statusIcon" style="font-size:56px;">🎉</div>
+      <div class="text-center mb-3" id="statusIcon" style="font-size:56px;">🎉</div>
 
-    <h2 class="text-center" id="statusTitle">Đặt món thành công!</h2>
-    <p class="text-center" id="statusDesc">Đơn hàng của bạn đang chờ nhân viên xác nhận.</p>
+      <h2 class="text-center" id="statusTitle">Đặt món thành công!</h2>
+      <p class="text-center" id="statusDesc">Đơn hàng của bạn đang chờ nhân viên xác nhận.</p>
 
-    <div style="background:#f9f6f3; border-radius:12px; padding:16px; margin:20px 0; font-size:13px;">
-      <div class="d-flex justify-content-between mb-2">
-        <span style="color:#9ca3af;">Mã đơn</span>
-        <span style="font-family:monospace; color:#1a1a1a;"><%= order._id %></span>
-      </div>
-      <div class="d-flex justify-content-between">
-        <span style="color:#9ca3af;">Tổng tiền</span>
-        <strong style="color:#D85A30;"><%= order.totalPrice.toLocaleString('vi-VN') %> VNĐ</strong>
-      </div>
-    </div>
-
-    <!-- Trạng thái: pending - chờ xác nhận -->
-    <div id="state-pending" class="status-box" style="background:#fff8e8; border:1px solid #ffe9b0; border-radius:12px; padding:16px; text-align:center;">
-      <div style="font-size:13px; color:#9a7416;">⏳ Đang chờ nhân viên xác nhận đơn hàng...</div>
-    </div>
-
-    <!-- Trạng thái: confirmed - hiện QR để khách thanh toán -->
-    <div id="state-confirmed" class="status-box" style="display:none;">
-      <div style="background:#fff3ee; border:1px solid #ffd9c2; border-radius:12px; padding:16px; text-align:center; margin-bottom:16px;">
-        <div style="font-size:13px; color:#9a4a1f; font-weight:600;">✅ Đơn đã được xác nhận! Vui lòng thanh toán theo mã QR bên dưới.</div>
-      </div>
-
-      <% if (qrImage) { %>
-        <img src="<%= qrImage %>" alt="QR thanh toán" style="width:100%; max-width:260px; display:block; margin:0 auto 16px; border-radius:12px; border:1px solid #f0ece8;">
-      <% } else { %>
-        <div class="empty-state" style="margin-bottom:16px;">
-          <p style="font-size:13px;">Quán chưa cập nhật mã QR. Vui lòng liên hệ trực tiếp để thanh toán.</p>
+      <div style="background:#f9f6f3; border-radius:12px; padding:16px; margin:20px 0; font-size:13px;">
+        <div class="d-flex justify-content-between mb-2">
+          <span style="color:#9ca3af;">Mã đơn</span>
+          <span style="font-family:monospace; color:#1a1a1a;">
+            <%= order._id %>
+          </span>
         </div>
-      <% } %>
+        <div class="d-flex justify-content-between">
+          <span style="color:#9ca3af;">Tổng tiền</span>
+          <strong style="color:#D85A30;">
+            <%= order.totalPrice.toLocaleString('vi-VN') %> VNĐ
+          </strong>
+        </div>
+      </div>
 
-      <form action="/order-payment-proof/<%= order._id %>" method="POST" enctype="multipart/form-data">
-        <label class="form-label-custom">Ảnh chứng minh đã chuyển khoản</label>
-        <input type="file" name="paymentProof" class="form-input-custom" accept="image/*" required>
-        <button type="submit" class="btn-auth mt-2">📤 Gửi ảnh chuyển khoản</button>
-      </form>
+      <!-- Trạng thái: pending - chờ xác nhận -->
+      <div id="state-pending" class="status-box"
+        style="background:#fff8e8; border:1px solid #ffe9b0; border-radius:12px; padding:16px; text-align:center;">
+        <div style="font-size:13px; color:#9a7416;">⏳ Đang chờ nhân viên xác nhận đơn hàng...</div>
+      </div>
+
+      <!-- Trạng thái: confirmed - hiện QR để khách thanh toán -->
+      <div id="state-confirmed" class="status-box" style="display:none;">
+        <div
+          style="background:#fff3ee; border:1px solid #ffd9c2; border-radius:12px; padding:16px; text-align:center; margin-bottom:16px;">
+          <div style="font-size:13px; color:#9a4a1f; font-weight:600;">✅ Đơn đã được xác nhận! Vui lòng thanh toán theo
+            mã QR bên dưới.</div>
+        </div>
+
+        <% if (qrImage) { %>
+          <img src="<%= qrImage %>" alt="QR thanh toán"
+            style="width:100%; max-width:260px; display:block; margin:0 auto 16px; border-radius:12px; border:1px solid #f0ece8;">
+          <% } else { %>
+            <div class="empty-state" style="margin-bottom:16px;">
+              <p style="font-size:13px;">Quán chưa cập nhật mã QR. Vui lòng liên hệ trực tiếp để thanh toán.</p>
+            </div>
+            <% } %>
+
+              <form action="/order-payment-proof/<%= order._id %>" method="POST" enctype="multipart/form-data">
+                <label class="form-label-custom">Ảnh chứng minh đã chuyển khoản</label>
+                <input type="file" name="paymentProof" class="form-input-custom"
+                  accept=".jpg,.jpeg,.png,.webp,.heic,.heif,image/*" capture="environment" required>
+                <button type="submit" class="btn-auth mt-2">📤 Gửi ảnh chuyển khoản</button>
+              </form>
+      </div>
+
+      <!-- Trạng thái: payment_submitted - đã gửi ảnh, chờ xác minh -->
+      <div id="state-payment_submitted" class="status-box"
+        style="display:none; background:#eef2ff; border:1px solid #c7d2fe; border-radius:12px; padding:16px; text-align:center;">
+        <div style="font-size:13px; color:#3730a3;">📤 Đã gửi ảnh chuyển khoản. Đang chờ nhân viên xác minh...</div>
+      </div>
+
+      <!-- Trạng thái: preparing và sau đó - đang làm món -->
+      <div id="state-preparing" class="status-box"
+        style="display:none; background:#d1fae5; border:1px solid #a7f3d0; border-radius:12px; padding:16px; text-align:center;">
+        <div style="font-size:13px; color:#065f46; font-weight:600;">👨‍🍳 Thanh toán đã xác nhận! Quán đang chuẩn bị
+          món cho bạn.</div>
+      </div>
+
+      <a href="/" class="btn-go-back mt-3" style="display:block; text-align:center;">← Quay lại menu</a>
+
     </div>
-
-    <!-- Trạng thái: payment_submitted - đã gửi ảnh, chờ xác minh -->
-    <div id="state-payment_submitted" class="status-box" style="display:none; background:#eef2ff; border:1px solid #c7d2fe; border-radius:12px; padding:16px; text-align:center;">
-      <div style="font-size:13px; color:#3730a3;">📤 Đã gửi ảnh chuyển khoản. Đang chờ nhân viên xác minh...</div>
-    </div>
-
-    <!-- Trạng thái: preparing và sau đó - đang làm món -->
-    <div id="state-preparing" class="status-box" style="display:none; background:#d1fae5; border:1px solid #a7f3d0; border-radius:12px; padding:16px; text-align:center;">
-      <div style="font-size:13px; color:#065f46; font-weight:600;">👨‍🍳 Thanh toán đã xác nhận! Quán đang chuẩn bị món cho bạn.</div>
-    </div>
-
-    <a href="/" class="btn-go-back mt-3" style="display:block; text-align:center;">← Quay lại menu</a>
-
   </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-  const orderId = "<%= order._id %>";
-  const initialStatus = "<%= order.status %>";
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const orderId = "<%= order._id %>";
+    const initialStatus = "<%= order.status %>";
 
-  const icons = {
-    pending: "⏳",
-    confirmed: "💳",
-    payment_submitted: "📤",
-    preparing: "👨‍🍳",
-    delivering: "🛵",
-    completed: "🎉",
-    cancelled: "❌"
-  };
+    const icons = {
+      pending: "⏳",
+      confirmed: "💳",
+      payment_submitted: "📤",
+      preparing: "👨‍🍳",
+      delivering: "🛵",
+      completed: "🎉",
+      cancelled: "❌"
+    };
 
-  const titles = {
-    pending: "Đặt món thành công!",
-    confirmed: "Đơn đã được xác nhận",
-    payment_submitted: "Đã gửi ảnh thanh toán",
-    preparing: "Đang chuẩn bị món",
-    delivering: "Đang giao hàng",
-    completed: "Hoàn tất",
-    cancelled: "Đơn đã bị hủy"
-  };
+    const titles = {
+      pending: "Đặt món thành công!",
+      confirmed: "Đơn đã được xác nhận",
+      payment_submitted: "Đã gửi ảnh thanh toán",
+      preparing: "Đang chuẩn bị món",
+      delivering: "Đang giao hàng",
+      completed: "Hoàn tất",
+      cancelled: "Đơn đã bị hủy"
+    };
 
-  const descs = {
-    pending: "Đơn hàng của bạn đang chờ nhân viên xác nhận.",
-    confirmed: "Vui lòng quét mã QR và gửi ảnh chuyển khoản.",
-    payment_submitted: "Đang chờ nhân viên xác minh thanh toán.",
-    preparing: "Quán đang chuẩn bị món ăn cho bạn.",
-    delivering: "Món ăn đang được giao đến bạn.",
-    completed: "Cảm ơn bạn đã đặt món!",
-    cancelled: "Đơn hàng đã bị hủy."
-  };
+    const descs = {
+      pending: "Đơn hàng của bạn đang chờ nhân viên xác nhận.",
+      confirmed: "Vui lòng quét mã QR và gửi ảnh chuyển khoản.",
+      payment_submitted: "Đang chờ nhân viên xác minh thanh toán.",
+      preparing: "Quán đang chuẩn bị món ăn cho bạn.",
+      delivering: "Món ăn đang được giao đến bạn.",
+      completed: "Cảm ơn bạn đã đặt món!",
+      cancelled: "Đơn hàng đã bị hủy."
+    };
 
-  function renderStatus(status) {
-    document.querySelectorAll('.status-box').forEach(el => el.style.display = 'none');
+    function renderStatus(status) {
+      document.querySelectorAll('.status-box').forEach(el => el.style.display = 'none');
 
-    const box = document.getElementById('state-' + status);
-    if (box) box.style.display = '';
-    else if (status === 'delivering' || status === 'completed') {
-      document.getElementById('state-preparing').style.display = '';
+      const box = document.getElementById('state-' + status);
+      if (box) box.style.display = '';
+      else if (status === 'delivering' || status === 'completed') {
+        document.getElementById('state-preparing').style.display = '';
+      }
+
+      document.getElementById('statusIcon').textContent = icons[status] || '🎉';
+      document.getElementById('statusTitle').textContent = titles[status] || 'Đặt món thành công!';
+      document.getElementById('statusDesc').textContent = descs[status] || '';
     }
 
-    document.getElementById('statusIcon').textContent = icons[status] || '🎉';
-    document.getElementById('statusTitle').textContent = titles[status] || 'Đặt món thành công!';
-    document.getElementById('statusDesc').textContent = descs[status] || '';
-  }
+    renderStatus(initialStatus);
 
-  renderStatus(initialStatus);
+    // Polling tự động - không cần F5 để thấy trạng thái mới nhất
+    let currentStatus = initialStatus;
 
-  // Polling tự động - không cần F5 để thấy trạng thái mới nhất
-  let currentStatus = initialStatus;
+    async function checkOrderStatus() {
+      try {
+        const res = await fetch('/order-status/' + orderId);
+        const data = await res.json();
 
-  async function checkOrderStatus() {
-    try {
-      const res = await fetch('/order-status/' + orderId);
-      const data = await res.json();
+        if (data.status && data.status !== currentStatus) {
+          currentStatus = data.status;
+          renderStatus(currentStatus);
+        }
 
-      if (data.status && data.status !== currentStatus) {
-        currentStatus = data.status;
-        renderStatus(currentStatus);
-      }
+        // Dừng polling khi đơn đã hoàn tất hoặc bị hủy
+        if (currentStatus === 'completed' || currentStatus === 'cancelled') {
+          clearInterval(pollTimer);
+        }
+      } catch (e) { }
+    }
 
-      // Dừng polling khi đơn đã hoàn tất hoặc bị hủy
-      if (currentStatus === 'completed' || currentStatus === 'cancelled') {
-        clearInterval(pollTimer);
-      }
-    } catch (e) {}
-  }
-
-  const pollTimer = setInterval(checkOrderStatus, 4000);
-</script>
+    const pollTimer = setInterval(checkOrderStatus, 4000);
+  </script>
 
 </body>
+
 </html>
