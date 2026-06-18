@@ -45,73 +45,19 @@ const uploadQr = multer({ storage: qrStorage });
 
 // Upload riêng cho ảnh chứng minh chuyển khoản do khách gửi - mỗi ảnh cần
 // tên riêng (dùng timestamp) để không bị đè lẫn giữa các đơn khác nhau.
-// const paymentProofStorage = new CloudinaryStorage({
-//   cloudinary: cloudinary,
-//   params: (req, file) => {
-//     const ext = path.extname(file.originalname).replace(".", "");
-//     return {
-//       folder: "food-order/payment-proofs",
-//       public_id: "proof-" + Date.now(),
-//       format: ext || "jpg",
-//     };
-//   }
-// });
 const paymentProofStorage = new CloudinaryStorage({
-  cloudinary,
-  params: async (req, file) => {
-
-    let ext = path
-      .extname(file.originalname)
-      .replace(".", "")
-      .toLowerCase();
-
-    const allowedFormats = [
-      "jpg",
-      "jpeg",
-      "png",
-      "webp",
-      "heic",
-      "heif"
-    ];
-
-    if (!allowedFormats.includes(ext)) {
-      ext = "jpg";
-    }
-
+  cloudinary: cloudinary,
+  params: (req, file) => {
+    const ext = path.extname(file.originalname).replace(".", "");
     return {
       folder: "food-order/payment-proofs",
       public_id: "proof-" + Date.now(),
-      format: ext
+      format: ext || "jpg"
     };
   }
 });
 
-// const uploadPaymentProof = multer({ storage: paymentProofStorage });
-const uploadPaymentProof = multer({
-  storage: paymentProofStorage,
-
-  fileFilter: (req, file, cb) => {
-
-    const allowedTypes = [
-      "image/jpeg",
-      "image/jpg",
-      "image/png",
-      "image/webp",
-      "image/heic",
-      "image/heif"
-    ];
-
-    if (allowedTypes.includes(file.mimetype)) {
-      cb(null, true);
-    } else {
-      cb(new Error("Chỉ cho phép file ảnh"));
-    }
-  },
-
-  limits: {
-    fileSize: 10 * 1024 * 1024
-  }
-});
+const uploadPaymentProof = multer({ storage: paymentProofStorage });
 
 module.exports = upload;
 module.exports.uploadQr = uploadQr;
