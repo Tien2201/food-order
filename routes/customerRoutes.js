@@ -163,8 +163,9 @@ router.post("/order-payment-proof/:id", upload.uploadPaymentProof.single("paymen
     }
     res.redirect("/order-success/" + req.params.id);
   } catch (err) {
+    console.error("LỖI UPLOAD ẢNH THANH TOÁN:", err.message);
     console.error(err);
-    res.redirect("/order-success/" + req.params.id);
+    res.status(500).send("Lỗi khi gửi ảnh thanh toán: " + err.message);
   }
 });
 

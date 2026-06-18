@@ -45,16 +45,16 @@ const uploadQr = multer({ storage: qrStorage });
 
 // Upload riêng cho ảnh chứng minh chuyển khoản do khách gửi - mỗi ảnh cần
 // tên riêng (dùng timestamp) để không bị đè lẫn giữa các đơn khác nhau.
+// Không ép "format" theo phần mở rộng tên file gốc (vd: .JPEG viết hoa,
+// hoặc ảnh HEIC từ iPhone được đặt tên .jpeg) - để Cloudinary tự nhận diện
+// định dạng thật dựa trên nội dung file, tránh lỗi upload từ điện thoại.
 const paymentProofStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
-  params: (req, file) => {
-    const ext = path.extname(file.originalname).replace(".", "");
-    return {
-      folder: "food-order/payment-proofs",
-      public_id: "proof-" + Date.now(),
-      format: ext || "jpg"
-    };
-  }
+  params: () => ({
+    folder: "food-order/payment-proofs",
+    public_id: "proof-" + Date.now(),
+    resource_type: "image"
+  })
 });
 
 const uploadPaymentProof = multer({ storage: paymentProofStorage });
