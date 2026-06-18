@@ -43,9 +43,21 @@ app.use("/", customerRoutes);
 // Phải đặt SAU tất cả routes, có đủ 4 tham số (err, req, res, next) để Express
 // nhận diện đây là error-handling middleware.
 app.use((err, req, res, next) => {
-  console.error("LỖI SERVER:", err.message);
-  console.error(err.stack);
-  res.status(500).send("Đã xảy ra lỗi: " + err.message);
+  console.error("===== LỖI SERVER (chi tiết đầy đủ) =====");
+  console.error("typeof err:", typeof err);
+  console.error("err:", err);
+  console.error("err.message:", err && err.message);
+  console.error("err.name:", err && err.name);
+  console.error("err.code:", err && err.code);
+  console.error("err.stack:", err && err.stack);
+  console.error("==========================================");
+
+  const safeMessage =
+    (err && err.message) ||
+    (typeof err === "string" ? err : null) ||
+    "Lỗi không xác định, xem chi tiết trong log server";
+
+  res.status(500).send("Đã xảy ra lỗi: " + safeMessage);
 });
 
 app.listen(process.env.PORT || 3000, () => {
