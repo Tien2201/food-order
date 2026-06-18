@@ -202,6 +202,9 @@
   </a>
 
   <div class="sidebar-section-label">Quản lý</div>
+  <a href="/admin/settings/qr" class="sidebar-link <%= typeof activePage !== 'undefined' && activePage === 'settings-qr' ? 'active' : '' %>">
+    <span class="icon">💳</span> QR thanh toán
+  </a>
   <a href="/admin/foods" class="sidebar-link <%= typeof activePage !== 'undefined' && activePage === 'foods' ? 'active' : '' %>">
     <span class="icon">🍽️</span> Món ăn
   </a>
@@ -210,9 +213,6 @@
   </a>
   <a href="/admin/users" class="sidebar-link <%= typeof activePage !== 'undefined' && activePage === 'users' ? 'active' : '' %>">
     <span class="icon">👥</span> Tài khoản
-  </a>
-  <a href="/admin/settings/qr" class="sidebar-link <%= typeof activePage !== 'undefined' && activePage === 'settings-qr' ? 'active' : '' %>">
-    <span class="icon">💳</span> QR thanh toán
   </a>
 
   <div class="sidebar-footer">

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,248 +10,274 @@
   <link rel="icon" href="/images/logo.jpg">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
 
-<div class="d-flex">
+  <div class="d-flex">
 
-<div class="admin-overlay" id="adminOverlay" onclick="closeSidebar()"></div>
+    <div class="admin-overlay" id="adminOverlay" onclick="closeSidebar()"></div>
 
-  <!-- SIDEBAR -->
-  <div class="admin-sidebar" id="adminSidebar">
-    <div class="sidebar-brand">
-      <div class="sidebar-brand-icon">🍜</div>
-      <div>
-        <div class="sidebar-brand-text">Food Order</div>
-        <div class="sidebar-brand-sub">Admin Panel</div>
-      </div>
-    </div>
-
-    <div class="sidebar-section-label">Tổng quan</div>
-    <a href="/admin/dashboard" class="sidebar-link active">
-      <span class="icon">📊</span> Dashboard
-    </a>
-    <a href="/admin/statistics" class="sidebar-link ">
-      <span class="icon">📈</span> Thống kê
-    </a>
-
-    <div class="sidebar-section-label">Quản lý</div>
-    <a href="/admin/foods" class="sidebar-link ">
-      <span class="icon">🍽️</span> Món ăn
-    </a>
-    <a href="/admin/orders" class="sidebar-link ">
-      <span class="icon">📋</span> Đơn hàng
-    </a>
-    <a href="/admin/users" class="sidebar-link ">
-      <span class="icon">👥</span> Tài khoản
-    </a>
-
-    <div class="sidebar-footer">
-      <div class="sidebar-user">
-        <div class="sidebar-avatar">
-          <%= user ? user.fullname.charAt(0).toUpperCase() : 'A' %>
-        </div>
+    <!-- SIDEBAR -->
+    <div class="admin-sidebar" id="adminSidebar">
+      <div class="sidebar-brand">
+        <div class="sidebar-brand-icon">🍜</div>
         <div>
-          <div class="sidebar-user-name"><%= user ? user.fullname : 'Admin' %></div>
-          <div class="sidebar-user-role">Administrator</div>
+          <div class="sidebar-brand-text">Food Order</div>
+          <div class="sidebar-brand-sub">Admin Panel</div>
         </div>
       </div>
-      <a href="/logout" class="btn-logout-sidebar">
-        <span class="icon">🚪</span> Đăng xuất
+
+      <div class="sidebar-section-label">Tổng quan</div>
+      <a href="/admin/dashboard" class="sidebar-link active">
+        <span class="icon">📊</span> Dashboard
       </a>
+      <a href="/admin/statistics" class="sidebar-link ">
+        <span class="icon">📈</span> Thống kê
+      </a>
+
+      <div class="sidebar-section-label">Quản lý</div>
+
+      <a href="/admin/foods" class="sidebar-link ">
+        <span class="icon">🍽️</span> Món ăn
+      </a>
+      <a href="/admin/orders" class="sidebar-link ">
+        <span class="icon">📋</span> Đơn hàng
+      </a>
+      <a href="/admin/users" class="sidebar-link ">
+        <span class="icon">👥</span> Tài khoản
+      </a>
+      <a href="/admin/settings/qr"
+        class="sidebar-link <%= typeof activePage !== 'undefined' && activePage === 'settings-qr' ? 'active' : '' %>">
+        <span class="icon">💳</span> QR thanh toán
+      </a>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-avatar">
+            <%= user ? user.fullname.charAt(0).toUpperCase() : 'A' %>
+          </div>
+          <div>
+            <div class="sidebar-user-name">
+              <%= user ? user.fullname : 'Admin' %>
+            </div>
+            <div class="sidebar-user-role">Administrator</div>
+          </div>
+        </div>
+        <a href="/logout" class="btn-logout-sidebar">
+          <span class="icon">🚪</span> Đăng xuất
+        </a>
+      </div>
     </div>
-  </div>
 
-<div class="admin-main">
+    <div class="admin-main">
 
-    <!-- Topbar -->
-    <div class="admin-topbar">
-      <div class="d-flex align-items-center gap-2">
-        <button class="admin-hamburger" onclick="openSidebar()">☰</button>
-        <div>
-          <div class="admin-topbar-title">Xin chào, <%= user.fullname %> 👋</div>
-          <div class="admin-topbar-sub">Trang quản trị hệ thống đặt món</div>
-        </div>
-      </div>
-      <div class="topbar-date" id="currentDate"></div>
-    </div>
-
-    <div class="admin-content">
-
-      <!-- Stat cards -->
-      <div class="row g-3 mb-4">
-        <div class="col-md-3 col-sm-6">
-          <div class="stat-card">
-            <div class="stat-icon orange">🍽️</div>
-            <div>
-              <div class="stat-label">Món ăn</div>
-              <div class="stat-value"><%= foodCount %></div>
-              <div class="stat-sub">Đang phục vụ</div>
-            </div>
+      <!-- Topbar -->
+      <div class="admin-topbar">
+        <div class="d-flex align-items-center gap-2">
+          <button class="admin-hamburger" onclick="openSidebar()">☰</button>
+          <div>
+            <div class="admin-topbar-title">Xin chào, <%= user.fullname %> 👋</div>
+            <div class="admin-topbar-sub">Trang quản trị hệ thống đặt món</div>
           </div>
         </div>
-        <div class="col-md-3 col-sm-6">
-          <div class="stat-card">
-            <div class="stat-icon blue">📋</div>
-            <div>
-              <div class="stat-label">Đơn hàng</div>
-              <div class="stat-value"><%= orderCount %></div>
-              <div class="stat-sub">Tổng tất cả</div>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-3 col-sm-6">
-          <div class="stat-card">
-            <div class="stat-icon green">👥</div>
-            <div>
-              <div class="stat-label">Tài khoản</div>
-              <div class="stat-value"><%= userCount %></div>
-              <div class="stat-sub">Đã đăng ký</div>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-3 col-sm-6">
-          <div class="stat-card">
-            <div class="stat-icon purple">💰</div>
-            <div>
-              <div class="stat-label">Doanh thu</div>
-              <div class="stat-value"><%= typeof totalRevenue !== 'undefined' ? (totalRevenue/1000).toFixed(0) + 'K' : '—' %></div>
-              <div class="stat-sub">VNĐ tổng cộng</div>
-            </div>
-          </div>
-        </div>
+        <div class="topbar-date" id="currentDate"></div>
       </div>
 
-      <div class="row g-3 mb-4">
+      <div class="admin-content">
 
-        <!-- Chart -->
-        <div class="col-lg-8">
-          <div class="chart-card">
-            <div class="chart-card-title">📈 Đơn hàng gần đây</div>
-            <div class="chart-card-sub">7 ngày gần nhất</div>
-            <canvas id="orderChart" height="100"></canvas>
+        <!-- Stat cards -->
+        <div class="row g-3 mb-4">
+          <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+              <div class="stat-icon orange">🍽️</div>
+              <div>
+                <div class="stat-label">Món ăn</div>
+                <div class="stat-value">
+                  <%= foodCount %>
+                </div>
+                <div class="stat-sub">Đang phục vụ</div>
+              </div>
+            </div>
           </div>
-        </div>
-
-        <!-- Quick actions -->
-        <div class="col-lg-4">
-          <div class="chart-card" style="height: 100%;">
-            <div class="chart-card-title">⚡ Thao tác nhanh</div>
-            <div class="chart-card-sub">Truy cập nhanh các chức năng</div>
-            <div class="d-flex flex-column gap-2">
-              <a href="/admin/foods" class="action-card">
-                <div class="action-icon">🍽️</div>
-                <div class="action-title">Thêm món mới</div>
-                <div class="action-sub">Quản lý thực đơn</div>
-              </a>
-              <a href="/admin/orders" class="action-card">
-                <div class="action-icon">📋</div>
-                <div class="action-title">Xem đơn hàng</div>
-                <div class="action-sub">Kiểm tra & cập nhật</div>
-              </a>
-              <a href="/admin/statistics" class="action-card">
-                <div class="action-icon">📊</div>
-                <div class="action-title">Thống kê doanh thu</div>
-                <div class="action-sub">Báo cáo chi tiết</div>
-              </a>
+          <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+              <div class="stat-icon blue">📋</div>
+              <div>
+                <div class="stat-label">Đơn hàng</div>
+                <div class="stat-value">
+                  <%= orderCount %>
+                </div>
+                <div class="stat-sub">Tổng tất cả</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+              <div class="stat-icon green">👥</div>
+              <div>
+                <div class="stat-label">Tài khoản</div>
+                <div class="stat-value">
+                  <%= userCount %>
+                </div>
+                <div class="stat-sub">Đã đăng ký</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+              <div class="stat-icon purple">💰</div>
+              <div>
+                <div class="stat-label">Doanh thu</div>
+                <div class="stat-value">
+                  <%= typeof totalRevenue !=='undefined' ? (totalRevenue/1000).toFixed(0) + 'K' : '—' %>
+                </div>
+                <div class="stat-sub">VNĐ tổng cộng</div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Recent orders table -->
-      <div class="table-card">
-        <div class="table-card-header">
-          <div class="table-card-title">🕐 Đơn hàng mới nhất</div>
-          <a href="/admin/orders" style="font-size:13px; color:#D85A30; font-weight:600; text-decoration:none;">Xem tất cả →</a>
+        <div class="row g-3 mb-4">
+
+          <!-- Chart -->
+          <div class="col-lg-8">
+            <div class="chart-card">
+              <div class="chart-card-title">📈 Đơn hàng gần đây</div>
+              <div class="chart-card-sub">7 ngày gần nhất</div>
+              <canvas id="orderChart" height="100"></canvas>
+            </div>
+          </div>
+
+          <!-- Quick actions -->
+          <div class="col-lg-4">
+            <div class="chart-card" style="height: 100%;">
+              <div class="chart-card-title">⚡ Thao tác nhanh</div>
+              <div class="chart-card-sub">Truy cập nhanh các chức năng</div>
+              <div class="d-flex flex-column gap-2">
+                <a href="/admin/foods" class="action-card">
+                  <div class="action-icon">🍽️</div>
+                  <div class="action-title">Thêm món mới</div>
+                  <div class="action-sub">Quản lý thực đơn</div>
+                </a>
+                <a href="/admin/orders" class="action-card">
+                  <div class="action-icon">📋</div>
+                  <div class="action-title">Xem đơn hàng</div>
+                  <div class="action-sub">Kiểm tra & cập nhật</div>
+                </a>
+                <a href="/admin/statistics" class="action-card">
+                  <div class="action-icon">📊</div>
+                  <div class="action-title">Thống kê doanh thu</div>
+                  <div class="action-sub">Báo cáo chi tiết</div>
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
-        <table>
-          <thead>
-            <tr>
-              <th>Khách hàng</th>
-              <th>SĐT</th>
-              <th>Tổng tiền</th>
-              <th>Trạng thái</th>
-              <th>Thao tác</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% if (typeof recentOrders !== 'undefined') { %>
-              <% recentOrders.forEach(order => { %>
-                <tr>
-                  <td><strong><%= order.customerName %></strong></td>
-                  <td><%= order.phone %></td>
-                  <td style="color:#D85A30; font-weight:600;"><%= order.totalPrice.toLocaleString('vi-VN') %> VNĐ</td>
-                  <td>
-                    <% if (order.paymentCode) { %>
-                      <span class="badge-confirmed">Đã xác nhận</span>
+
+        <!-- Recent orders table -->
+        <div class="table-card">
+          <div class="table-card-header">
+            <div class="table-card-title">🕐 Đơn hàng mới nhất</div>
+            <a href="/admin/orders" style="font-size:13px; color:#D85A30; font-weight:600; text-decoration:none;">Xem
+              tất cả →</a>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Khách hàng</th>
+                <th>SĐT</th>
+                <th>Tổng tiền</th>
+                <th>Trạng thái</th>
+                <th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (typeof recentOrders !=='undefined' ) { %>
+                <% recentOrders.forEach(order=> { %>
+                  <tr>
+                    <td><strong>
+                        <%= order.customerName %>
+                      </strong></td>
+                    <td>
+                      <%= order.phone %>
+                    </td>
+                    <td style="color:#D85A30; font-weight:600;">
+                      <%= order.totalPrice.toLocaleString('vi-VN') %> VNĐ
+                    </td>
+                    <td>
+                      <% if (order.paymentCode) { %>
+                        <span class="badge-confirmed">Đã xác nhận</span>
+                        <% } else { %>
+                          <span class="badge-pending">Đơn mới</span>
+                          <% } %>
+                    </td>
+                    <td><a href="/admin/orders/edit/<%= order._id %>" class="btn-view">Chi tiết →</a></td>
+                  </tr>
+                  <% }) %>
                     <% } else { %>
-                      <span class="badge-pending">Đơn mới</span>
-                    <% } %>
-                  </td>
-                  <td><a href="/admin/orders/edit/<%= order._id %>" class="btn-view">Chi tiết →</a></td>
-                </tr>
-              <% }) %>
-            <% } else { %>
-              <tr><td colspan="5" style="text-align:center; color:#9ca3af; padding:32px;">Chưa có đơn hàng nào</td></tr>
-            <% } %>
-          </tbody>
-        </table>
-      </div>
+                      <tr>
+                        <td colspan="5" style="text-align:center; color:#9ca3af; padding:32px;">Chưa có đơn hàng nào
+                        </td>
+                      </tr>
+                      <% } %>
+            </tbody>
+          </table>
+        </div>
 
+      </div>
     </div>
   </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script>
-  // Mobile sidebar toggle
-  function openSidebar() {
-    document.getElementById('adminSidebar').classList.add('open');
-    document.getElementById('adminOverlay').classList.add('show');
-  }
-  function closeSidebar() {
-    document.getElementById('adminSidebar').classList.remove('open');
-    document.getElementById('adminOverlay').classList.remove('show');
-  }
-
-  // Hiện ngày giờ
-  const d = new Date();
-  document.getElementById('currentDate').textContent =
-    d.toLocaleDateString('vi-VN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-
-  // Chart đơn hàng 7 ngày
-  const labels = [];
-  const today = new Date();
-  for (let i = 6; i >= 0; i--) {
-    const dd = new Date(today);
-    dd.setDate(today.getDate() - i);
-    labels.push(dd.toLocaleDateString('vi-VN', { month: 'numeric', day: 'numeric' }));
-  }
-
-  const orderData = <%- typeof ordersByDay !== 'undefined' ? JSON.stringify(ordersByDay) : '[0,0,0,0,0,0,0]' %>;
-
-  new Chart(document.getElementById('orderChart'), {
-    type: 'bar',
-    data: {
-      labels,
-      datasets: [{
-        label: 'Số đơn',
-        data: orderData,
-        backgroundColor: '#D85A30',
-        borderRadius: 8,
-        borderSkipped: false,
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: { legend: { display: false } },
-      scales: {
-        y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 11 } }, grid: { color: '#f3f4f6' } },
-        x: { ticks: { font: { size: 11 } }, grid: { display: false } }
-      }
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script>
+    // Mobile sidebar toggle
+    function openSidebar() {
+      document.getElementById('adminSidebar').classList.add('open');
+      document.getElementById('adminOverlay').classList.add('show');
     }
-  });
-</script>
+    function closeSidebar() {
+      document.getElementById('adminSidebar').classList.remove('open');
+      document.getElementById('adminOverlay').classList.remove('show');
+    }
+
+    // Hiện ngày giờ
+    const d = new Date();
+    document.getElementById('currentDate').textContent =
+      d.toLocaleDateString('vi-VN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+    // Chart đơn hàng 7 ngày
+    const labels = [];
+    const today = new Date();
+    for (let i = 6; i >= 0; i--) {
+      const dd = new Date(today);
+      dd.setDate(today.getDate() - i);
+      labels.push(dd.toLocaleDateString('vi-VN', { month: 'numeric', day: 'numeric' }));
+    }
+
+    const orderData =   typeof ordersByDay !== 'undefined' ? JSON.stringify(ordersByDay) : '[0,0,0,0,0,0,0]' 
+
+    new Chart(document.getElementById('orderChart'), {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Số đơn',
+          data: orderData,
+          backgroundColor: '#D85A30',
+          borderRadius: 8,
+          borderSkipped: false,
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 11 } }, grid: { color: '#f3f4f6' } },
+          x: { ticks: { font: { size: 11 } }, grid: { display: false } }
+        }
+      }
+    });
+  </script>
 </body>
+
 </html>
