@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 
 const bcrypt = require("bcryptjs");
+const fs = require("fs");
+const path = require("path");
 
 const Food = require("../models/Food");
 const Order = require("../models/Order");
@@ -11,6 +13,22 @@ const upload = require("../config/upload");
 const sendOTPEmail = require("../config/mailer");
 
 const { isAdmin } = require("../middleware/auth");
+
+// Xóa file ảnh vật lý trong public/images/ nếu đường dẫn trỏ tới đó
+// (an toàn: không xóa nhầm ảnh mặc định hoặc URL bên ngoài)
+function deleteFoodImage(imagePath) {
+  if (!imagePath || !imagePath.startsWith("/images/")) return;
+  if (imagePath === "/images/background.jpg") return;
+
+  const filename = imagePath.replace("/images/", "");
+  const fullPath = path.join(__dirname, "..", "public", "images", filename);
+
+  fs.unlink(fullPath, (err) => {
+    if (err && err.code !== "ENOENT") {
+      console.error("Không xóa được ảnh:", err.message);
+    }
+  });
+}
 
 router.get("/dashboard", isAdmin, async (req, res) => {
   const foodCount = await Food.countDocuments();
@@ -92,7 +110,11 @@ router.post("/foods/edit/:id", isAdmin, upload.single("image"), async (req, res)
     };
 
     if (req.file) {
-      updateData.image = "/uploads/foods/" + req.file.filename;
+      // Có ảnh mới -> xóa ảnh cũ để tránh tích rác trong public/images/
+      const oldFood = await Food.findById(req.params.id);
+      if (oldFood) deleteFoodImage(oldFood.image);
+
+      updateData.image = "/images/" + req.file.filename;
     }
 
     await Food.findByIdAndUpdate(req.params.id, updateData);
@@ -105,9 +127,17 @@ router.post("/foods/edit/:id", isAdmin, upload.single("image"), async (req, res)
 });
 
 router.post("/foods/delete/:id", isAdmin, async (req, res) => {
-  await Food.findByIdAndDelete(req.params.id);
+  try {
+    const food = await Food.findById(req.params.id);
+    if (food) deleteFoodImage(food.image);
 
-  res.redirect("/admin/foods");
+    await Food.findByIdAndDelete(req.params.id);
+
+    res.redirect("/admin/foods");
+  } catch (err) {
+    console.error(err);
+    res.redirect("/admin/foods");
+  }
 });
 
 router.get("/orders", isAdmin, async (req, res) => {
