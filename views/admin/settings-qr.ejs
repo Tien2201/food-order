@@ -15,53 +15,7 @@
 
 <div class="admin-overlay" id="adminOverlay" onclick="closeSidebar()"></div>
 
-  <!-- SIDEBAR -->
-  <div class="admin-sidebar" id="adminSidebar">
-    <div class="sidebar-brand">
-      <div class="sidebar-brand-icon">🍜</div>
-      <div>
-        <div class="sidebar-brand-text">Food Order</div>
-        <div class="sidebar-brand-sub">Admin Panel</div>
-      </div>
-    </div>
-
-    <div class="sidebar-section-label">Tổng quan</div>
-    <a href="/admin/dashboard" class="sidebar-link">
-      <span class="icon">📊</span> Dashboard
-    </a>
-    <a href="/admin/statistics" class="sidebar-link">
-      <span class="icon">📈</span> Thống kê
-    </a>
-
-    <div class="sidebar-section-label">Quản lý</div>
-    <a href="/admin/foods" class="sidebar-link">
-      <span class="icon">🍽️</span> Món ăn
-    </a>
-    <a href="/admin/orders" class="sidebar-link">
-      <span class="icon">📋</span> Đơn hàng
-    </a>
-    <a href="/admin/users" class="sidebar-link">
-      <span class="icon">👥</span> Tài khoản
-    </a>
-    <a href="/admin/settings/qr" class="sidebar-link active">
-      <span class="icon">💳</span> QR thanh toán
-    </a>
-
-    <div class="sidebar-footer">
-      <div class="sidebar-user">
-        <div class="sidebar-avatar">
-          <%= user ? user.fullname.charAt(0).toUpperCase() : 'A' %>
-        </div>
-        <div>
-          <div class="sidebar-user-name"><%= user ? user.fullname : 'Admin' %></div>
-          <div class="sidebar-user-role">Administrator</div>
-        </div>
-      </div>
-      <a href="/logout" class="btn-logout-sidebar">
-        <span class="icon">🚪</span> Đăng xuất
-      </a>
-    </div>
-  </div>
+  <%- include("partials/sidebar", { user, activePage: "settings-qr" }) %>
 
   <!-- MAIN CONTENT -->
   <div class="admin-main">

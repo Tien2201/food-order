@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thống kê</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="/images/logo.jpg">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="d-flex">
+
+<div class="admin-overlay" id="adminOverlay" onclick="closeSidebar()"></div>
+
+  <%- include("partials/sidebar", { user, activePage: "statistics" }) %>
+
+  <!-- MAIN CONTENT -->
+  <div class="admin-main">
+    <div class="admin-topbar">
+      <div class="d-flex align-items-center gap-2">
+        <button class="admin-hamburger" onclick="openSidebar()">☰</button>
+        <div>
+          <div class="admin-topbar-title">📈 Thống kê</div>
+          <div class="admin-topbar-sub">Doanh thu và món bán chạy theo ngày, tháng, năm</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="admin-content">
+
+      <!-- Tab chuyển nhanh -->
+      <div class="d-flex gap-2 flex-wrap mb-4">
+        <button class="filter-btn active" onclick="switchTab('today', this)">📅 Hôm nay</button>
+        <button class="filter-btn" onclick="switchTab('month', this)">🗓️ Tháng này</button>
+        <button class="filter-btn" onclick="switchTab('year', this)">📆 Năm này</button>
+      </div>
+
+      <!-- TODAY -->
+      <div id="tab-today" class="stat-tab">
+        <div class="row g-3 mb-4">
+          <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+              <div class="stat-icon orange">💰</div>
+              <div>
+                <div class="stat-label">Doanh thu hôm nay</div>
+                <div class="stat-value"><%= todayStats.totalRevenue.toLocaleString('vi-VN') %> đ</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+              <div class="stat-icon green">📋</div>
+              <div>
+                <div class="stat-label">Số đơn hôm nay</div>
+                <div class="stat-value"><%= todayStats.totalOrders %></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+              <div class="stat-icon purple">🍽️</div>
+              <div>
+                <div class="stat-label">Số phần bán được</div>
+                <div class="stat-value"><%= todayStats.totalItemsSold %></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+              <div class="stat-icon orange">🏆</div>
+              <div>
+                <div class="stat-label">Bán chạy nhất</div>
+                <div class="stat-value" style="font-size:15px;"><%= todayStats.topFood ? todayStats.topFood._id : "Chưa có" %></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <%- include("partials/food-stats-table", { foodStats: todayStats.foodStats }) %>
+      </div>
+
+      <!-- MONTH -->
+      <div id="tab-month" class="stat-tab" style="display:none;">
+        <div class="row g-3 mb-4">
+          <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+              <div class="stat-icon orange">💰</div>
+              <div>
+                <div class="stat-label">Doanh thu tháng này</div>
+                <div class="stat-value"><%= monthStats.totalRevenue.toLocaleString('vi-VN') %> đ</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+              <div class="stat-icon green">📋</div>
+              <div>
+                <div class="stat-label">Số đơn tháng này</div>
+                <div class="stat-value"><%= monthStats.totalOrders %></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+              <div class="stat-icon purple">🍽️</div>
+              <div>
+                <div class="stat-label">Số phần bán được</div>
+                <div class="stat-value"><%= monthStats.totalItemsSold %></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+              <div class="stat-icon orange">🏆</div>
+              <div>
+                <div class="stat-label">Bán chạy nhất</div>
+                <div class="stat-value" style="font-size:15px;"><%= monthStats.topFood ? monthStats.topFood._id : "Chưa có" %></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <%- include("partials/food-stats-table", { foodStats: monthStats.foodStats }) %>
+      </div>
+
+      <!-- YEAR -->
+      <div id="tab-year" class="stat-tab" style="display:none;">
+        <div class="row g-3 mb-4">
+          <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+              <div class="stat-icon orange">💰</div>
+              <div>
+                <div class="stat-label">Doanh thu năm này</div>
+                <div class="stat-value"><%= yearStats.totalRevenue.toLocaleString('vi-VN') %> đ</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+              <div class="stat-icon green">📋</div>
+              <div>
+                <div class="stat-label">Số đơn năm này</div>
+                <div class="stat-value"><%= yearStats.totalOrders %></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+              <div class="stat-icon purple">🍽️</div>
+              <div>
+                <div class="stat-label">Số phần bán được</div>
+                <div class="stat-value"><%= yearStats.totalItemsSold %></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+              <div class="stat-icon orange">🏆</div>
+              <div>
+                <div class="stat-label">Bán chạy nhất</div>
+                <div class="stat-value" style="font-size:15px;"><%= yearStats.topFood ? yearStats.topFood._id : "Chưa có" %></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <%- include("partials/food-stats-table", { foodStats: yearStats.foodStats }) %>
+      </div>
+
+      <!-- XUẤT EXCEL -->
+      <div class="form-card mt-4" style="max-width:520px;">
+        <div class="form-card-title">📤 Xuất báo cáo Excel</div>
+        <p style="font-size:13px; color:#9ca3af; margin-bottom:16px;">
+          Chọn khoảng thời gian để xuất file Excel chứa danh sách món, số lượng, doanh thu từng món và tổng doanh thu.
+        </p>
+
+        <form action="/admin/statistics/export" method="GET">
+          <label class="form-label-custom">Chọn ngày</label>
+          <input type="date" name="date" id="exportDate" class="form-input-custom" required>
+
+          <button type="submit" class="btn-save mt-3">📥 Xuất file Excel</button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  function openSidebar() {
+    document.getElementById('adminSidebar').classList.add('open');
+    document.getElementById('adminOverlay').classList.add('show');
+  }
+  function closeSidebar() {
+    document.getElementById('adminSidebar').classList.remove('open');
+    document.getElementById('adminOverlay').classList.remove('show');
+  }
+
+  function switchTab(tab, btn) {
+    document.querySelectorAll('.stat-tab').forEach(el => el.style.display = 'none');
+    document.getElementById('tab-' + tab).style.display = '';
+
+    document.querySelectorAll('.filter-btn').forEach(el => el.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  // Mặc định điền sẵn "hôm nay" cho ô ngày xuất Excel
+  (function () {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('exportDate').value = today;
+  })();
+</script>
+
+</body>
+</html>
