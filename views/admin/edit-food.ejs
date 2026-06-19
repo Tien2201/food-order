@@ -88,11 +88,40 @@
             <option value="drink" <%= food.category === 'drink' ? 'selected' : '' %>>🥤 Đồ uống</option>
           </select>
 
+          <label class="form-label-custom">Độ cay</label>
+          <select name="spiceLevel" class="form-input-custom">
+            <option value="non-spicy" <%= (food.spiceLevel || 'non-spicy') === 'non-spicy' ? 'selected' : '' %>>🟢 Không cay</option>
+            <option value="spicy" <%= food.spiceLevel === 'spicy' ? 'selected' : '' %>>🌶️ Cay</option>
+          </select>
+
+          <label class="form-label-custom">Loại nước</label>
+          <select name="soupType" class="form-input-custom">
+            <option value="dry" <%= (food.soupType || 'dry') === 'dry' ? 'selected' : '' %>>🍲 Khô</option>
+            <option value="soup" <%= food.soupType === 'soup' ? 'selected' : '' %>>🍜 Soup</option>
+          </select>
+
           <label class="form-label-custom">Trạng thái</label>
           <select name="status" class="form-input-custom">
             <option value="true" <%= food.status ? 'selected' : '' %>>✅ Đang bán</option>
             <option value="false" <%= !food.status ? 'selected' : '' %>>⛔ Ngừng bán</option>
           </select>
+
+          <label class="form-label-custom">Nhóm tùy chọn hiện khi khách thêm vào giỏ</label>
+          <div class="option-group-checks">
+            <label class="option-check-chip">
+              <input type="checkbox" name="optionGroups" value="spice" <%= (food.optionGroups || []).includes('spice') ? 'checked' : '' %>>
+              <span>🌶️ Cay / Không cay (ớt)</span>
+            </label>
+            <label class="option-check-chip">
+              <input type="checkbox" name="optionGroups" value="cheese" <%= (food.optionGroups || []).includes('cheese') ? 'checked' : '' %>>
+              <span>🧀 Muối Đài Loan / Rau quế</span>
+            </label>
+            <label class="option-check-chip">
+              <input type="checkbox" name="optionGroups" value="beefFloss" <%= (food.optionGroups || []).includes('beefFloss') ? 'checked' : '' %>>
+              <span>🐟 Khô cá bào</span>
+            </label>
+          </div>
+          <div class="option-group-hint">Lưu ý: Tùy chọn "Soup chung/riêng" tự hiện khi Loại nước = Soup, không cần tick ở đây.</div>
 
           <label class="form-label-custom">Ảnh hiện tại</label>
           <img src="<%= food.image %>" class="current-img" alt="<%= food.name %>" onerror="this.src='/images/background.jpg'">

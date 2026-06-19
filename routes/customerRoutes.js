@@ -50,7 +50,12 @@ router.get("/about", (req, res) => {
 router.post("/cart/add/:id", async (req, res) => {
   try {
     const food = await Food.findById(req.params.id);
-    if (!food) return res.redirect("/");
+    if (!food) {
+      if (req.headers["x-requested-with"] === "XMLHttpRequest" || req.headers.accept?.includes("application/json")) {
+        return res.status(404).json({ success: false, message: "Không tìm thấy món ăn" });
+      }
+      return res.redirect("/");
+    }
 
     if (!req.session.cart) req.session.cart = [];
 
@@ -64,9 +69,19 @@ router.post("/cart/add/:id", async (req, res) => {
       note: req.body.note || ""
     });
 
+    const cartCount = req.session.cart.reduce((sum, item) => sum + item.quantity, 0);
+
+    // Yêu cầu AJAX (fetch từ popup chọn món) -> trả JSON, không chuyển trang
+    if (req.headers["x-requested-with"] === "XMLHttpRequest" || req.headers.accept?.includes("application/json")) {
+      return res.json({ success: true, cartCount });
+    }
+
     res.redirect("/cart");
   } catch (err) {
     console.error(err);
+    if (req.headers["x-requested-with"] === "XMLHttpRequest" || req.headers.accept?.includes("application/json")) {
+      return res.status(500).json({ success: false, message: "Lỗi server" });
+    }
     res.redirect("/");
   }
 });

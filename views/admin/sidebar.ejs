@@ -1,3 +1,4 @@
+<!-- TEST123 -->
 <style>
   .admin-sidebar {
     width: 240px;
@@ -194,34 +195,43 @@
   </div>
 
   <div class="sidebar-section-label">Tổng quan</div>
-  <a href="/admin/dashboard" class="sidebar-link <%= typeof activePage !== 'undefined' && activePage === 'dashboard' ? 'active' : '' %>">
+  <a href="/admin/dashboard"
+    class="sidebar-link <%= typeof activePage !== 'undefined' && activePage === 'dashboard' ? 'active' : '' %>">
     <span class="icon">📊</span> Dashboard
   </a>
-  <a href="/admin/statistics" class="sidebar-link <%= typeof activePage !== 'undefined' && activePage === 'statistics' ? 'active' : '' %>">
+  <a href="/admin/statistics"
+    class="sidebar-link <%= typeof activePage !== 'undefined' && activePage === 'statistics' ? 'active' : '' %>">
     <span class="icon">📈</span> Thống kê
   </a>
 
   <div class="sidebar-section-label">Quản lý</div>
-  <a href="/admin/settings/qr" class="sidebar-link <%= typeof activePage !== 'undefined' && activePage === 'settings-qr' ? 'active' : '' %>">
-    <span class="icon">💳</span> QR thanh toán
-  </a>
-  <a href="/admin/foods" class="sidebar-link <%= typeof activePage !== 'undefined' && activePage === 'foods' ? 'active' : '' %>">
+
+  <a href="/admin/foods"
+    class="sidebar-link <%= typeof activePage !== 'undefined' && activePage === 'foods' ? 'active' : '' %>">
     <span class="icon">🍽️</span> Món ăn
   </a>
-  <a href="/admin/orders" class="sidebar-link <%= typeof activePage !== 'undefined' && activePage === 'orders' ? 'active' : '' %>">
+  <a href="/admin/orders"
+    class="sidebar-link <%= typeof activePage !== 'undefined' && activePage === 'orders' ? 'active' : '' %>">
     <span class="icon">📋</span> Đơn hàng
   </a>
-  <a href="/admin/users" class="sidebar-link <%= typeof activePage !== 'undefined' && activePage === 'users' ? 'active' : '' %>">
+  <a href="/admin/users"
+    class="sidebar-link <%= typeof activePage !== 'undefined' && activePage === 'users' ? 'active' : '' %>">
     <span class="icon">👥</span> Tài khoản
+  </a>
+  <a href="/admin/settings/qr"
+    class="sidebar-link <%= typeof activePage !== 'undefined' && activePage === 'settings-qr' ? 'active' : '' %>">
+    <span class="icon">💳</span> QR thanh toán
   </a>
 
   <div class="sidebar-footer">
     <div class="sidebar-user">
       <div class="sidebar-avatar">
-        <%= typeof user !== 'undefined' && user ? user.fullname.charAt(0).toUpperCase() : 'A' %>
+        <%= typeof user !=='undefined' && user ? user.fullname.charAt(0).toUpperCase() : 'A' %>
       </div>
       <div>
-        <div class="sidebar-user-name"><%= typeof user !== 'undefined' && user ? user.fullname : 'Admin' %></div>
+        <div class="sidebar-user-name">
+          <%= typeof user !=='undefined' && user ? user.fullname : 'Admin' %>
+        </div>
         <div class="sidebar-user-role">Administrator</div>
       </div>
     </div>

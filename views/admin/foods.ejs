@@ -110,8 +110,40 @@
                 </select>
               </div>
               <div class="col-md-3">
+                <label class="form-label-custom">Độ cay</label>
+                <select name="spiceLevel" class="form-input-custom" required>
+                  <option value="non-spicy">🟢 Không cay</option>
+                  <option value="spicy">🌶️ Cay</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label-custom">Loại nước</label>
+                <select name="soupType" class="form-input-custom" required>
+                  <option value="dry">🍲 Khô</option>
+                  <option value="soup">🍜 Soup</option>
+                </select>
+              </div>
+              <div class="col-md-3">
                 <label class="form-label-custom">Hình ảnh</label>
                 <input type="file" name="image" class="form-input-custom" accept="image/*" required>
+              </div>
+              <div class="col-12">
+                <label class="form-label-custom">Nhóm tùy chọn hiện khi khách thêm vào giỏ</label>
+                <div class="option-group-checks">
+                  <label class="option-check-chip">
+                    <input type="checkbox" name="optionGroups" value="spice">
+                    <span>🌶️ Cay / Không cay (ớt)</span>
+                  </label>
+                  <label class="option-check-chip">
+                    <input type="checkbox" name="optionGroups" value="cheese">
+                    <span>🧀 Muối Đài Loan / Rau quế</span>
+                  </label>
+                  <label class="option-check-chip">
+                    <input type="checkbox" name="optionGroups" value="beefFloss">
+                    <span>🐟 Khô cá bào</span>
+                  </label>
+                </div>
+                <div class="option-group-hint">Lưu ý: Tùy chọn "Soup chung/riêng" tự hiện khi Loại nước = Soup, không cần tick ở đây.</div>
               </div>
               <div class="col-12">
                 <button type="submit" class="btn-add">➕ Thêm món</button>

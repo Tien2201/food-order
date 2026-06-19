@@ -113,12 +113,20 @@ router.post("/foods/add", isAdmin, upload.single("image"), async (req, res) => {
     // req.file.path là URL đầy đủ trên Cloudinary (vd: https://res.cloudinary.com/...)
     const image = req.file ? req.file.path : "";
 
+    // Checkbox cùng tên có thể trả về: undefined (không tick), string (tick 1), hoặc array (tick nhiều)
+    const optionGroups = req.body.optionGroups
+      ? (Array.isArray(req.body.optionGroups) ? req.body.optionGroups : [req.body.optionGroups])
+      : [];
+
     await Food.create({
       name: req.body.name,
       price: req.body.price,
       description: req.body.description,
       image: image,
       category: req.body.category,
+      spiceLevel: req.body.spiceLevel,
+      soupType: req.body.soupType,
+      optionGroups: optionGroups,
       status: true
     });
 
@@ -138,13 +146,21 @@ router.get("/foods/edit/:id", isAdmin, async (req, res) => {
 
 router.post("/foods/edit/:id", isAdmin, upload.single("image"), async (req, res) => {
   try {
-    const { name, price, description, status, category } = req.body;
+    const { name, price, description, status, category, spiceLevel, soupType } = req.body;
+
+    // Checkbox cùng tên có thể trả về: undefined (không tick), string (tick 1), hoặc array (tick nhiều)
+    const optionGroups = req.body.optionGroups
+      ? (Array.isArray(req.body.optionGroups) ? req.body.optionGroups : [req.body.optionGroups])
+      : [];
 
     const updateData = {
       name,
       price,
       description,
       category,
+      spiceLevel,
+      soupType,
+      optionGroups,
       status: status === "true"
     };
 

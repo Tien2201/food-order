@@ -85,26 +85,36 @@
       <div class="section-label">Đồ ăn</div>
       <div class="row g-4" id="grid-food">
         <% foods.forEach(food => { %>
-          <div class="col-md-4 col-sm-6 food-item" data-type="food" data-name="<%= food.name.toLowerCase() %>">
-            <div class="food-card">
+          <div class="col-lg-3 col-md-4 col-sm-6 food-item" data-type="food" data-name="<%= food.name.toLowerCase() %>">
+            <div class="food-card"
+                 onclick="openFoodModal(this)"
+                 data-id="<%= food._id %>"
+                 data-name="<%= food.name %>"
+                 data-price="<%= food.price %>"
+                 data-image="<%= food.image %>"
+                 data-category="<%= food.category %>"
+                 data-soup-type="<%= food.soupType %>"
+                 data-option-groups="<%= (food.optionGroups || []).join(',') %>">
               <img src="<%= food.image %>" class="food-img" alt="<%= food.name %>">
               <div class="card-body">
                 <div class="food-name"><%= food.name %></div>
+                <div class="food-tags">
+                  <% if (food.spiceLevel === 'spicy') { %>
+                    <span class="food-tag food-tag-spicy"><span class="food-tag-icon">🌶️</span>Cay</span>
+                  <% } %>
+                  <% if (food.soupType === 'soup') { %>
+                    <span class="food-tag food-tag-soup"><span class="food-tag-icon">🍜</span>Soup</span>
+                  <% } else { %>
+                    <span class="food-tag food-tag-dry"><span class="food-tag-icon">🍲</span>Khô</span>
+                  <% } %>
+                </div>
                 <% if (food.description) { %>
                   <div class="food-desc"><%= food.description %></div>
                 <% } %>
                 <div class="food-price"><%= food.price.toLocaleString('vi-VN') %> VNĐ</div>
-                <form action="/cart/add/<%= food._id %>" method="POST">
-                  <div class="qty-control">
-                    <button type="button" class="qty-btn" onclick="changeQty(this, -1)">−</button>
-                    <input type="number" name="quantity" class="qty-value" value="1" min="1" readonly>
-                    <button type="button" class="qty-btn" onclick="changeQty(this, 1)">+</button>
-                  </div>
-                  <input type="text" name="note" class="note-input" placeholder="Ghi chú (không bắt buộc)">
-                  <button type="submit" class="btn-add-cart">
-                    🛒 Thêm vào giỏ
-                  </button>
-                </form>
+                <button type="button" class="btn-add-cart" onclick="event.stopPropagation(); openFoodModal(this.closest('.food-card'))">
+                  🛒 Thêm vào giỏ
+                </button>
               </div>
             </div>
           </div>
@@ -123,26 +133,36 @@
       <div class="section-label">Đồ uống</div>
       <div class="row g-4" id="grid-drink">
         <% drinks.forEach(food => { %>
-          <div class="col-md-4 col-sm-6 food-item" data-type="drink" data-name="<%= food.name.toLowerCase() %>">
-            <div class="food-card">
+          <div class="col-lg-3 col-md-4 col-sm-6 food-item" data-type="drink" data-name="<%= food.name.toLowerCase() %>">
+            <div class="food-card"
+                 onclick="openFoodModal(this)"
+                 data-id="<%= food._id %>"
+                 data-name="<%= food.name %>"
+                 data-price="<%= food.price %>"
+                 data-image="<%= food.image %>"
+                 data-category="<%= food.category %>"
+                 data-soup-type="<%= food.soupType %>"
+                 data-option-groups="<%= (food.optionGroups || []).join(',') %>">
               <img src="<%= food.image %>" class="food-img" alt="<%= food.name %>">
               <div class="card-body">
                 <div class="food-name"><%= food.name %></div>
+                <div class="food-tags">
+                  <% if (food.spiceLevel === 'spicy') { %>
+                    <span class="food-tag food-tag-spicy"><span class="food-tag-icon">🌶️</span>Cay</span>
+                  <% } %>
+                  <% if (food.soupType === 'soup') { %>
+                    <span class="food-tag food-tag-soup"><span class="food-tag-icon">🍜</span>Soup</span>
+                  <% } else { %>
+                    <span class="food-tag food-tag-dry"><span class="food-tag-icon">🍲</span>Khô</span>
+                  <% } %>
+                </div>
                 <% if (food.description) { %>
                   <div class="food-desc"><%= food.description %></div>
                 <% } %>
                 <div class="food-price"><%= food.price.toLocaleString('vi-VN') %> VNĐ</div>
-                <form action="/cart/add/<%= food._id %>" method="POST">
-                  <div class="qty-control">
-                    <button type="button" class="qty-btn" onclick="changeQty(this, -1)">−</button>
-                    <input type="number" name="quantity" class="qty-value" value="1" min="1" readonly>
-                    <button type="button" class="qty-btn" onclick="changeQty(this, 1)">+</button>
-                  </div>
-                  <input type="text" name="note" class="note-input" placeholder="Ghi chú (không bắt buộc)">
-                  <button type="submit" class="btn-add-cart">
-                    🛒 Thêm vào giỏ
-                  </button>
-                </form>
+                <button type="button" class="btn-add-cart" onclick="event.stopPropagation(); openFoodModal(this.closest('.food-card'))">
+                  🛒 Thêm vào giỏ
+                </button>
               </div>
             </div>
           </div>
@@ -156,18 +176,316 @@
 
   </div>
 
+  <!-- Modal chọn tùy chỉnh món -->
+  <div class="food-modal-overlay" id="foodModalOverlay" onclick="if(event.target===this) closeFoodModal()">
+    <div class="food-modal">
+      <button type="button" class="food-modal-close" onclick="closeFoodModal()">✕</button>
+
+      <div class="food-modal-header">
+        <img id="modalFoodImg" src="" alt="">
+        <div>
+          <div class="food-modal-name" id="modalFoodName"></div>
+          <div class="food-modal-price" id="modalFoodPrice"></div>
+        </div>
+      </div>
+
+      <div class="food-modal-body">
+
+        <!-- Soup chung/riêng: chỉ hiện khi món có soupType = soup -->
+        <div id="modalSoupGroup" class="modal-option-group" style="display:none">
+          <div class="modal-option-label">🍜 Soup</div>
+          <div class="modal-option-choices">
+            <label class="modal-chip">
+              <input type="radio" name="soupChoice" value="Soup chung" checked>
+              <span>Soup chung</span>
+            </label>
+            <label class="modal-chip">
+              <input type="radio" name="soupChoice" value="Soup riêng">
+              <span>Soup riêng</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Nhóm "spice": Cay/Không cay + không hành/ngò/tỏi phi -->
+        <div id="modalSpiceGroup" class="modal-option-group" style="display:none">
+          <div class="modal-option-label">🧂 Gia vị</div>
+          <div class="modal-option-choices">
+            <label class="modal-chip">
+              <input type="checkbox" name="noOption" value="Không ớt">
+              <span>Không ớt</span>
+            </label>
+            <label class="modal-chip">
+              <input type="checkbox" name="noOption" value="Không hành">
+              <span>Không hành</span>
+            </label>
+            <label class="modal-chip">
+              <input type="checkbox" name="noOption" value="Không ngò">
+              <span>Không ngò</span>
+            </label>
+            <label class="modal-chip">
+              <input type="checkbox" name="noOption" value="Không tỏi phi">
+              <span>Không tỏi phi</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Nhóm "cheese": Muối Đài Loan + Rau quế -->
+        <div id="modalCheeseGroup" class="modal-option-group" style="display:none">
+          <div class="modal-option-label">🧀 Tùy chọn</div>
+          <div class="modal-option-choices">
+            <label class="modal-chip">
+              <input type="checkbox" name="cheeseOption" value="Không muối Đài Loan">
+              <span>Không muối Đài Loan</span>
+            </label>
+            <label class="modal-chip">
+              <input type="checkbox" name="cheeseOption" value="Không rau quế">
+              <span>Không rau quế</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Nhóm "beefFloss": Khô cá bào -->
+        <div id="modalBeefFlossGroup" class="modal-option-group" style="display:none">
+          <div class="modal-option-label">🐟 Tùy chọn</div>
+          <div class="modal-option-choices">
+            <label class="modal-chip">
+              <input type="checkbox" name="beefFlossOption" value="Không khô cá bào">
+              <span>Không khô cá bào</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Đá chung/riêng: chỉ hiện cho đồ uống -->
+        <div id="modalIceGroup" class="modal-option-group" style="display:none">
+          <div class="modal-option-label">🧊 Đá</div>
+          <div class="modal-option-choices">
+            <label class="modal-chip">
+              <input type="radio" name="iceChoice" value="Đá chung" checked>
+              <span>Đá chung</span>
+            </label>
+            <label class="modal-chip">
+              <input type="radio" name="iceChoice" value="Đá riêng">
+              <span>Đá riêng</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="modal-option-group">
+          <div class="modal-option-label">🔢 Số lượng</div>
+          <div class="qty-control">
+            <button type="button" class="qty-btn" onclick="changeModalQty(-1)">−</button>
+            <input type="number" id="modalQty" class="qty-value" value="1" min="1" readonly>
+            <button type="button" class="qty-btn" onclick="changeModalQty(1)">+</button>
+          </div>
+        </div>
+
+        <div class="modal-option-group">
+          <div class="modal-option-label">📝 Ghi chú thêm</div>
+          <input type="text" id="modalNote" class="note-input" placeholder="Ghi chú khác (không bắt buộc)">
+        </div>
+
+      </div>
+
+      <div class="food-modal-footer">
+        <button type="button" class="btn-add-cart" id="modalAddBtn" onclick="confirmAddToCart()">
+          🛒 Thêm vào giỏ
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Icon món bay vào giỏ (hiệu ứng) -->
+  <img id="flyingImg" class="flying-img" src="" alt="">
+
   <%- include("partials/footer") %>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="/js/main.js"></script>
 
   <script>
-    // ── Quantity control ──
-    function changeQty(btn, delta) {
-      const input = btn.parentElement.querySelector('.qty-value');
-      const current = parseInt(input.value) || 1;
-      const next = Math.max(1, current + delta);
+    // ── Modal chọn tùy chỉnh món ──
+    let currentFood = null; // { id, name, price, image, category, soupType, optionGroups }
+
+    function openFoodModal(cardEl) {
+      const groupsStr = cardEl.dataset.optionGroups || '';
+      currentFood = {
+        id: cardEl.dataset.id,
+        name: cardEl.dataset.name,
+        price: cardEl.dataset.price,
+        image: cardEl.dataset.image,
+        category: cardEl.dataset.category,
+        soupType: cardEl.dataset.soupType,
+        optionGroups: groupsStr ? groupsStr.split(',') : []
+      };
+
+      document.getElementById('modalFoodImg').src = currentFood.image;
+      document.getElementById('modalFoodName').textContent = currentFood.name;
+      document.getElementById('modalFoodPrice').textContent =
+        Number(currentFood.price).toLocaleString('vi-VN') + ' VNĐ';
+
+      // Hiện đúng nhóm tùy chọn theo dữ liệu riêng của món này
+      const hasSpice = currentFood.optionGroups.includes('spice');
+      const hasCheese = currentFood.optionGroups.includes('cheese');
+      const hasBeefFloss = currentFood.optionGroups.includes('beefFloss');
+      const hasSoup = currentFood.soupType === 'soup';
+      const isDrink = currentFood.category === 'drink';
+
+      document.getElementById('modalSoupGroup').style.display = hasSoup ? '' : 'none';
+      document.getElementById('modalSpiceGroup').style.display = hasSpice ? '' : 'none';
+      document.getElementById('modalCheeseGroup').style.display = hasCheese ? '' : 'none';
+      document.getElementById('modalBeefFlossGroup').style.display = hasBeefFloss ? '' : 'none';
+      document.getElementById('modalIceGroup').style.display = isDrink ? '' : 'none';
+
+      // Reset form về mặc định
+      document.getElementById('modalQty').value = 1;
+      document.getElementById('modalNote').value = '';
+      document.querySelectorAll('#foodModalOverlay input[type="checkbox"]').forEach(cb => cb.checked = false);
+      const defaultSoup = document.querySelector('#foodModalOverlay input[name="soupChoice"][value="Soup chung"]');
+      if (defaultSoup) defaultSoup.checked = true;
+      const defaultIce = document.querySelector('#foodModalOverlay input[name="iceChoice"][value="Đá chung"]');
+      if (defaultIce) defaultIce.checked = true;
+
+      document.getElementById('foodModalOverlay').classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeFoodModal() {
+      document.getElementById('foodModalOverlay').classList.remove('show');
+      document.body.style.overflow = '';
+      currentFood = null;
+    }
+
+    function changeModalQty(delta) {
+      const input = document.getElementById('modalQty');
+      const next = Math.max(1, (parseInt(input.value) || 1) + delta);
       input.value = next;
+    }
+
+    // ── Gom các lựa chọn trong modal thành 1 chuỗi ghi chú ──
+    function buildNoteFromModal() {
+      const parts = [];
+
+      if (currentFood.soupType === 'soup') {
+        const soupChoice = document.querySelector('#foodModalOverlay input[name="soupChoice"]:checked');
+        if (soupChoice) parts.push(soupChoice.value);
+      }
+
+      if (currentFood.optionGroups.includes('spice')) {
+        document.querySelectorAll('#foodModalOverlay input[name="noOption"]:checked').forEach(cb => {
+          parts.push(cb.value);
+        });
+      }
+
+      if (currentFood.optionGroups.includes('cheese')) {
+        document.querySelectorAll('#foodModalOverlay input[name="cheeseOption"]:checked').forEach(cb => {
+          parts.push(cb.value);
+        });
+      }
+
+      if (currentFood.optionGroups.includes('beefFloss')) {
+        document.querySelectorAll('#foodModalOverlay input[name="beefFlossOption"]:checked').forEach(cb => {
+          parts.push(cb.value);
+        });
+      }
+
+      if (currentFood.category === 'drink') {
+        const iceChoice = document.querySelector('#foodModalOverlay input[name="iceChoice"]:checked');
+        if (iceChoice) parts.push(iceChoice.value);
+      }
+
+      const extra = document.getElementById('modalNote').value.trim();
+      if (extra) parts.push(extra);
+
+      return parts.join(', ');
+    }
+
+    // ── Hiệu ứng ảnh bay vào icon giỏ hàng ──
+    function flyToCart(imgSrc, startEl) {
+      const cartBtn = document.querySelector('.btn-cart');
+      if (!cartBtn) return;
+
+      const flyImg = document.getElementById('flyingImg');
+      const startRect = startEl.getBoundingClientRect();
+      const endRect = cartBtn.getBoundingClientRect();
+
+      flyImg.src = imgSrc;
+      flyImg.style.display = 'block';
+      flyImg.style.left = startRect.left + startRect.width / 2 - 28 + 'px';
+      flyImg.style.top = startRect.top + startRect.height / 2 - 28 + 'px';
+      flyImg.style.width = '56px';
+      flyImg.style.height = '56px';
+      flyImg.style.opacity = '1';
+      flyImg.style.transform = 'scale(1)';
+
+      requestAnimationFrame(() => {
+        flyImg.style.transition = 'all 0.6s cubic-bezier(0.55, 0, 1, 0.45)';
+        flyImg.style.left = endRect.left + endRect.width / 2 - 10 + 'px';
+        flyImg.style.top = endRect.top + endRect.height / 2 - 10 + 'px';
+        flyImg.style.width = '20px';
+        flyImg.style.height = '20px';
+        flyImg.style.opacity = '0.3';
+      });
+
+      setTimeout(() => {
+        flyImg.style.display = 'none';
+        flyImg.style.transition = 'none';
+        cartBtn.classList.add('cart-bump');
+        setTimeout(() => cartBtn.classList.remove('cart-bump'), 300);
+      }, 600);
+    }
+
+    function updateCartBadge(count) {
+      const cartBtn = document.querySelector('.btn-cart');
+      if (!cartBtn) return;
+      let badge = cartBtn.querySelector('.cart-badge');
+      if (!badge) {
+        badge = document.createElement('span');
+        badge.className = 'cart-badge';
+        cartBtn.appendChild(badge);
+      }
+      badge.textContent = count;
+    }
+
+    // ── Xác nhận thêm vào giỏ từ modal (AJAX, không reload trang) ──
+    async function confirmAddToCart() {
+      if (!currentFood) return;
+
+      const btn = document.getElementById('modalAddBtn');
+      btn.disabled = true;
+
+      const quantity = document.getElementById('modalQty').value;
+      const note = buildNoteFromModal();
+      const imgSrc = currentFood.image;
+
+      // Tìm card gốc trên trang để làm điểm bắt đầu hiệu ứng bay
+      const sourceCard = document.querySelector(`.food-card[data-id="${currentFood.id}"]`);
+      const sourceImg = sourceCard ? sourceCard.querySelector('.food-img') : null;
+
+      try {
+        const res = await fetch(`/cart/add/${currentFood.id}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-Requested-With': 'XMLHttpRequest'
+          },
+          body: new URLSearchParams({ quantity, note })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          closeFoodModal();
+          if (sourceImg) flyToCart(imgSrc, sourceImg);
+          updateCartBadge(data.cartCount);
+        } else {
+          alert(data.message || 'Có lỗi xảy ra, vui lòng thử lại.');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Không thể thêm vào giỏ, vui lòng kiểm tra kết nối.');
+      } finally {
+        btn.disabled = false;
+      }
     }
 
     // ── Filter tabs ──
