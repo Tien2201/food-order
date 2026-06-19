@@ -1,6 +1,7 @@
-// migrateOptionGroups.js
-// Script gán sẵn `optionGroups` cho các món đã có trong DB, theo đúng map đã thống nhất.
-// Chạy 1 lần: node migrateOptionGroups.js
+// migrateIngredients.js
+// Script gán sẵn danh sách gia vị (`ingredients`) cho các món đã có trong DB,
+// theo đúng map đã thống nhất với người dùng.
+// Chạy 1 lần: node migrateIngredients.js
 // (Đặt file này vào thư mục gốc food_order, cùng cấp với server.js)
 
 const mongoose = require("mongoose");
@@ -10,17 +11,34 @@ const Food = require("./models/Food");
 // (thường lấy từ file config/db.js hoặc file .env)
 const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/food_order";
 
-// Map: tên món (phải khớp đúng tên đang lưu trong DB) -> nhóm tùy chọn
+// Map: tên món (phải khớp đúng tên đang lưu trong DB) -> danh sách gia vị
 const map = {
-  "Đậu Hủ Thúi Truyền Thống":         { optionGroups: ["spice"] },
-  "Đậu Hủ Thúi Nhục Thảo":            { optionGroups: ["spice"] },
-  "Đậu Hủ Thúi Mắm Cá":               { optionGroups: ["spice"] },
-  "Đậu Hủ Thúi Lắc Muối Tân Cương":   { optionGroups: ["spice"] },
-  "Đậu Hủ Thúi Sốt Chao Thúi":        { optionGroups: ["spice"] },
-  "Đậu Hủ Thúi Sốt Tương":            { optionGroups: ["spice"] },
-  "Đậu Hủ Thúi Phỉ Thuý":             { optionGroups: ["spice", "cheese"] },
-  "Đậu Hủ Thúi Phô Mai Mặn":          { optionGroups: ["cheese"] },
-  "Đậu Hủ Thúi Sa Tế Khô Triều Châu": { optionGroups: ["beefFloss"] }
+  "Đậu Hủ Thúi Phô Mai Mặn":
+    { ingredients: ["Muối Đài Loan", "Rau quế"] },
+
+  "Đậu Hủ Thúi Phỉ Thuý":
+    { ingredients: ["Muối Đài Loan", "Rau quế"] },
+
+  "Đậu Hủ Thúi Sa Tế Khô Triều Châu":
+    { ingredients: ["Khô cá bào"] },
+
+  "Đậu Hủ Thúi Lắc Muối Tân Cương":
+    { ingredients: ["Hành", "Cần tàu", "Tỏi phi", "Ớt tươi"] },
+
+  "Đậu Hủ Thúi Sốt Chao Thúi":
+    { ingredients: ["Hành", "Cần tàu", "Tỏi phi", "Ớt tươi"] },
+
+  "Đậu Hủ Thúi Sốt Tương":
+    { ingredients: ["Hành", "Cần tàu", "Tỏi phi", "Ớt tươi"] },
+
+  "Đậu Hủ Thúi Truyền Thống":
+    { ingredients: ["Hành", "Cần tàu", "Tỏi phi", "Dầu ớt", "Củ cải dền"] },
+
+  "Đậu Hủ Thúi Nhục Thảo":
+    { ingredients: ["Hành", "Ớt tươi", "Đậu hủ ky", "Trứng bắc thảo"] },
+
+  "Đậu Hủ Thúi Mắm Cá":
+    { ingredients: ["Cần", "Bắp", "Rong biển", "Ớt tươi", "Củ cải dền"] }
 };
 
 async function run() {
@@ -34,7 +52,7 @@ async function run() {
     const result = await Food.updateOne({ name }, { $set: data });
     if (result.matchedCount > 0) {
       updated++;
-      console.log(`✅ Đã cập nhật: ${name} ->`, data.optionGroups);
+      console.log(`✅ Đã cập nhật: ${name} ->`, data.ingredients.join(", "));
     } else {
       notFound.push(name);
     }

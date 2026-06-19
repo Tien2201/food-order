@@ -113,9 +113,9 @@ router.post("/foods/add", isAdmin, upload.single("image"), async (req, res) => {
     // req.file.path là URL đầy đủ trên Cloudinary (vd: https://res.cloudinary.com/...)
     const image = req.file ? req.file.path : "";
 
-    // Checkbox cùng tên có thể trả về: undefined (không tick), string (tick 1), hoặc array (tick nhiều)
-    const optionGroups = req.body.optionGroups
-      ? (Array.isArray(req.body.optionGroups) ? req.body.optionGroups : [req.body.optionGroups])
+    // Hidden input "ingredients" có thể trả về: undefined (chưa thêm gia vị), string (1 gia vị), hoặc array (nhiều)
+    const ingredients = req.body.ingredients
+      ? (Array.isArray(req.body.ingredients) ? req.body.ingredients : [req.body.ingredients])
       : [];
 
     await Food.create({
@@ -126,7 +126,7 @@ router.post("/foods/add", isAdmin, upload.single("image"), async (req, res) => {
       category: req.body.category,
       spiceLevel: req.body.spiceLevel,
       soupType: req.body.soupType,
-      optionGroups: optionGroups,
+      ingredients: ingredients,
       status: true
     });
 
@@ -148,9 +148,9 @@ router.post("/foods/edit/:id", isAdmin, upload.single("image"), async (req, res)
   try {
     const { name, price, description, status, category, spiceLevel, soupType } = req.body;
 
-    // Checkbox cùng tên có thể trả về: undefined (không tick), string (tick 1), hoặc array (tick nhiều)
-    const optionGroups = req.body.optionGroups
-      ? (Array.isArray(req.body.optionGroups) ? req.body.optionGroups : [req.body.optionGroups])
+    // Hidden input "ingredients" có thể trả về: undefined (chưa thêm gia vị), string (1 gia vị), hoặc array (nhiều)
+    const ingredients = req.body.ingredients
+      ? (Array.isArray(req.body.ingredients) ? req.body.ingredients : [req.body.ingredients])
       : [];
 
     const updateData = {
@@ -160,7 +160,7 @@ router.post("/foods/edit/:id", isAdmin, upload.single("image"), async (req, res)
       category,
       spiceLevel,
       soupType,
-      optionGroups,
+      ingredients,
       status: status === "true"
     };
 

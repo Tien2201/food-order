@@ -41,14 +41,11 @@ const foodSchema = new mongoose.Schema({
     default: "dry"
   },
 
-  // ── Nhóm tùy chọn hiện trong popup khi khách thêm vào giỏ ──
-  // spice: Cay/Không cay (ớt)
-  // cheese: Có/Không muối Đài Loan + rau quế
-  // beefFloss: Có/Không khô cá bào
-  // (Soup chung/riêng tự hiện riêng dựa theo soupType, không cần khai báo ở đây)
-  optionGroups: {
+  // ── Danh sách gia vị/thành phần của món (admin tự thêm, mỗi món khác nhau) ──
+  // Khách sẽ thấy mỗi gia vị thành 1 tùy chọn "Không [gia vị]" trong popup thêm vào giỏ.
+  // Ví dụ: ["Hành", "Cần tàu", "Tỏi phi", "Ớt tươi"]
+  ingredients: {
     type: [String],
-    enum: ["spice", "cheese", "beefFloss"],
     default: []
   },
 
@@ -77,5 +74,13 @@ const foodSchema = new mongoose.Schema({
 }, {
   timestamps: true
 });
+
+// ── Index để tăng tốc truy vấn khi số lượng món lớn ──
+// category + status: trang chủ luôn lọc theo cả 2 field này cùng lúc
+foodSchema.index({ category: 1, status: 1 });
+// soldCount: tìm món bán chạy nhất (bestSeller)
+foodSchema.index({ soldCount: -1 });
+// avgRating: tìm món đánh giá cao nhất (topRated)
+foodSchema.index({ avgRating: -1 });
 
 module.exports = mongoose.model("Food", foodSchema);

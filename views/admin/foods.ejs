@@ -128,22 +128,13 @@
                 <input type="file" name="image" class="form-input-custom" accept="image/*" required>
               </div>
               <div class="col-12">
-                <label class="form-label-custom">Nhóm tùy chọn hiện khi khách thêm vào giỏ</label>
-                <div class="option-group-checks">
-                  <label class="option-check-chip">
-                    <input type="checkbox" name="optionGroups" value="spice">
-                    <span>🌶️ Cay / Không cay (ớt)</span>
-                  </label>
-                  <label class="option-check-chip">
-                    <input type="checkbox" name="optionGroups" value="cheese">
-                    <span>🧀 Muối Đài Loan / Rau quế</span>
-                  </label>
-                  <label class="option-check-chip">
-                    <input type="checkbox" name="optionGroups" value="beefFloss">
-                    <span>🐟 Khô cá bào</span>
-                  </label>
+                <label class="form-label-custom">Gia vị / Thành phần (khách có thể chọn "Không [gia vị]")</label>
+                <div class="ingredient-input-row">
+                  <input type="text" id="ingredientInput" class="form-input-custom" placeholder="VD: Hành, Tỏi phi... rồi bấm Add">
+                  <button type="button" class="btn-add-ingredient" onclick="addIngredient('ingredientInput', 'ingredientList')">+ Add gia vị</button>
                 </div>
-                <div class="option-group-hint">Lưu ý: Tùy chọn "Soup chung/riêng" tự hiện khi Loại nước = Soup, không cần tick ở đây.</div>
+                <div class="ingredient-tag-list" id="ingredientList" data-tags="[]"></div>
+                <div class="option-group-hint">Lưu ý: Tùy chọn "Soup chung/riêng" tự hiện khi Loại nước = Soup, không cần thêm ở đây.</div>
               </div>
               <div class="col-12">
                 <button type="submit" class="btn-add">➕ Thêm món</button>
@@ -211,6 +202,54 @@
       document.getElementById('adminSidebar').classList.remove('open');
       document.getElementById('adminOverlay').classList.remove('show');
     }
+
+    // ── Tag input gia vị: thêm / xóa / đồng bộ hidden input để submit ──
+    function renderIngredientTags(listId) {
+      const listEl = document.getElementById(listId);
+      const tags = JSON.parse(listEl.dataset.tags || '[]');
+
+      listEl.innerHTML = '';
+      tags.forEach((tag, i) => {
+        const chip = document.createElement('span');
+        chip.className = 'ingredient-tag';
+        chip.innerHTML = `${tag} <button type="button" onclick="removeIngredient('${listId}', ${i})">&times;</button>
+          <input type="hidden" name="ingredients" value="${tag.replace(/"/g, '&quot;')}">`;
+        listEl.appendChild(chip);
+      });
+    }
+
+    function addIngredient(inputId, listId) {
+      const input = document.getElementById(inputId);
+      const value = input.value.trim();
+      if (!value) return;
+
+      const listEl = document.getElementById(listId);
+      const tags = JSON.parse(listEl.dataset.tags || '[]');
+
+      if (!tags.includes(value)) {
+        tags.push(value);
+        listEl.dataset.tags = JSON.stringify(tags);
+        renderIngredientTags(listId);
+      }
+      input.value = '';
+      input.focus();
+    }
+
+    function removeIngredient(listId, index) {
+      const listEl = document.getElementById(listId);
+      const tags = JSON.parse(listEl.dataset.tags || '[]');
+      tags.splice(index, 1);
+      listEl.dataset.tags = JSON.stringify(tags);
+      renderIngredientTags(listId);
+    }
+
+    // Cho phép bấm Enter để add gia vị thay vì phải bấm nút
+    document.getElementById('ingredientInput')?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        addIngredient('ingredientInput', 'ingredientList');
+      }
+    });
   </script>
 </body>
 

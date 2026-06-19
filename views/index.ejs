@@ -94,7 +94,7 @@
                  data-image="<%= food.image %>"
                  data-category="<%= food.category %>"
                  data-soup-type="<%= food.soupType %>"
-                 data-option-groups="<%= (food.optionGroups || []).join(',') %>">
+                 data-ingredients='<%- JSON.stringify(food.ingredients || []) %>'>
               <img src="<%= food.image %>" class="food-img" alt="<%= food.name %>">
               <div class="card-body">
                 <div class="food-name"><%= food.name %></div>
@@ -142,7 +142,7 @@
                  data-image="<%= food.image %>"
                  data-category="<%= food.category %>"
                  data-soup-type="<%= food.soupType %>"
-                 data-option-groups="<%= (food.optionGroups || []).join(',') %>">
+                 data-ingredients='<%- JSON.stringify(food.ingredients || []) %>'>
               <img src="<%= food.image %>" class="food-img" alt="<%= food.name %>">
               <div class="card-body">
                 <div class="food-name"><%= food.name %></div>
@@ -206,53 +206,10 @@
           </div>
         </div>
 
-        <!-- Nhóm "spice": Cay/Không cay + không hành/ngò/tỏi phi -->
-        <div id="modalSpiceGroup" class="modal-option-group" style="display:none">
+        <!-- Gia vị/thành phần: render động theo danh sách ingredients của từng món -->
+        <div id="modalIngredientGroup" class="modal-option-group" style="display:none">
           <div class="modal-option-label">🧂 Gia vị</div>
-          <div class="modal-option-choices">
-            <label class="modal-chip">
-              <input type="checkbox" name="noOption" value="Không ớt">
-              <span>Không ớt</span>
-            </label>
-            <label class="modal-chip">
-              <input type="checkbox" name="noOption" value="Không hành">
-              <span>Không hành</span>
-            </label>
-            <label class="modal-chip">
-              <input type="checkbox" name="noOption" value="Không ngò">
-              <span>Không ngò</span>
-            </label>
-            <label class="modal-chip">
-              <input type="checkbox" name="noOption" value="Không tỏi phi">
-              <span>Không tỏi phi</span>
-            </label>
-          </div>
-        </div>
-
-        <!-- Nhóm "cheese": Muối Đài Loan + Rau quế -->
-        <div id="modalCheeseGroup" class="modal-option-group" style="display:none">
-          <div class="modal-option-label">🧀 Tùy chọn</div>
-          <div class="modal-option-choices">
-            <label class="modal-chip">
-              <input type="checkbox" name="cheeseOption" value="Không muối Đài Loan">
-              <span>Không muối Đài Loan</span>
-            </label>
-            <label class="modal-chip">
-              <input type="checkbox" name="cheeseOption" value="Không rau quế">
-              <span>Không rau quế</span>
-            </label>
-          </div>
-        </div>
-
-        <!-- Nhóm "beefFloss": Khô cá bào -->
-        <div id="modalBeefFlossGroup" class="modal-option-group" style="display:none">
-          <div class="modal-option-label">🐟 Tùy chọn</div>
-          <div class="modal-option-choices">
-            <label class="modal-chip">
-              <input type="checkbox" name="beefFlossOption" value="Không khô cá bào">
-              <span>Không khô cá bào</span>
-            </label>
-          </div>
+          <div class="modal-option-choices" id="modalIngredientChoices"></div>
         </div>
 
         <!-- Đá chung/riêng: chỉ hiện cho đồ uống -->
@@ -304,10 +261,16 @@
 
   <script>
     // ── Modal chọn tùy chỉnh món ──
-    let currentFood = null; // { id, name, price, image, category, soupType, optionGroups }
+    let currentFood = null; // { id, name, price, image, category, soupType, ingredients }
 
     function openFoodModal(cardEl) {
-      const groupsStr = cardEl.dataset.optionGroups || '';
+      let ingredients = [];
+      try {
+        ingredients = JSON.parse(cardEl.dataset.ingredients || '[]');
+      } catch (e) {
+        ingredients = [];
+      }
+
       currentFood = {
         id: cardEl.dataset.id,
         name: cardEl.dataset.name,
@@ -315,7 +278,7 @@
         image: cardEl.dataset.image,
         category: cardEl.dataset.category,
         soupType: cardEl.dataset.soupType,
-        optionGroups: groupsStr ? groupsStr.split(',') : []
+        ingredients: ingredients
       };
 
       document.getElementById('modalFoodImg').src = currentFood.image;
@@ -324,17 +287,26 @@
         Number(currentFood.price).toLocaleString('vi-VN') + ' VNĐ';
 
       // Hiện đúng nhóm tùy chọn theo dữ liệu riêng của món này
-      const hasSpice = currentFood.optionGroups.includes('spice');
-      const hasCheese = currentFood.optionGroups.includes('cheese');
-      const hasBeefFloss = currentFood.optionGroups.includes('beefFloss');
       const hasSoup = currentFood.soupType === 'soup';
       const isDrink = currentFood.category === 'drink';
+      const hasIngredients = currentFood.ingredients.length > 0;
 
       document.getElementById('modalSoupGroup').style.display = hasSoup ? '' : 'none';
-      document.getElementById('modalSpiceGroup').style.display = hasSpice ? '' : 'none';
-      document.getElementById('modalCheeseGroup').style.display = hasCheese ? '' : 'none';
-      document.getElementById('modalBeefFlossGroup').style.display = hasBeefFloss ? '' : 'none';
       document.getElementById('modalIceGroup').style.display = isDrink ? '' : 'none';
+
+      // Render động các chip "Không [gia vị]" theo danh sách ingredients của món này
+      const choicesEl = document.getElementById('modalIngredientChoices');
+      choicesEl.innerHTML = '';
+      currentFood.ingredients.forEach((ing, i) => {
+        const label = document.createElement('label');
+        label.className = 'modal-chip';
+        label.innerHTML = `
+          <input type="checkbox" name="ingredientOption" value="Không ${ing}">
+          <span>Không ${ing}</span>
+        `;
+        choicesEl.appendChild(label);
+      });
+      document.getElementById('modalIngredientGroup').style.display = hasIngredients ? '' : 'none';
 
       // Reset form về mặc định
       document.getElementById('modalQty').value = 1;
@@ -370,23 +342,9 @@
         if (soupChoice) parts.push(soupChoice.value);
       }
 
-      if (currentFood.optionGroups.includes('spice')) {
-        document.querySelectorAll('#foodModalOverlay input[name="noOption"]:checked').forEach(cb => {
-          parts.push(cb.value);
-        });
-      }
-
-      if (currentFood.optionGroups.includes('cheese')) {
-        document.querySelectorAll('#foodModalOverlay input[name="cheeseOption"]:checked').forEach(cb => {
-          parts.push(cb.value);
-        });
-      }
-
-      if (currentFood.optionGroups.includes('beefFloss')) {
-        document.querySelectorAll('#foodModalOverlay input[name="beefFlossOption"]:checked').forEach(cb => {
-          parts.push(cb.value);
-        });
-      }
+      document.querySelectorAll('#foodModalOverlay input[name="ingredientOption"]:checked').forEach(cb => {
+        parts.push(cb.value);
+      });
 
       if (currentFood.category === 'drink') {
         const iceChoice = document.querySelector('#foodModalOverlay input[name="iceChoice"]:checked');

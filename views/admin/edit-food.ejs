@@ -106,22 +106,13 @@
             <option value="false" <%= !food.status ? 'selected' : '' %>>⛔ Ngừng bán</option>
           </select>
 
-          <label class="form-label-custom">Nhóm tùy chọn hiện khi khách thêm vào giỏ</label>
-          <div class="option-group-checks">
-            <label class="option-check-chip">
-              <input type="checkbox" name="optionGroups" value="spice" <%= (food.optionGroups || []).includes('spice') ? 'checked' : '' %>>
-              <span>🌶️ Cay / Không cay (ớt)</span>
-            </label>
-            <label class="option-check-chip">
-              <input type="checkbox" name="optionGroups" value="cheese" <%= (food.optionGroups || []).includes('cheese') ? 'checked' : '' %>>
-              <span>🧀 Muối Đài Loan / Rau quế</span>
-            </label>
-            <label class="option-check-chip">
-              <input type="checkbox" name="optionGroups" value="beefFloss" <%= (food.optionGroups || []).includes('beefFloss') ? 'checked' : '' %>>
-              <span>🐟 Khô cá bào</span>
-            </label>
+          <label class="form-label-custom">Gia vị / Thành phần (khách có thể chọn "Không [gia vị]")</label>
+          <div class="ingredient-input-row">
+            <input type="text" id="ingredientInputEdit" class="form-input-custom" placeholder="VD: Hành, Tỏi phi... rồi bấm Add">
+            <button type="button" class="btn-add-ingredient" onclick="addIngredient('ingredientInputEdit', 'ingredientListEdit')">+ Add gia vị</button>
           </div>
-          <div class="option-group-hint">Lưu ý: Tùy chọn "Soup chung/riêng" tự hiện khi Loại nước = Soup, không cần tick ở đây.</div>
+          <div class="ingredient-tag-list" id="ingredientListEdit" data-tags="<%= JSON.stringify(food.ingredients || []) %>"></div>
+          <div class="option-group-hint">Lưu ý: Tùy chọn "Soup chung/riêng" tự hiện khi Loại nước = Soup, không cần thêm ở đây.</div>
 
           <label class="form-label-custom">Ảnh hiện tại</label>
           <img src="<%= food.image %>" class="current-img" alt="<%= food.name %>" onerror="this.src='/images/background.jpg'">
@@ -141,5 +132,57 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // ── Tag input gia vị: thêm / xóa / đồng bộ hidden input để submit ──
+  function renderIngredientTags(listId) {
+    const listEl = document.getElementById(listId);
+    const tags = JSON.parse(listEl.dataset.tags || '[]');
+
+    listEl.innerHTML = '';
+    tags.forEach((tag, i) => {
+      const chip = document.createElement('span');
+      chip.className = 'ingredient-tag';
+      chip.innerHTML = `${tag} <button type="button" onclick="removeIngredient('${listId}', ${i})">&times;</button>
+        <input type="hidden" name="ingredients" value="${tag.replace(/"/g, '&quot;')}">`;
+      listEl.appendChild(chip);
+    });
+  }
+
+  function addIngredient(inputId, listId) {
+    const input = document.getElementById(inputId);
+    const value = input.value.trim();
+    if (!value) return;
+
+    const listEl = document.getElementById(listId);
+    const tags = JSON.parse(listEl.dataset.tags || '[]');
+
+    if (!tags.includes(value)) {
+      tags.push(value);
+      listEl.dataset.tags = JSON.stringify(tags);
+      renderIngredientTags(listId);
+    }
+    input.value = '';
+    input.focus();
+  }
+
+  function removeIngredient(listId, index) {
+    const listEl = document.getElementById(listId);
+    const tags = JSON.parse(listEl.dataset.tags || '[]');
+    tags.splice(index, 1);
+    listEl.dataset.tags = JSON.stringify(tags);
+    renderIngredientTags(listId);
+  }
+
+  // Cho phép bấm Enter để add gia vị thay vì phải bấm nút
+  document.getElementById('ingredientInputEdit')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addIngredient('ingredientInputEdit', 'ingredientListEdit');
+    }
+  });
+
+  // Render sẵn các gia vị đã lưu khi tải trang
+  renderIngredientTags('ingredientListEdit');
+</script>
 </body>
 </html>

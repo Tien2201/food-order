@@ -256,6 +256,44 @@ router.get("/my-orders", async (req, res) => {
   }
 });
 
+// ── Tra cứu đơn hàng (dành cho khách KHÔNG đăng nhập, tìm theo SĐT) ──
+router.get("/track-order", (req, res) => {
+  res.render("track-order", {
+    orders: null,
+    phone: "",
+    user: req.session.user || null
+  });
+});
+
+router.post("/track-order", async (req, res) => {
+  try {
+    const phone = (req.body.phone || "").trim();
+
+    if (!phone) {
+      return res.render("track-order", {
+        orders: null,
+        phone: "",
+        user: req.session.user || null
+      });
+    }
+
+    const orders = await Order.find({ phone }).sort({ createdAt: -1 });
+
+    res.render("track-order", {
+      orders,
+      phone,
+      user: req.session.user || null
+    });
+  } catch (err) {
+    console.error(err);
+    res.render("track-order", {
+      orders: null,
+      phone: "",
+      user: req.session.user || null
+    });
+  }
+});
+
 // ── Gửi đánh giá cho 1 món trong 1 đơn hàng cụ thể ──
 router.post("/review/:orderId/:foodId", async (req, res) => {
   if (!req.session.user) return res.redirect("/login");

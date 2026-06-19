@@ -79,4 +79,14 @@ paymentVerifiedBy: {
 timestamps: true
 });
 
+// ── Index để tăng tốc truy vấn khi số lượng đơn hàng lớn ──
+// phone: dùng trong /track-order, /my-orders (khách cũ tra theo SĐT)
+orderSchema.index({ phone: 1 });
+// placedBy: dùng trong /my-orders (khách đã đăng nhập)
+orderSchema.index({ placedBy: 1 });
+// status: admin/staff lọc đơn theo trạng thái (pending, confirmed...)
+orderSchema.index({ status: 1 });
+// createdAt: gần như mọi trang đều sort theo thời gian mới nhất
+orderSchema.index({ createdAt: -1 });
+
 module.exports = mongoose.model("Order", orderSchema);
