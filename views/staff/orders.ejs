@@ -177,7 +177,7 @@
                   <%
                     const badge = statusBadges[order.status] || statusBadges.pending;
                   %>
-                  <div class="day-order-row" data-search="<%= (order.customerName + ' ' + order.phone).toLowerCase() %>" data-order-id="<%= order._id %>">
+                  <div class="day-order-row" data-status="<%= order.status %>" data-search="<%= (order.customerName + ' ' + order.phone).toLowerCase() %>" data-order-id="<%= order._id %>">
                     <div class="day-order-info">
                       <div class="day-order-name"><%= order.customerName %></div>
                       <div class="day-order-meta">
@@ -345,26 +345,39 @@
     Array.from(document.querySelectorAll('.day-order-row[data-order-id]')).map(row => row.dataset.orderId)
   );
 
+  function buildKnownStatuses() {
+    const map = {};
+    document.querySelectorAll('.day-order-row[data-order-id]').forEach(row => {
+      map[row.dataset.orderId] = row.dataset.status;
+    });
+    return map;
+  }
+
   async function checkStaffNotification() {
     try {
-      const res = await fetch("/staff/notifications");
+      const knownStatuses = buildKnownStatuses();
+      const res = await fetch("/staff/notifications?knownStatuses=" + encodeURIComponent(JSON.stringify(knownStatuses)));
       const data = await res.json();
 
       document.getElementById("staffBell").innerText = data.count;
 
       const newOnes = (data.orders || []).filter(o => !knownOrderIds.has(String(o._id)));
+      const hasNewOrders = newOnes.length > 0;
+      const hasChangedOrders = !!data.hasChangedOrders;
 
-      if (newOnes.length > 0) {
-        newOnes.forEach(o => knownOrderIds.add(String(o._id)));
+      if (hasNewOrders || hasChangedOrders) {
+        if (hasNewOrders) {
+          newOnes.forEach(o => knownOrderIds.add(String(o._id)));
+        }
 
         if (!isMuted) {
           notifySound.currentTime = 0;
           notifySound.play().catch(() => {});
         }
 
-        // Đơn mới có thể thuộc nhóm "hôm nay" chưa từng tạo nếu đây là đơn đầu ngày,
-        // hoặc nhóm hôm nay đã có sẵn. Đơn giản và an toàn nhất: tải lại trang
-        // để hiển thị đúng accordion theo ngày mà không cần dựng lại DOM phức tạp.
+        // Đơn mới hoặc đơn đổi trạng thái (ví dụ khách vừa gửi ảnh thanh toán)
+        // đều cần phản ánh đúng vào accordion theo ngày + badge trạng thái.
+        // Đơn giản và an toàn nhất: tải lại trang để luôn hiển thị đúng dữ liệu mới.
         location.reload();
       }
     } catch (e) {}

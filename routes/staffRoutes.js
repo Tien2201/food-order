@@ -89,12 +89,36 @@ router.post("/orders/verify-payment/:id", isStaff, async (req, res) => {
 });
 
 // ── Thông báo đơn mới (status = pending, chưa xác nhận) ──
+// ── Thông báo cho nhân viên: đơn mới + đơn vừa đổi trạng thái ──
+// Trang danh sách gửi lên "knownStatuses" (orderId:status hiện đang hiển thị)
+// để server so sánh và báo lại nếu có đơn nào đã đổi trạng thái (ví dụ khách
+// vừa gửi ảnh thanh toán: confirmed -> payment_submitted) mà trang chưa biết.
 router.get("/notifications", isStaff, async (req, res) => {
   try {
     const newOrders = await Order.find({ status: "pending" });
-    res.json({ count: newOrders.length, orders: newOrders });
+
+    let hasChangedOrders = false;
+    if (req.query.knownStatuses) {
+      let knownMap = {};
+      try {
+        knownMap = JSON.parse(req.query.knownStatuses);
+      } catch (e) {
+        knownMap = {};
+      }
+
+      const allOrders = await Order.find().select("status");
+      for (const order of allOrders) {
+        const orderIdStr = String(order._id);
+        if (knownMap[orderIdStr] !== undefined && knownMap[orderIdStr] !== order.status) {
+          hasChangedOrders = true;
+          break;
+        }
+      }
+    }
+
+    res.json({ count: newOrders.length, orders: newOrders, hasChangedOrders });
   } catch (err) {
-    res.json({ count: 0, orders: [] });
+    res.json({ count: 0, orders: [], hasChangedOrders: false });
   }
 });
 
