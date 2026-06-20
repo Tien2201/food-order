@@ -2434,3 +2434,13 @@ input, select, textarea, button {
     max-width: none;
   }
 }
+
+/* ── Hiệu ứng badge trạng thái vừa tự cập nhật (không cần F5) ── */
+.status-just-updated {
+  animation: statusPulse 0.6s ease 2;
+}
+
+@keyframes statusPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.12); box-shadow: 0 0 0 4px rgba(216,90,48,0.15); }
+}

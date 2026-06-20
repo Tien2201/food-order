@@ -303,6 +303,26 @@ router.get("/my-orders", async (req, res) => {
   }
 });
 
+// ── Trạng thái mới nhất của các đơn khách (dùng cho polling tự cập nhật) ──
+// Dùng đúng điều kiện tìm kiếm như route /my-orders để không lộ đơn của người khác.
+router.get("/my-orders/status", async (req, res) => {
+  if (!req.session.user) return res.json({ orders: [] });
+
+  try {
+    const orConditions = [{ placedBy: req.session.user._id }];
+    if (req.session.user.phone) {
+      orConditions.push({ phone: req.session.user.phone });
+    }
+
+    const orders = await Order.find({ $or: orConditions }).select("status paymentCode");
+    res.json({
+      orders: orders.map(o => ({ id: o._id, status: o.status }))
+    });
+  } catch (err) {
+    res.json({ orders: [] });
+  }
+});
+
 // ── Tra cứu đơn hàng (dành cho khách KHÔNG đăng nhập, tìm theo SĐT) ──
 router.get("/track-order", (req, res) => {
   res.render("track-order", {

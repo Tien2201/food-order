@@ -47,7 +47,7 @@
       <%
         const badge = statusBadges[order.status] || statusBadges.pending;
       %>
-      <div class="cart-item-card" style="flex-direction:column; align-items:stretch; gap:12px;">
+      <div class="cart-item-card order-card-item" data-order-id="<%= order._id %>" style="flex-direction:column; align-items:stretch; gap:12px;">
 
         <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
           <div>
@@ -55,7 +55,7 @@
             <div style="font-size:13px; color:#9ca3af;">Ngày đặt: <%= order.createdAt.toLocaleDateString('vi-VN') %></div>
           </div>
           <div class="d-flex align-items-center gap-2 flex-wrap">
-            <span class="<%= badge.cls %>"><%= badge.text %></span>
+            <span class="<%= badge.cls %> order-status-badge" data-status="<%= order.status %>"><%= badge.text %></span>
             <a href="/order-success/<%= order._id %>" class="btn-detail">💳 Xem / Thanh toán</a>
           </div>
         </div>
@@ -177,6 +177,58 @@
       alert('Vui lòng chọn số sao đánh giá!');
     }
   });
+
+  // ── Tự cập nhật trạng thái đơn, không cần F5 ──
+  // Ví dụ: nhân viên vừa xác minh thanh toán xong, badge tự đổi
+  // "📤 Chờ xác minh" -> "👨‍🍳 Đang làm món" ngay trên trang này.
+  (function() {
+    const statusBadgeMap = {
+      pending: { cls: "badge-pending", text: "⏳ Chờ xác nhận" },
+      confirmed: { cls: "badge-pending", text: "💳 Chờ thanh toán" },
+      payment_submitted: { cls: "badge-pending", text: "📤 Chờ xác minh" },
+      preparing: { cls: "badge-confirmed", text: "👨‍🍳 Đang làm món" },
+      delivering: { cls: "badge-confirmed", text: "🛵 Đang giao" },
+      completed: { cls: "badge-confirmed", text: "✅ Hoàn tất" },
+      cancelled: { cls: "badge-pending", text: "❌ Đã hủy" }
+    };
+
+    async function checkOrderStatusUpdates() {
+      const cards = document.querySelectorAll('.order-card-item[data-order-id]');
+      if (cards.length === 0) return;
+
+      try {
+        const res = await fetch('/my-orders/status');
+        const data = await res.json();
+        const statusById = {};
+        (data.orders || []).forEach(o => { statusById[String(o.id)] = o.status; });
+
+        cards.forEach(card => {
+          const orderId = card.dataset.orderId;
+          const newStatus = statusById[orderId];
+          if (!newStatus) return;
+
+          const badgeEl = card.querySelector('.order-status-badge');
+          if (!badgeEl) return;
+
+          const currentStatus = badgeEl.dataset.status;
+          if (newStatus !== currentStatus) {
+            const info = statusBadgeMap[newStatus] || statusBadgeMap.pending;
+            badgeEl.className = info.cls + ' order-status-badge';
+            badgeEl.textContent = info.text;
+            badgeEl.dataset.status = newStatus;
+
+            // Hiệu ứng nhấp nháy nhẹ để khách chú ý badge vừa đổi
+            badgeEl.classList.add('status-just-updated');
+            setTimeout(() => badgeEl.classList.remove('status-just-updated'), 1200);
+          }
+        });
+      } catch (e) {
+        // Lỗi mạng tạm thời, bỏ qua, thử lại ở lần poll kế tiếp
+      }
+    }
+
+    setInterval(checkOrderStatusUpdates, 5000);
+  })();
 </script>
 
 </body>
