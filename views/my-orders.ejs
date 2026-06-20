@@ -31,7 +31,22 @@
     </div>
   <% } else { %>
 
+    <%
+      const statusBadges = {
+        pending: { cls: "badge-pending", text: "⏳ Chờ xác nhận" },
+        confirmed: { cls: "badge-pending", text: "💳 Chờ thanh toán" },
+        payment_submitted: { cls: "badge-pending", text: "📤 Chờ xác minh" },
+        preparing: { cls: "badge-confirmed", text: "👨‍🍳 Đang làm món" },
+        delivering: { cls: "badge-confirmed", text: "🛵 Đang giao" },
+        completed: { cls: "badge-confirmed", text: "✅ Hoàn tất" },
+        cancelled: { cls: "badge-pending", text: "❌ Đã hủy" }
+      };
+    %>
+
     <% orders.forEach(order => { %>
+      <%
+        const badge = statusBadges[order.status] || statusBadges.pending;
+      %>
       <div class="cart-item-card" style="flex-direction:column; align-items:stretch; gap:12px;">
 
         <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
@@ -39,12 +54,9 @@
             <div style="font-size:13px; color:#9ca3af;">Mã đơn: <span style="font-family:monospace"><%= order._id %></span></div>
             <div style="font-size:13px; color:#9ca3af;">Ngày đặt: <%= order.createdAt.toLocaleDateString('vi-VN') %></div>
           </div>
-          <div>
-            <% if (order.paymentCode) { %>
-              <span class="badge-confirmed">✅ <%= order.status %></span>
-            <% } else { %>
-              <span class="badge-pending">⏳ <%= order.status %></span>
-            <% } %>
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <span class="<%= badge.cls %>"><%= badge.text %></span>
+            <a href="/order-success/<%= order._id %>" class="btn-detail">💳 Xem / Thanh toán</a>
           </div>
         </div>
 
