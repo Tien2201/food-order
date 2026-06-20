@@ -2463,6 +2463,8 @@ input, select, textarea, button {
   z-index: 3500;
   transition: transform 0.15s;
   animation: cartBubblePop 0.3s ease;
+  touch-action: none; /* tránh trang tự cuộn khi đang kéo bong bóng trên mobile */
+  user-select: none;
 }
 
 .floating-cart-bubble:hover {

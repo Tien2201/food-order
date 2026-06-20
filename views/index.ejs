@@ -403,11 +403,8 @@
       }
       badge.textContent = count;
 
-      // Cập nhật luôn bong bóng giỏ hàng nổi (định nghĩa trong footer.ejs),
-      // không cần chờ tới lần poll định kỳ tiếp theo.
-      if (typeof window.refreshFloatingCart === 'function') {
-        window.refreshFloatingCart();
-      }
+      // Cập nhật luôn bong bóng giỏ hàng nổi của trang Menu
+      updateFloatingCartBubble(count);
     }
 
     // ── Xác nhận thêm vào giỏ từ modal (AJAX, không reload trang) ──
@@ -535,6 +532,113 @@
       dots.forEach(d => d.addEventListener('click', () => { show(parseInt(d.dataset.i)); restart(); }));
 
       restart();
+    })();
+  </script>
+
+  <!-- ── Bong bóng giỏ hàng nổi (kiểu Messenger) ──
+       Chỉ hiện ở trang Menu này. Bấm vào để vào giỏ hàng (bong bóng tự ẩn
+       vì rời khỏi trang Menu). Trên mobile có thể kéo-thả tự do; vị trí
+       không được nhớ lại, mỗi lần vào lại trang sẽ về góc dưới-phải mặc định. -->
+  <a href="/cart" id="floatingCartBubble" class="floating-cart-bubble" style="display:none;">
+    🛒
+    <span id="floatingCartCount" class="floating-cart-count">0</span>
+  </a>
+
+  <script>
+    (function() {
+      const bubble = document.getElementById('floatingCartBubble');
+      const countEl = document.getElementById('floatingCartCount');
+
+      function setBubbleCount(count) {
+        if (count > 0) {
+          countEl.textContent = count;
+          bubble.style.display = 'flex';
+        } else {
+          bubble.style.display = 'none';
+        }
+      }
+
+      // Đọc số lượng giỏ hàng hiện tại lúc tải trang
+      async function loadInitialCartCount() {
+        try {
+          const res = await fetch('/cart/count');
+          const data = await res.json();
+          setBubbleCount(data.cartCount || 0);
+        } catch (e) {
+          // Lỗi mạng tạm thời, bong bóng giữ trạng thái ẩn mặc định
+        }
+      }
+      loadInitialCartCount();
+
+      // Hàm này được gọi từ updateCartBadge() ngay sau khi thêm món qua modal,
+      // để bong bóng cập nhật tức thì không cần chờ tải lại trang.
+      window.updateFloatingCartBubble = setBubbleCount;
+
+      // ── Kéo-thả trên mobile (touch), giữ click thường để vào giỏ hàng ──
+      // Phân biệt "kéo" và "bấm": nếu di chuyển ít hơn 8px thì coi là 1 lần bấm.
+      const isTouchDevice = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+
+      if (isTouchDevice) {
+        let startX = 0, startY = 0;
+        let startLeft = 0, startTop = 0;
+        let dragging = false;
+        let moved = false;
+        const DRAG_THRESHOLD = 8;
+
+        bubble.addEventListener('touchstart', (e) => {
+          const touch = e.touches[0];
+          startX = touch.clientX;
+          startY = touch.clientY;
+
+          const rect = bubble.getBoundingClientRect();
+          startLeft = rect.left;
+          startTop = rect.top;
+
+          dragging = true;
+          moved = false;
+
+          // Chuyển sang định vị bằng left/top tuyệt đối để kéo tự do
+          bubble.style.right = 'auto';
+          bubble.style.bottom = 'auto';
+          bubble.style.left = startLeft + 'px';
+          bubble.style.top = startTop + 'px';
+        }, { passive: true });
+
+        bubble.addEventListener('touchmove', (e) => {
+          if (!dragging) return;
+          const touch = e.touches[0];
+          const dx = touch.clientX - startX;
+          const dy = touch.clientY - startY;
+
+          if (Math.abs(dx) > DRAG_THRESHOLD || Math.abs(dy) > DRAG_THRESHOLD) {
+            moved = true;
+          }
+
+          if (moved) {
+            let newLeft = startLeft + dx;
+            let newTop = startTop + dy;
+
+            // Giữ bong bóng trong giới hạn màn hình
+            const size = bubble.offsetWidth;
+            newLeft = Math.max(4, Math.min(window.innerWidth - size - 4, newLeft));
+            newTop = Math.max(4, Math.min(window.innerHeight - size - 4, newTop));
+
+            bubble.style.left = newLeft + 'px';
+            bubble.style.top = newTop + 'px';
+          }
+        }, { passive: true });
+
+        bubble.addEventListener('touchend', (e) => {
+          dragging = false;
+          if (moved) {
+            // Vừa kéo xong, chặn hành vi "click" tự nhiên của thẻ <a> để
+            // không vô tình điều hướng sang trang giỏ hàng sau khi kéo.
+            e.preventDefault();
+          }
+          // Nếu không di chuyển (moved === false), để hành vi click mặc định
+          // của thẻ <a> tự xảy ra, dẫn khách vào trang giỏ hàng như bình thường.
+        });
+      }
     })();
   </script>
 
