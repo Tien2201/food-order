@@ -646,8 +646,11 @@
   <!-- ── Nút quay lại đầu trang ──
        Góc dưới-trái (bóng bóng giỏ hàng + chat Messenger đều ở bên phải).
        Ẩn khi ở đầu trang, tự hiện khi cuộn xuống quá 300px. -->
-  <button type="button" id="scrollToTopBtn" class="scroll-to-top-btn" aria-label="Quay lại đầu trang" style="display:none;">
-    ↑
+  <button type="button" id="scrollToTopBtn" class="scroll-to-top-btn" aria-label="Quay lại đầu trang">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 19V5"></path>
+      <path d="M5 12l7-7 7 7"></path>
+    </svg>
   </button>
 
   <script>
@@ -655,15 +658,29 @@
       const btn = document.getElementById('scrollToTopBtn');
       const SHOW_AFTER_PX = 300;
 
-      function toggleScrollBtn() {
-        btn.style.display = window.scrollY > SHOW_AFTER_PX ? 'flex' : 'none';
+      function getScrollY() {
+        // Một số trình duyệt mobile không cập nhật window.scrollY đúng cách
+        // tùy theo cấu trúc trang; lấy giá trị lớn nhất trong các nguồn phổ biến
+        // để đảm bảo luôn đọc đúng vị trí cuộn thực tế.
+        return window.scrollY
+          || window.pageYOffset
+          || document.documentElement.scrollTop
+          || document.body.scrollTop
+          || 0;
       }
 
-      window.addEventListener('scroll', toggleScrollBtn);
+      function toggleScrollBtn() {
+        btn.classList.toggle('show', getScrollY() > SHOW_AFTER_PX);
+      }
+
+      window.addEventListener('scroll', toggleScrollBtn, { passive: true });
+      document.addEventListener('scroll', toggleScrollBtn, { passive: true });
       toggleScrollBtn();
 
       btn.addEventListener('click', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
       });
     })();
   </script>
