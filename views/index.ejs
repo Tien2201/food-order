@@ -498,19 +498,6 @@
 
     searchInput.addEventListener('input', applySearch);
 
-    // ── Customer notification ──
-    async function checkCustomerNotification() {
-      try {
-        const res = await fetch("/notifications");
-        const data = await res.json();
-        const bell = document.getElementById("customerBell");
-        if (bell) bell.innerText = data.count;
-      } catch (e) {}
-    }
-
-    setInterval(checkCustomerNotification, 5000);
-    checkCustomerNotification();
-
     // ── Featured slideshow ──
     (function() {
       const wrap = document.getElementById('featuredSlideshow');

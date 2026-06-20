@@ -23,3 +23,89 @@
         </div>
     </div>
 </footer>
+
+<!-- ── Messenger Customer Chat Plugin ──
+     Nút chat góc màn hình liên kết trực tiếp với Messenger của Page.
+     CHỈ hoạt động trên domain đã whitelist trong Facebook Page Settings
+     (Advanced Messaging > Whitelisted Domains). Không hiện trên localhost. -->
+<div id="fb-root"></div>
+
+<div id="fb-customer-chat" class="fb-customerchat"
+     page_id="100092493286703"
+     attribution="biz_inbox">
+</div>
+
+<script>
+  var chatbox = document.getElementById('fb-customer-chat');
+  chatbox.setAttribute("page_id", "100092493286703");
+  chatbox.setAttribute("attribution", "biz_inbox");
+</script>
+
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      xfbml: true,
+      version: 'v19.0'
+    });
+  };
+
+  (function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s);
+    js.id = id;
+    js.src = 'https://connect.facebook.net/vi_VN/sdk/xfbml.customerchat.js';
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));
+</script>
+
+<!-- ── Toast thông báo đơn hàng (toàn site) ──
+     Báo cho khách ngay khi: (1) nhân viên xác nhận đơn, (2) thanh toán hợp lệ.
+     Hiện ở mọi trang phía khách vì footer này được include chung. -->
+<div id="orderToastContainer" class="order-toast-container"></div>
+
+<script>
+  (function() {
+    function showOrderToast(message, orderId) {
+      const container = document.getElementById('orderToastContainer');
+      if (!container) return;
+
+      const toast = document.createElement('div');
+      toast.className = 'order-toast';
+      toast.innerHTML = `
+        <span class="order-toast-text">${message}</span>
+        <a href="/order-success/${orderId}" class="order-toast-link">Xem đơn →</a>
+        <button type="button" class="order-toast-close" aria-label="Đóng">✕</button>
+      `;
+
+      toast.querySelector('.order-toast-close').addEventListener('click', () => {
+        toast.classList.add('order-toast-hide');
+        setTimeout(() => toast.remove(), 250);
+      });
+
+      container.appendChild(toast);
+
+      // Tự ẩn sau 8 giây nếu khách không bấm gì
+      setTimeout(() => {
+        toast.classList.add('order-toast-hide');
+        setTimeout(() => toast.remove(), 250);
+      }, 8000);
+    }
+
+    async function checkOrderToasts() {
+      try {
+        const res = await fetch('/notifications');
+        const data = await res.json();
+
+        (data.toasts || []).forEach(t => {
+          showOrderToast(t.message, t.orderId);
+        });
+      } catch (e) {
+        // Lỗi mạng tạm thời, bỏ qua, thử lại ở lần poll kế tiếp
+      }
+    }
+
+    setInterval(checkOrderToasts, 5000);
+    checkOrderToasts();
+  })();
+</script>

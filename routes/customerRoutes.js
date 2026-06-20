@@ -191,16 +191,57 @@ router.post("/order-payment-proof/:id", upload.uploadPaymentProof.single("paymen
 });
 
 // ── Thông báo đơn hàng đã xác nhận ──
+// ── Thông báo toast cho khách: đơn được xác nhận / thanh toán hợp lệ ──
+// Theo dõi 2 cột mốc quan trọng khách cần biết ngay:
+//   - "confirmed": nhân viên đã xác nhận đơn, QR thanh toán đã sẵn sàng
+//   - "preparing": nhân viên đã xác minh thanh toán hợp lệ, đơn đang được làm
+// req.session.notifiedStatuses lưu lại trạng thái đã từng báo cho từng đơn,
+// để không hiện lại toast cũ mỗi lần polling.
 router.get("/notifications", async (req, res) => {
   try {
     const orderIds = req.session.orderIds || [];
+    if (!req.session.notifiedStatuses) req.session.notifiedStatuses = {};
+
+    const watchedStatuses = ["confirmed", "preparing"];
+    const orders = await Order.find({
+      _id: { $in: orderIds },
+      status: { $in: watchedStatuses }
+    });
+
+    const toastMessages = {
+      confirmed: "✅ Đơn hàng của bạn đã được xác nhận! Vào kiểm tra mã QR để thanh toán.",
+      preparing: "🎉 Thanh toán hợp lệ! Đơn của bạn đang được chuẩn bị."
+    };
+
+    const newNotifications = [];
+    orders.forEach(order => {
+      const orderIdStr = String(order._id);
+      const lastNotified = req.session.notifiedStatuses[orderIdStr];
+
+      // Chỉ báo nếu trạng thái này CHƯA từng được báo cho đơn này
+      if (lastNotified !== order.status) {
+        newNotifications.push({
+          orderId: order._id,
+          status: order.status,
+          message: toastMessages[order.status]
+        });
+        req.session.notifiedStatuses[orderIdStr] = order.status;
+      }
+    });
+
+    // Vẫn giữ "count" cũ (dùng cho chuông thông báo ở trang chủ) để không phá vỡ chỗ đang dùng
     const confirmedOrders = await Order.find({
       _id: { $in: orderIds },
       paymentCode: { $ne: "" }
     });
-    res.json({ count: confirmedOrders.length, orders: confirmedOrders });
+
+    res.json({
+      count: confirmedOrders.length,
+      orders: confirmedOrders,
+      toasts: newNotifications
+    });
   } catch (err) {
-    res.json({ count: 0, orders: [] });
+    res.json({ count: 0, orders: [], toasts: [] });
   }
 });
 

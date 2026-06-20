@@ -2343,3 +2343,94 @@ input, select, textarea, button {
 @media (max-width: 767px) {
   .about-heading { font-size: 22px; }
 }
+
+/* ── Toast thông báo đơn hàng (toàn site) ── */
+.order-toast-container {
+  position: fixed;
+  top: 84px;
+  right: 16px;
+  z-index: 4000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 360px;
+  pointer-events: none;
+}
+
+.order-toast {
+  background: #fff;
+  border: 1px solid #f0ece8;
+  border-left: 4px solid #D85A30;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: auto;
+  animation: toastSlideIn 0.3s ease;
+  position: relative;
+}
+
+.order-toast-hide {
+  animation: toastSlideOut 0.25s ease forwards;
+}
+
+@keyframes toastSlideIn {
+  from { transform: translateX(40px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes toastSlideOut {
+  from { transform: translateX(0); opacity: 1; }
+  to { transform: translateX(40px); opacity: 0; }
+}
+
+.order-toast-text {
+  font-size: 13.5px;
+  color: #1a1a1a;
+  font-weight: 500;
+  line-height: 1.5;
+  padding-right: 20px;
+}
+
+.order-toast-link {
+  align-self: flex-start;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #D85A30;
+  text-decoration: none;
+}
+
+.order-toast-link:hover {
+  text-decoration: underline;
+}
+
+.order-toast-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border: none;
+  background: transparent;
+  color: #9ca3af;
+  font-size: 13px;
+  cursor: pointer;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  transition: background 0.15s;
+}
+
+.order-toast-close:hover {
+  background: #f5f1ed;
+}
+
+@media (max-width: 480px) {
+  .order-toast-container {
+    top: auto;
+    bottom: 16px;
+    right: 12px;
+    left: 12px;
+    max-width: none;
+  }
+}
