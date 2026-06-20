@@ -643,5 +643,30 @@
     })();
   </script>
 
+  <!-- ── Nút quay lại đầu trang ──
+       Góc dưới-trái (bóng bóng giỏ hàng + chat Messenger đều ở bên phải).
+       Ẩn khi ở đầu trang, tự hiện khi cuộn xuống quá 300px. -->
+  <button type="button" id="scrollToTopBtn" class="scroll-to-top-btn" aria-label="Quay lại đầu trang" style="display:none;">
+    ↑
+  </button>
+
+  <script>
+    (function() {
+      const btn = document.getElementById('scrollToTopBtn');
+      const SHOW_AFTER_PX = 300;
+
+      function toggleScrollBtn() {
+        btn.style.display = window.scrollY > SHOW_AFTER_PX ? 'flex' : 'none';
+      }
+
+      window.addEventListener('scroll', toggleScrollBtn);
+      toggleScrollBtn();
+
+      btn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    })();
+  </script>
+
 </body>
 </html>

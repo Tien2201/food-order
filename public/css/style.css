@@ -2503,3 +2503,41 @@ input, select, textarea, button {
     font-size: 22px;
   }
 }
+
+/* ── Nút quay lại đầu trang ── */
+.scroll-to-top-btn {
+  position: fixed;
+  left: 20px;
+  bottom: 32px;
+  width: 48px;
+  height: 48px;
+  background: #D85A30;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(216,90,48,0.4);
+  z-index: 3500;
+  transition: transform 0.15s, background 0.15s;
+  animation: cartBubblePop 0.3s ease;
+}
+
+.scroll-to-top-btn:hover {
+  background: #c44e26;
+  transform: scale(1.08);
+}
+
+@media (max-width: 480px) {
+  .scroll-to-top-btn {
+    left: 16px;
+    bottom: 28px;
+    width: 44px;
+    height: 44px;
+    font-size: 18px;
+  }
+}
