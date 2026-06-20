@@ -402,6 +402,12 @@
         cartBtn.appendChild(badge);
       }
       badge.textContent = count;
+
+      // Cập nhật luôn bong bóng giỏ hàng nổi (định nghĩa trong footer.ejs),
+      // không cần chờ tới lần poll định kỳ tiếp theo.
+      if (typeof window.refreshFloatingCart === 'function') {
+        window.refreshFloatingCart();
+      }
     }
 
     // ── Xác nhận thêm vào giỏ từ modal (AJAX, không reload trang) ──

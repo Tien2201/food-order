@@ -100,6 +100,13 @@ router.get("/cart", (req, res) => {
   res.render("cart", { cart, totalPrice, user: req.session.user || null });
 });
 
+// ── Số lượng giỏ hàng hiện tại (dùng cho bong bóng giỏ hàng nổi ở mọi trang) ──
+router.get("/cart/count", (req, res) => {
+  const cart = req.session.cart || [];
+  const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+  res.json({ cartCount });
+});
+
 // ── Xóa món khỏi giỏ ──
 router.post("/cart/remove/:index", (req, res) => {
   const index = parseInt(req.params.index);

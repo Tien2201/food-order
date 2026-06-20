@@ -109,3 +109,43 @@
     checkOrderToasts();
   })();
 </script>
+
+<!-- ── Bong bóng giỏ hàng nổi (kiểu Messenger) ──
+     Cố định góc dưới-phải, đặt phía trên nút chat Facebook để không đè lên nhau.
+     Chỉ hiện khi giỏ có ít nhất 1 món. Tiện cho khách trên mobile không phải
+     lướt lên đầu trang mỗi lần muốn vào giỏ hàng. -->
+<a href="/cart" id="floatingCartBubble" class="floating-cart-bubble" style="display:none;">
+  🛒
+  <span id="floatingCartCount" class="floating-cart-count">0</span>
+</a>
+
+<script>
+  (function() {
+    async function updateFloatingCart() {
+      try {
+        const res = await fetch('/cart/count');
+        const data = await res.json();
+        const bubble = document.getElementById('floatingCartBubble');
+        const countEl = document.getElementById('floatingCartCount');
+
+        if (data.cartCount > 0) {
+          countEl.textContent = data.cartCount;
+          bubble.style.display = 'flex';
+        } else {
+          bubble.style.display = 'none';
+        }
+      } catch (e) {
+        // Lỗi mạng tạm thời, bỏ qua, thử lại ở lần poll kế tiếp
+      }
+    }
+
+    // Cập nhật ngay khi tải trang, rồi poll nhẹ để bắt các thay đổi giỏ hàng
+    // xảy ra ở tab khác hoặc do hiệu ứng "bay vào giỏ" ở trang menu.
+    updateFloatingCart();
+    setInterval(updateFloatingCart, 4000);
+
+    // Cho phép trang menu (index.ejs) gọi cập nhật ngay lập tức sau khi
+    // thêm món vào giỏ, không cần chờ tới lần poll kế tiếp.
+    window.refreshFloatingCart = updateFloatingCart;
+  })();
+</script>

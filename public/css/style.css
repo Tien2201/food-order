@@ -2444,3 +2444,60 @@ input, select, textarea, button {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.12); box-shadow: 0 0 0 4px rgba(216,90,48,0.15); }
 }
+
+/* ── Bong bóng giỏ hàng nổi (kiểu Messenger) ── */
+.floating-cart-bubble {
+  position: fixed;
+  right: 20px;
+  bottom: 96px; /* cao hơn nút chat Messenger (thường ~20-30px + ~56px cao) để không đè lên nhau */
+  width: 56px;
+  height: 56px;
+  background: #D85A30;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  text-decoration: none;
+  box-shadow: 0 6px 20px rgba(216,90,48,0.4);
+  z-index: 3500;
+  transition: transform 0.15s;
+  animation: cartBubblePop 0.3s ease;
+}
+
+.floating-cart-bubble:hover {
+  transform: scale(1.08);
+}
+
+@keyframes cartBubblePop {
+  from { transform: scale(0.5); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.floating-cart-count {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #fff;
+  color: #D85A30;
+  font-size: 12px;
+  font-weight: 700;
+  min-width: 22px;
+  height: 22px;
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  border: 2px solid #D85A30;
+}
+
+@media (max-width: 480px) {
+  .floating-cart-bubble {
+    right: 16px;
+    bottom: 86px;
+    width: 50px;
+    height: 50px;
+    font-size: 22px;
+  }
+}
