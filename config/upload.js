@@ -59,6 +59,37 @@ const paymentProofStorage = new CloudinaryStorage({
 
 const uploadPaymentProof = multer({ storage: paymentProofStorage });
 
+// ── Giới hạn định dạng file ảnh được phép upload ──
+// Chấp nhận: JPEG, JPG, PNG, WEBP. Từ chối các định dạng khác (vd: .gif, .bmp, .svg)
+// để tránh ảnh lỗi định dạng hoặc file giả mạo đuôi ảnh.
+function imageFileFilter(req, file, cb) {
+  const allowedMimeTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+  if (allowedMimeTypes.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new Error("Chỉ chấp nhận file ảnh định dạng JPEG, JPG, PNG hoặc WEBP."));
+  }
+}
+
+// Upload ảnh trang Giới thiệu (About) - 4 vị trí cố định: 1 ảnh story lớn
+// + 3 ảnh gallery món ăn. Mỗi vị trí có public_id riêng để ghi đè đúng ảnh,
+// không ảnh hưởng tới 3 ảnh còn lại khi admin thay 1 ảnh.
+const aboutStorage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: (req, file) => {
+    // req.params.slot nhận giá trị: "story", "gallery1", "gallery2", "gallery3"
+    const slot = req.params.slot || "story";
+    return {
+      folder: "food-order/about",
+      public_id: "about-" + slot,
+      overwrite: true
+    };
+  }
+});
+
+const uploadAbout = multer({ storage: aboutStorage, fileFilter: imageFileFilter });
+
 module.exports = upload;
 module.exports.uploadQr = uploadQr;
 module.exports.uploadPaymentProof = uploadPaymentProof;
+module.exports.uploadAbout = uploadAbout;

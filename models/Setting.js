@@ -13,6 +13,24 @@ const settingSchema = new mongoose.Schema({
   paymentQrImage: {
     type: String,
     default: ""
+  },
+
+  // ── Ảnh trang Giới thiệu (About) ──
+  aboutStoryImage: {
+    type: String,
+    default: ""
+  },
+  aboutGalleryImage1: {
+    type: String,
+    default: ""
+  },
+  aboutGalleryImage2: {
+    type: String,
+    default: ""
+  },
+  aboutGalleryImage3: {
+    type: String,
+    default: ""
   }
 
 }, {

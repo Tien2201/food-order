@@ -102,6 +102,52 @@ router.post("/settings/qr", isAdmin, upload.uploadQr.single("qrImage"), async (r
   }
 });
 
+// ── Quản lý ảnh trang Giới thiệu (About): 1 ảnh story + 3 ảnh gallery ──
+router.get("/settings/about", isAdmin, async (req, res) => {
+  try {
+    let setting = await Setting.findOne({ key: "general" });
+    if (!setting) setting = await Setting.create({ key: "general" });
+
+    res.render("admin/settings-about", { setting, user: req.session.user });
+  } catch (err) {
+    console.error(err);
+    res.redirect("/admin/dashboard");
+  }
+});
+
+// slot nhận giá trị: story, gallery1, gallery2, gallery3
+router.post("/settings/about/:slot", isAdmin, (req, res, next) => {
+  upload.uploadAbout.single("aboutImage")(req, res, (err) => {
+    if (err) {
+      console.error("LỖI UPLOAD ẢNH ABOUT:", err.message);
+      return res.redirect("/admin/settings/about");
+    }
+    next();
+  });
+}, async (req, res) => {
+  try {
+    const slotFieldMap = {
+      story: "aboutStoryImage",
+      gallery1: "aboutGalleryImage1",
+      gallery2: "aboutGalleryImage2",
+      gallery3: "aboutGalleryImage3"
+    };
+    const field = slotFieldMap[req.params.slot];
+
+    if (field && req.file) {
+      await Setting.findOneAndUpdate(
+        { key: "general" },
+        { [field]: req.file.path },
+        { upsert: true }
+      );
+    }
+    res.redirect("/admin/settings/about");
+  } catch (err) {
+    console.error(err);
+    res.redirect("/admin/settings/about");
+  }
+});
+
 router.get("/foods", isAdmin, async (req, res) => {
   const foods = await Food.find().sort({ createdAt: -1 });
 

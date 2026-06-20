@@ -2207,3 +2207,139 @@ input, select, textarea, button {
   .day-order-row > * { width: 100%; }
   .btn-delete-order { width: auto; align-self: flex-end; }
 }
+
+/* ── Trang About ── */
+.about-story-section {
+  margin-bottom: 20px;
+}
+
+.about-heading {
+  font-size: 26px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 16px;
+}
+
+.about-text {
+  font-size: 14.5px;
+  color: #4b5563;
+  line-height: 1.7;
+  margin-bottom: 14px;
+}
+
+.about-img-placeholder {
+  width: 100%;
+  aspect-ratio: 4/3;
+  background: linear-gradient(135deg, #fbfaf9 0%, #f0ece8 100%);
+  border: 1.5px dashed #e0dbd6;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #b0a89e;
+}
+
+.about-img-placeholder-sm {
+  aspect-ratio: 1/1;
+  border-radius: 12px;
+}
+
+.about-img-placeholder-icon {
+  font-size: 32px;
+}
+
+.about-img-placeholder-text {
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
+.about-img-real {
+  width: 100%;
+  aspect-ratio: 4/3;
+  object-fit: cover;
+  border-radius: 16px;
+  border: 1px solid #f0ece8;
+  display: block;
+}
+
+.about-img-real-sm {
+  aspect-ratio: 1/1;
+  border-radius: 12px;
+}
+
+.about-highlight-card {
+  background: #fff;
+  border: 1px solid #f0ece8;
+  border-radius: 16px;
+  padding: 28px 24px;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.about-highlight-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+}
+
+.about-highlight-icon {
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+
+.about-highlight-card h4 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 8px;
+}
+
+.about-highlight-card p {
+  font-size: 13.5px;
+  color: #6b7280;
+  line-height: 1.6;
+  margin-bottom: 0;
+}
+
+.about-gallery-section {
+  margin: 40px 0;
+}
+
+.about-contact-section {
+  margin-top: 20px;
+  padding-top: 40px;
+  border-top: 1px solid #f0ece8;
+}
+
+.about-contact-card {
+  background: #fbfaf9;
+  border-radius: 16px;
+  padding: 24px;
+  height: 100%;
+  text-align: center;
+}
+
+.about-contact-icon {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.about-contact-card h5 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 8px;
+}
+
+.about-contact-card p {
+  font-size: 13.5px;
+  color: #6b7280;
+  line-height: 1.6;
+  margin-bottom: 0;
+}
+
+@media (max-width: 767px) {
+  .about-heading { font-size: 22px; }
+}

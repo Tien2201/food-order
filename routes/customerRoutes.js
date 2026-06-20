@@ -42,8 +42,14 @@ router.get("/", async (req, res) => {
 });
 
 // ── Giới thiệu ──
-router.get("/about", (req, res) => {
-  res.render("about", { user: req.session.user || null });
+router.get("/about", async (req, res) => {
+  try {
+    const setting = await Setting.findOne({ key: "general" });
+    res.render("about", { user: req.session.user || null, setting });
+  } catch (err) {
+    console.error(err);
+    res.render("about", { user: req.session.user || null, setting: null });
+  }
 });
 
 // ── Thêm vào giỏ hàng ──
