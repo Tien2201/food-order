@@ -576,6 +576,7 @@
 
       // ── Kéo-thả trên mobile (touch), giữ click thường để vào giỏ hàng ──
       // Phân biệt "kéo" và "bấm": nếu di chuyển ít hơn 8px thì coi là 1 lần bấm.
+      // (Double-tap-to-zoom đã được chặn chung toàn site ở header.ejs)
       const isTouchDevice = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
 
       if (isTouchDevice) {
