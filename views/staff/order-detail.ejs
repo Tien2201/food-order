@@ -168,6 +168,33 @@
     document.getElementById('adminSidebar').classList.remove('open');
     document.getElementById('adminOverlay').classList.remove('show');
   }
+
+  // ── Tự động cập nhật khi khách gửi ảnh thanh toán / đổi trạng thái đơn ──
+  // Trang đang render sẵn (server-side), nên cách an toàn nhất khi phát hiện
+  // thay đổi là tự reload lại trang để lấy đúng HTML mới nhất.
+  (function() {
+    const orderId = "<%= order._id %>";
+    const initialStatus = "<%= order.status %>";
+    const initialHasProof = !order.paymentProofImage ;
+
+    async function checkOrderStatus() {
+      try {
+        const res = await fetch(`/staff/orders/${orderId}/status`);
+        const data = await res.json();
+
+        if (!data.status) return; // đơn không còn tồn tại, bỏ qua
+
+        const changed = data.status !== initialStatus || data.hasPaymentProof !== initialHasProof;
+        if (changed) {
+          location.reload();
+        }
+      } catch (err) {
+        // Lỗi mạng tạm thời, bỏ qua, thử lại ở lần poll kế tiếp
+      }
+    }
+
+    setInterval(checkOrderStatus, 5000);
+  })();
 </script>
 
 </body>

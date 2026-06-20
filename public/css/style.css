@@ -1243,6 +1243,13 @@ input, select, textarea, button {
   font-weight: 600;
   cursor: pointer;
   transition: background 0.15s;
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  white-space: nowrap;
+  box-sizing: border-box;
 }
 
 .btn-save:hover { background: #c44e26; }
@@ -1258,6 +1265,14 @@ input, select, textarea, button {
   cursor: pointer;
   text-decoration: none;
   transition: background 0.15s;
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  white-space: nowrap;
+  box-sizing: border-box;
+  margin-top: 10px;
 }
 
 .btn-cancel:hover { background: #f9f6f3; color: #111827; }
@@ -2083,4 +2098,112 @@ input, select, textarea, button {
 .ingredient-tag button:hover {
   background: #D85A30;
   color: #fff;
+}
+
+/* ── Accordion danh sách đơn theo ngày ── */
+.day-group {
+  background: #fff;
+  border: 1px solid #f0ece8;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.day-group-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  background: #fbfaf9;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s;
+}
+
+.day-group-header:hover {
+  background: #f5f1ed;
+}
+
+.day-group-arrow {
+  font-size: 11px;
+  color: #9ca3af;
+  width: 14px;
+  flex-shrink: 0;
+}
+
+.day-group-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1a1a;
+  flex: 1;
+}
+
+.day-group-count {
+  font-size: 12px;
+  font-weight: 600;
+  color: #D85A30;
+  background: #fdf2ee;
+  padding: 4px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.day-group-body {
+  border-top: 1px solid #f0ece8;
+}
+
+.day-order-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 18px;
+  border-bottom: 1px solid #f5f1ed;
+  flex-wrap: wrap;
+}
+
+.day-order-row:last-child {
+  border-bottom: none;
+}
+
+.day-order-info {
+  flex: 1;
+  min-width: 160px;
+}
+
+.day-order-name {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.day-order-meta {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 2px;
+}
+
+.btn-delete-order {
+  background: #fee2e2;
+  color: #dc2626;
+  border: none;
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+
+.btn-delete-order:hover {
+  background: #dc2626;
+  color: #fff;
+}
+
+@media (max-width: 576px) {
+  .day-order-row { flex-direction: column; align-items: flex-start; }
+  .day-order-row > * { width: 100%; }
+  .btn-delete-order { width: auto; align-self: flex-end; }
 }

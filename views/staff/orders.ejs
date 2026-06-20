@@ -114,7 +114,7 @@
         </div>
       </div>
 
-      <!-- Search + Filter -->
+      <!-- Search -->
       <div class="d-flex flex-wrap gap-2 align-items-center mb-3">
         <div class="search-wrap" style="max-width:320px; flex:1;">
           <span class="search-icon" style="color:#aaa;">🔍</span>
@@ -126,13 +126,6 @@
             autocomplete="off"
           >
         </div>
-        <div class="d-flex gap-2 flex-wrap">
-          <button class="filter-btn active" onclick="filterOrders('all', this)">Tất cả</button>
-          <button class="filter-btn" onclick="filterOrders('pending', this)">⏳ Chờ xác nhận</button>
-          <button class="filter-btn" onclick="filterOrders('confirmed', this)">💳 Chờ thanh toán</button>
-          <button class="filter-btn" onclick="filterOrders('payment_submitted', this)">📤 Chờ xác minh</button>
-          <button class="filter-btn" onclick="filterOrders('preparing', this)">👨‍🍳 Đang làm món</button>
-        </div>
       </div>
 
       <% if (orders.length === 0) { %>
@@ -141,53 +134,69 @@
           <p>Chưa có đơn hàng nào.</p>
         </div>
       <% } else { %>
-        <div class="table-card">
-          <table>
-            <thead>
-              <tr>
-                <th>Khách hàng</th>
-                <th>SĐT</th>
-                <th>Tổng tiền</th>
-                <th>Trạng thái</th>
-                <th>Mã thanh toán</th>
-                <th>Thao tác</th>
-              </tr>
-            </thead>
-            <tbody id="orderTable">
-              <%
-                const statusBadges = {
-                  pending: { cls: "badge-pending", text: "⏳ Chờ xác nhận" },
-                  confirmed: { cls: "badge-pending", text: "💳 Chờ thanh toán" },
-                  payment_submitted: { cls: "badge-pending", text: "📤 Chờ xác minh" },
-                  preparing: { cls: "badge-confirmed", text: "👨‍🍳 Đang làm món" },
-                  delivering: { cls: "badge-confirmed", text: "🛵 Đang giao" },
-                  completed: { cls: "badge-confirmed", text: "✅ Hoàn tất" },
-                  cancelled: { cls: "badge-pending", text: "❌ Đã hủy" }
-                };
-              %>
-              <% orders.forEach(order => { %>
-                <%
-                  const badge = statusBadges[order.status] || statusBadges.pending;
-                %>
-                <tr
-                  data-status="<%= order.status %>"
-                  data-search="<%= (order.customerName + ' ' + order.phone).toLowerCase() %>"
-                  data-order-id="<%= order._id %>"
-                >
-                  <td><strong style="color:#111827"><%= order.customerName %></strong></td>
-                  <td><%= order.phone %></td>
-                  <td style="color:#D85A30; font-weight:700;"><%= order.totalPrice.toLocaleString('vi-VN') %> VNĐ</td>
-                  <td><span class="<%= badge.cls %>"><%= badge.text %></span></td>
-                  <td style="font-family:monospace; font-size:11px; color:#9ca3af;"><%= order.paymentCode || "Chưa có" %></td>
-                  <td><a href="/staff/orders/<%= order._id %>" class="btn-detail">Xem chi tiết</a></td>
-                </tr>
-              <% }) %>
-            </tbody>
-          </table>
-          <div id="emptyFilterState" class="empty-state" style="display:none;">
-            <div style="font-size:40px; margin-bottom:8px;">🔍</div>
-            <p>Không tìm thấy đơn hàng phù hợp</p>
-          </div>
+
+        <%
+          const statusBadges = {
+            pending: { cls: "badge-pending", text: "⏳ Chờ xác nhận" },
+            confirmed: { cls: "badge-pending", text: "💳 Chờ thanh toán" },
+            payment_submitted: { cls: "badge-pending", text: "📤 Chờ xác minh" },
+            preparing: { cls: "badge-confirmed", text: "👨‍🍳 Đang làm món" },
+            delivering: { cls: "badge-confirmed", text: "🛵 Đang giao" },
+            completed: { cls: "badge-confirmed", text: "✅ Hoàn tất" },
+            cancelled: { cls: "badge-pending", text: "❌ Đã hủy" }
+          };
+
+          // Gom đơn theo ngày (dùng createdAt), orders đã sort mới nhất trước
+          const dayNames = ['Chủ nhật', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7'];
+          const groups = [];
+          const groupMap = {};
+
+          orders.forEach(order => {
+            const d = new Date(order.createdAt);
+            const dateKey = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+            if (!groupMap[dateKey]) {
+              const label = `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getFullYear()} (${dayNames[d.getDay()]})`;
+              groupMap[dateKey] = { key: dateKey, label, orders: [] };
+              groups.push(groupMap[dateKey]);
+            }
+            groupMap[dateKey].orders.push(order);
+          });
+        %>
+
+        <div id="dayGroupsContainer">
+          <% groups.forEach((group, gIndex) => { %>
+            <div class="day-group" data-day-key="<%= group.key %>">
+              <button type="button" class="day-group-header" onclick="toggleDayGroup(this)">
+                <span class="day-group-arrow">▶</span>
+                <span class="day-group-label">📅 Ngày <%= group.label %></span>
+                <span class="day-group-count"><%= group.orders.length %> đơn</span>
+              </button>
+
+              <div class="day-group-body" style="display:none;">
+                <% group.orders.forEach(order => { %>
+                  <%
+                    const badge = statusBadges[order.status] || statusBadges.pending;
+                  %>
+                  <div class="day-order-row" data-search="<%= (order.customerName + ' ' + order.phone).toLowerCase() %>" data-order-id="<%= order._id %>">
+                    <div class="day-order-info">
+                      <div class="day-order-name"><%= order.customerName %></div>
+                      <div class="day-order-meta">
+                        <%= order.phone %> · <span style="color:#D85A30; font-weight:700;"><%= order.totalPrice.toLocaleString('vi-VN') %> VNĐ</span>
+                      </div>
+                    </div>
+                    <span class="<%= badge.cls %>"><%= badge.text %></span>
+                    <a href="/staff/orders/<%= order._id %>" class="btn-detail">Xem chi tiết</a>
+                    <button type="button" class="btn-delete-order" onclick="deleteOrder('<%= order._id %>', this)" title="Xóa đơn này">🗑️</button>
+                  </div>
+                <% }) %>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+
+        <div id="emptyFilterState" class="empty-state" style="display:none;">
+          <div style="font-size:40px; margin-bottom:8px;">🔍</div>
+          <p>Không tìm thấy đơn hàng phù hợp</p>
         </div>
       <% } %>
 
@@ -210,8 +219,6 @@
   }
 
   // ── Mở khóa âm thanh trên mobile ──
-  // Trình duyệt mobile chặn audio tự động phát nếu chưa có tương tác người dùng.
-  // Lần chạm/click đầu tiên trên trang sẽ "mở khóa" để các lần phát tự động sau hoạt động.
   let audioUnlocked = false;
   const isTouchDevice = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
   const unlockNotice = document.getElementById('audioUnlockNotice');
@@ -234,37 +241,92 @@
   document.addEventListener('touchstart', unlockAudio, { once: true });
   document.addEventListener('click', unlockAudio, { once: true });
 
-  // ── Filter + Search ──
-  let activeFilter = 'all';
+  // ── Accordion theo ngày ──
+  function toggleDayGroup(headerBtn) {
+    const group = headerBtn.closest('.day-group');
+    const body = group.querySelector('.day-group-body');
+    const arrow = headerBtn.querySelector('.day-group-arrow');
+    const isOpen = body.style.display !== 'none';
 
-  function filterOrders(status, btn) {
-    activeFilter = status;
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    applyFilters();
+    body.style.display = isOpen ? 'none' : '';
+    arrow.textContent = isOpen ? '▶' : '▼';
   }
 
-  function applyFilters() {
-    const query = (document.getElementById('searchInput').value || '').trim().toLowerCase();
-    const rows = document.querySelectorAll('#orderTable tr');
-    let visibleCount = 0;
+  // ── Search: tự mở các nhóm ngày có kết quả khớp, ẩn nhóm không có kết quả ──
+  const searchInput = document.getElementById('searchInput');
 
-    rows.forEach(row => {
-      const matchStatus = activeFilter === 'all' || row.dataset.status === activeFilter;
-      const matchSearch = !query || row.dataset.search.includes(query);
-      const show = matchStatus && matchSearch;
-      row.style.display = show ? '' : 'none';
-      if (show) visibleCount++;
+  function applySearch() {
+    const query = (searchInput.value || '').trim().toLowerCase();
+    const groups = document.querySelectorAll('.day-group');
+    let totalVisible = 0;
+
+    groups.forEach(group => {
+      const rows = group.querySelectorAll('.day-order-row');
+      let groupVisibleCount = 0;
+
+      rows.forEach(row => {
+        const match = !query || row.dataset.search.includes(query);
+        row.style.display = match ? '' : 'none';
+        if (match) groupVisibleCount++;
+      });
+
+      group.style.display = groupVisibleCount > 0 ? '' : 'none';
+      totalVisible += groupVisibleCount;
+
+      // Khi đang tìm kiếm và có kết quả, tự mở nhóm để khách thấy ngay
+      const body = group.querySelector('.day-group-body');
+      const arrow = group.querySelector('.day-group-arrow');
+      if (query && groupVisibleCount > 0) {
+        body.style.display = '';
+        arrow.textContent = '▼';
+      } else if (!query) {
+        body.style.display = 'none';
+        arrow.textContent = '▶';
+      }
     });
 
     const emptyState = document.getElementById('emptyFilterState');
-    if (emptyState) emptyState.style.display = visibleCount === 0 ? '' : 'none';
+    if (emptyState) emptyState.style.display = totalVisible === 0 ? '' : 'none';
   }
 
-  const searchInput = document.getElementById('searchInput');
-  if (searchInput) searchInput.addEventListener('input', applyFilters);
+  if (searchInput) searchInput.addEventListener('input', applySearch);
 
-  // ── Notification sound + Auto-update table (không cần F5) ──
+  // ── Xóa 1 đơn hàng ──
+  // CẢNH BÁO: không giới hạn trạng thái, có thể xóa cả đơn đang xử lý.
+  async function deleteOrder(orderId, btn) {
+    const confirmed = confirm('Bạn có chắc muốn xóa đơn hàng này? Hành động này không thể hoàn tác, kể cả khi đơn đang được xử lý.');
+    if (!confirmed) return;
+
+    try {
+      const res = await fetch(`/staff/orders/delete/${orderId}`, {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        const row = btn.closest('.day-order-row');
+        const group = row.closest('.day-group');
+        row.remove();
+
+        // Nếu nhóm ngày này không còn đơn nào, xóa luôn cả nhóm
+        if (group && group.querySelectorAll('.day-order-row').length === 0) {
+          group.remove();
+        } else if (group) {
+          // Cập nhật lại số đơn hiển thị trên header nhóm
+          const countEl = group.querySelector('.day-group-count');
+          const remaining = group.querySelectorAll('.day-order-row').length;
+          if (countEl) countEl.textContent = `${remaining} đơn`;
+        }
+      } else {
+        alert(data.message || 'Có lỗi xảy ra khi xóa đơn hàng.');
+      }
+    } catch (err) {
+      alert('Không thể kết nối tới server, vui lòng thử lại.');
+    }
+  }
+
+  // ── Notification sound + Auto-update (không cần F5) ──
   const notifySound = document.getElementById("notifySound");
   let isMuted = localStorage.getItem("staffSoundMuted") === "true";
 
@@ -279,36 +341,9 @@
     updateMuteBtn();
   }
 
-  function escapeHtml(str) {
-    const div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
-  }
-
-  function buildOrderRow(order) {
-    // Đơn mới phát hiện qua polling luôn ở trạng thái "pending" (chưa xác nhận)
-    const status = '<span class="badge-pending">⏳ Chờ xác nhận</span>';
-
-    const payCode = order.paymentCode
-      ? escapeHtml(order.paymentCode)
-      : 'Chưa có';
-
-    const searchKey = (order.customerName + ' ' + order.phone).toLowerCase();
-
-    const tr = document.createElement('tr');
-    tr.dataset.status = order.status || 'pending';
-    tr.dataset.search = searchKey;
-    tr.dataset.orderId = order._id;
-    tr.innerHTML = `
-      <td><strong style="color:#111827">${escapeHtml(order.customerName)}</strong></td>
-      <td>${escapeHtml(order.phone)}</td>
-      <td style="color:#D85A30; font-weight:700;">${Number(order.totalPrice).toLocaleString('vi-VN')} VNĐ</td>
-      <td>${status}</td>
-      <td style="font-family:monospace; font-size:11px; color:#9ca3af;">${escapeHtml(payCode)}</td>
-      <td><a href="/staff/orders/${order._id}" class="btn-detail">Xem chi tiết</a></td>
-    `;
-    return tr;
-  }
+  let knownOrderIds = new Set(
+    Array.from(document.querySelectorAll('.day-order-row[data-order-id]')).map(row => row.dataset.orderId)
+  );
 
   async function checkStaffNotification() {
     try {
@@ -317,36 +352,25 @@
 
       document.getElementById("staffBell").innerText = data.count;
 
-      const tableBody = document.getElementById('orderTable');
-      if (!tableBody) return;
-
-      // Lấy danh sách ID đơn hiện đang hiển thị trên bảng
-      const existingIds = new Set(
-        Array.from(tableBody.querySelectorAll('tr[data-order-id]')).map(tr => tr.dataset.orderId)
-      );
-
-      // Lọc ra các đơn mới (chưa từng xuất hiện trên bảng)
-      const newOnes = (data.orders || []).filter(o => !existingIds.has(String(o._id)));
+      const newOnes = (data.orders || []).filter(o => !knownOrderIds.has(String(o._id)));
 
       if (newOnes.length > 0) {
-        // Chèn đơn mới nhất lên đầu bảng
-        newOnes.forEach(order => {
-          const row = buildOrderRow(order);
-          tableBody.prepend(row);
-        });
-
-        applyFilters();
+        newOnes.forEach(o => knownOrderIds.add(String(o._id)));
 
         if (!isMuted) {
           notifySound.currentTime = 0;
           notifySound.play().catch(() => {});
         }
+
+        // Đơn mới có thể thuộc nhóm "hôm nay" chưa từng tạo nếu đây là đơn đầu ngày,
+        // hoặc nhóm hôm nay đã có sẵn. Đơn giản và an toàn nhất: tải lại trang
+        // để hiển thị đúng accordion theo ngày mà không cần dựng lại DOM phức tạp.
+        location.reload();
       }
     } catch (e) {}
   }
 
   setInterval(checkStaffNotification, 5000);
-  checkStaffNotification();
 </script>
 
 </body>

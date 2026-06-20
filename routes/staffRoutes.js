@@ -108,4 +108,32 @@ router.get("/orders/:id", isStaff, async (req, res) => {
   }
 });
 
+// ── Kiểm tra trạng thái 1 đơn (dùng cho polling tự động ở trang chi tiết đơn) ──
+router.get("/orders/:id/status", isStaff, async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id).select("status paymentProofImage");
+    if (!order) return res.json({ status: null });
+    res.json({
+      status: order.status,
+      hasPaymentProof: !!order.paymentProofImage
+    });
+  } catch (err) {
+    res.json({ status: null });
+  }
+});
+
+// ── Xóa 1 đơn hàng ──
+// Không giới hạn trạng thái — theo yêu cầu, cho phép xóa đơn ở bất kỳ
+// trạng thái nào. CẢNH BÁO: hành động này không thể hoàn tác, có thể
+// xóa mất đơn đang được xử lý nếu bấm nhầm.
+router.post("/orders/delete/:id", isStaff, async (req, res) => {
+  try {
+    await Order.findByIdAndDelete(req.params.id);
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Lỗi khi xóa đơn hàng" });
+  }
+});
+
 module.exports = router;

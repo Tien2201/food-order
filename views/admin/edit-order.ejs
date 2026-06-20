@@ -65,10 +65,11 @@
       <div class="d-flex align-items-center gap-2">
         <button class="admin-hamburger" onclick="openSidebar()">☰</button>
         <div>
-        <div class="admin-topbar-title">📋 Chi tiết đơn hàng</div>
-        <div class="admin-topbar-sub">Khách: <%= order.customerName %></div>
+          <div class="admin-topbar-title">📋 Chi tiết đơn hàng</div>
+          <div class="admin-topbar-sub">Khách: <%= order.customerName %></div>
+        </div>
       </div>
-      <a href="/admin/orders" style="font-size:13px; color:#D85A30; font-weight:600; text-decoration:none;">← Quay lại</a>
+      <a href="/admin/orders" class="btn-go-back" style="margin-bottom:0;">← Quay lại</a>
     </div>
 
     <div class="admin-content">
@@ -102,6 +103,14 @@
             <% } %>
           </div>
 
+          <% if (order.paymentProofImage) { %>
+          <div class="info-card mb-4">
+            <div class="card-title">📤 Ảnh chuyển khoản khách gửi</div>
+            <img src="<%= order.paymentProofImage %>" alt="Ảnh chuyển khoản"
+                 style="width:100%; max-width:280px; border-radius:12px; border:1px solid #f0ece8; display:block; margin:0 auto;">
+          </div>
+          <% } %>
+
           <div class="info-card">
             <div class="card-title">🍽️ Món đã đặt</div>
             <% order.items.forEach(item => { %>
@@ -128,18 +137,19 @@
           <div class="action-card-box">
             <div class="card-title">⚙️ Cập nhật đơn hàng</div>
 
-            <% 
-              const statusColors = {
-                'Chờ nhân viên xác nhận': 'background:#fef3c7; color:#92400e',
-                'Đã xác nhận': 'background:#d1fae5; color:#065f46',
-                'Đang làm món': 'background:#dbeafe; color:#1e40af',
-                'Đang giao hàng': 'background:#f3e8ff; color:#6b21a8',
-                'Hoàn thành': 'background:#d1fae5; color:#065f46',
-                'Đã hủy': 'background:#fee2e2; color:#991b1b',
+            <%
+              const statusBadges = {
+                pending: { cls: "badge-pending", text: "⏳ Chờ xác nhận" },
+                confirmed: { cls: "badge-pending", text: "💳 Chờ thanh toán" },
+                payment_submitted: { cls: "badge-pending", text: "📤 Chờ xác minh" },
+                preparing: { cls: "badge-confirmed", text: "👨‍🍳 Đang làm món" },
+                delivering: { cls: "badge-confirmed", text: "🛵 Đang giao" },
+                completed: { cls: "badge-confirmed", text: "✅ Hoàn tất" },
+                cancelled: { cls: "badge-pending", text: "❌ Đã hủy" }
               };
-              const currentColor = statusColors[order.status] || 'background:#f3f4f6; color:#374151';
+              const badge = statusBadges[order.status] || statusBadges.pending;
             %>
-            <span class="badge-status" style=<"<%= currentColor %>"><%= order.status %></span>
+            <span class="<%= badge.cls %>" style="font-size:13px; padding:8px 16px; display:inline-block; margin-bottom:16px;"><%= badge.text %></span>
 
             <form action="/admin/orders/edit/<%= order._id %>" method="POST">
 
@@ -157,8 +167,8 @@
 
               <label class="form-label-custom">Trạng thái đơn</label>
               <select name="status" class="form-input-custom">
-                <% ['Chờ nhân viên xác nhận','Đã xác nhận','Đang làm món','Đang giao hàng','Hoàn thành','Đã hủy'].forEach(s => { %>
-                  <option value="<%= s %>" <%= order.status === s ? 'selected' : '' %>><%= s %></option>
+                <% Object.entries(statusBadges).forEach(([value, info]) => { %>
+                  <option value="<%= value %>" <%= order.status === value ? 'selected' : '' %>><%= info.text %></option>
                 <% }) %>
               </select>
 

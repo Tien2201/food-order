@@ -224,9 +224,20 @@ router.post("/orders/edit/:id", isAdmin, async (req, res) => {
 });
 
 router.post("/orders/delete/:id", isAdmin, async (req, res) => {
-  await Order.findByIdAndDelete(req.params.id);
+  try {
+    await Order.findByIdAndDelete(req.params.id);
 
-  res.redirect("/admin/orders");
+    if (req.headers["x-requested-with"] === "XMLHttpRequest" || req.headers.accept?.includes("application/json")) {
+      return res.json({ success: true });
+    }
+    res.redirect("/admin/orders");
+  } catch (err) {
+    console.error(err);
+    if (req.headers["x-requested-with"] === "XMLHttpRequest" || req.headers.accept?.includes("application/json")) {
+      return res.status(500).json({ success: false, message: "Lỗi khi xóa đơn hàng" });
+    }
+    res.redirect("/admin/orders");
+  }
 });
 
 router.get("/users", isAdmin, async (req, res) => {
