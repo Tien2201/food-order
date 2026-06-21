@@ -397,6 +397,109 @@
     return map;
   }
 
+  // ── Dựng HTML cho 1 dòng đơn mới (JS, khớp đúng cấu trúc EJS đã render) ──
+  const statusBadgesJs = {
+    pending: { cls: "badge-pending", text: "⏳ Chờ xác nhận" },
+    confirmed: { cls: "badge-pending", text: "💳 Chờ thanh toán" },
+    payment_submitted: { cls: "badge-pending", text: "📤 Chờ xác minh" },
+    preparing: { cls: "badge-confirmed", text: "👨‍🍳 Đang làm món" },
+    delivering: { cls: "badge-confirmed", text: "🛵 Đang giao" },
+    delivered: { cls: "badge-confirmed", text: "✅ Hoàn tất" },
+    completed: { cls: "badge-confirmed", text: "✅ Hoàn tất" },
+    cancelled: { cls: "badge-pending", text: "❌ Đã hủy" }
+  };
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str == null ? '' : String(str);
+    return div.innerHTML;
+  }
+
+  function buildOrderRowEl(order) {
+    const badge = statusBadgesJs[order.status] || statusBadgesJs.pending;
+    const searchValue = `${order.customerName || ''} ${order.phone || ''}`.toLowerCase();
+
+    const row = document.createElement('div');
+    row.className = 'day-order-row';
+    row.dataset.status = order.status;
+    row.dataset.search = searchValue;
+    row.dataset.orderId = order._id;
+
+    const priceFormatted = (order.totalPrice || 0).toLocaleString('vi-VN');
+
+    row.innerHTML = `
+      <div class="day-order-info">
+        <div class="day-order-name">${escapeHtml(order.customerName)}</div>
+        <div class="day-order-meta">
+          ${escapeHtml(order.phone)} · <span style="color:#D85A30; font-weight:700;">${priceFormatted} VNĐ</span>
+        </div>
+      </div>
+      <span class="${badge.cls}">${badge.text}</span>
+      <a href="/staff/orders/${order._id}" class="btn-detail">Xem chi tiết</a>
+      <button type="button" class="btn-delete-order" title="Xóa đơn này">🗑️</button>
+    `;
+
+    // Gắn onclick bằng JS thay vì inline string để tránh lỗi escape ký tự đặc biệt
+    row.querySelector('.btn-delete-order').addEventListener('click', function() {
+      deleteOrder(order._id, this);
+    });
+
+    return row;
+  }
+
+  const dayNamesJs = ['Chủ nhật', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7'];
+
+  function buildDayGroupKey(date) {
+    return `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
+  }
+
+  function buildDayGroupLabel(date) {
+    const dd = date.getDate().toString().padStart(2, '0');
+    const mm = (date.getMonth()+1).toString().padStart(2, '0');
+    return `${dd}/${mm}/${date.getFullYear()} (${dayNamesJs[date.getDay()]})`;
+  }
+
+  // Chèn đơn mới vào đúng nhóm ngày (tạo nhóm mới nếu là đơn đầu tiên trong ngày đó)
+  function insertNewOrderIntoDOM(order) {
+    const container = document.getElementById('dayGroupsContainer');
+    if (!container) return; // Trang đang ở trạng thái "Chưa có đơn hàng nào" — bỏ qua, để lần poll sau tự xử lý qua nhánh reload nếu cần
+
+    const orderDate = new Date(order.createdAt || Date.now());
+    const dateKey = buildDayGroupKey(orderDate);
+
+    let groupEl = container.querySelector(`.day-group[data-day-key="${dateKey}"]`);
+    const rowEl = buildOrderRowEl(order);
+
+    if (groupEl) {
+      // Nhóm ngày đã tồn tại — chèn dòng mới lên đầu danh sách trong nhóm đó
+      const bodyEl = groupEl.querySelector('.day-group-body');
+      bodyEl.insertBefore(rowEl, bodyEl.firstChild);
+
+      const countEl = groupEl.querySelector('.day-group-count');
+      const newCount = bodyEl.querySelectorAll('.day-order-row').length;
+      if (countEl) countEl.textContent = `${newCount} đơn`;
+    } else {
+      // Chưa có nhóm cho ngày này (đơn đầu tiên hôm nay) — tạo nhóm mới, đặt lên đầu container
+      groupEl = document.createElement('div');
+      groupEl.className = 'day-group';
+      groupEl.dataset.dayKey = dateKey;
+      groupEl.innerHTML = `
+        <button type="button" class="day-group-header">
+          <span class="day-group-arrow">▶</span>
+          <span class="day-group-label">📅 Ngày ${buildDayGroupLabel(orderDate)}</span>
+          <span class="day-group-count">1 đơn</span>
+        </button>
+        <div class="day-group-body" style="display:none;"></div>
+      `;
+      groupEl.querySelector('.day-group-header').addEventListener('click', function() {
+        toggleDayGroup(this);
+      });
+      groupEl.querySelector('.day-group-body').appendChild(rowEl);
+
+      container.insertBefore(groupEl, container.firstChild);
+    }
+  }
+
   async function checkStaffNotification() {
     try {
       const knownStatuses = buildKnownStatuses();
@@ -409,21 +512,26 @@
       const hasNewOrders = newOnes.length > 0;
       const hasChangedOrders = !!data.hasChangedOrders;
 
-      if (hasNewOrders || hasChangedOrders) {
-        if (hasNewOrders) {
-          newOnes.forEach(o => knownOrderIds.add(String(o._id)));
-        }
+      if (!hasNewOrders && !hasChangedOrders) return;
 
-        if (!isMuted) {
-          notifySound.currentTime = 0;
-          notifySound.play().catch(() => {});
-        }
-
-        // Đơn mới hoặc đơn đổi trạng thái (ví dụ khách vừa gửi ảnh thanh toán)
-        // đều cần phản ánh đúng vào accordion theo ngày + badge trạng thái.
-        // Đơn giản và an toàn nhất: tải lại trang để luôn hiển thị đúng dữ liệu mới.
-        location.reload();
+      if (!isMuted) {
+        notifySound.currentTime = 0;
+        notifySound.play().catch(() => {});
       }
+
+      if (hasChangedOrders) {
+        // Đơn cũ đổi trạng thái (ví dụ tự động chuyển "delivering" -> "delivered"
+        // sau 1h) cần cập nhật nhiều badge rải rác khắp accordion — reload trang
+        // vẫn là cách an toàn và đơn giản nhất cho trường hợp này.
+        location.reload();
+        return;
+      }
+
+      // Chỉ có đơn mới (status "pending") — chèn động vào DOM, không reload trang.
+      newOnes.forEach(o => {
+        knownOrderIds.add(String(o._id));
+        insertNewOrderIntoDOM(o);
+      });
     } catch (e) {}
   }
 
