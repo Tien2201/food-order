@@ -8,6 +8,7 @@ const Review = require("../models/Review");
 const Setting = require("../models/Setting");
 const upload = require("../config/upload");
 const mongoose = require("mongoose");
+const { autoCompleteDeliveredOrders } = require("../utils/orderAutomation");
 
 // ── Trang chủ / Menu ──
 router.get("/", async (req, res) => {
@@ -168,6 +169,10 @@ router.get("/order-success/:id", async (req, res) => {
 // ── Kiểm tra trạng thái đơn hàng (dùng cho polling tự động trên trang order-success) ──
 router.get("/order-status/:id", async (req, res) => {
   try {
+    // Nhân lúc khách đang polling, kiểm tra luôn đơn này (và các đơn khác)
+    // có đang "delivering" quá 1h chưa, để tự chuyển sang "delivered".
+    await autoCompleteDeliveredOrders();
+
     const order = await Order.findById(req.params.id);
     if (!order) return res.json({ status: null });
 
@@ -316,6 +321,9 @@ router.get("/my-orders/status", async (req, res) => {
   if (!req.session.user) return res.json({ orders: [] });
 
   try {
+    // Nhân lúc khách đang polling, kiểm tra luôn các đơn "delivering" quá 1h.
+    await autoCompleteDeliveredOrders();
+
     const orConditions = [{ placedBy: req.session.user._id }];
     if (req.session.user.phone) {
       orConditions.push({ phone: req.session.user.phone });

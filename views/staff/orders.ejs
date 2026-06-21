@@ -142,6 +142,7 @@
             payment_submitted: { cls: "badge-pending", text: "📤 Chờ xác minh" },
             preparing: { cls: "badge-confirmed", text: "👨‍🍳 Đang làm món" },
             delivering: { cls: "badge-confirmed", text: "🛵 Đang giao" },
+            delivered: { cls: "badge-confirmed", text: "✅ Hoàn tất" },
             completed: { cls: "badge-confirmed", text: "✅ Hoàn tất" },
             cancelled: { cls: "badge-pending", text: "❌ Đã hủy" }
           };
@@ -185,6 +186,9 @@
                       </div>
                     </div>
                     <span class="<%= badge.cls %>"><%= badge.text %></span>
+                    <% if (order.status === 'preparing') { %>
+                      <button type="button" class="btn-complete-order" onclick="completeOrder('<%= order._id %>', this)" title="Đánh dấu đã làm món xong">✅ Đã làm xong</button>
+                    <% } %>
                     <a href="/staff/orders/<%= order._id %>" class="btn-detail">Xem chi tiết</a>
                     <button type="button" class="btn-delete-order" onclick="deleteOrder('<%= order._id %>', this)" title="Xóa đơn này">🗑️</button>
                   </div>
@@ -290,6 +294,46 @@
   }
 
   if (searchInput) searchInput.addEventListener('input', applySearch);
+
+  // ── Đánh dấu đơn đã làm món xong -> chuyển sang "Hoàn tất" ──
+  // Cập nhật badge tại chỗ, không reload trang, theo đúng yêu cầu.
+  // ── Đánh dấu đơn đã làm món xong -> chuyển sang "Đang giao" ──
+  // Sau 1 giờ, hệ thống tự chuyển tiếp sang "Hoàn tất" mà không cần
+  // nhân viên bấm thêm gì nữa (xem autoCompleteDeliveredOrders ở backend).
+  async function completeOrder(orderId, btn) {
+    btn.disabled = true;
+
+    try {
+      const res = await fetch(`/staff/orders/complete/${orderId}`, {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        const row = btn.closest('.day-order-row');
+        if (row) {
+          row.dataset.status = 'delivering';
+
+          const badgeEl = row.querySelector('.badge-pending, .badge-confirmed');
+          if (badgeEl) {
+            badgeEl.className = 'badge-confirmed';
+            badgeEl.textContent = '🛵 Đang giao';
+          }
+        }
+
+        // Nút chỉ có ý nghĩa khi đơn đang "preparing", giờ đã chuyển sang
+        // "delivering" nên ẩn luôn (sẽ tự chuyển tiếp sang "delivered" sau 1h)
+        btn.remove();
+      } else {
+        alert(data.message || 'Có lỗi xảy ra khi cập nhật đơn hàng.');
+        btn.disabled = false;
+      }
+    } catch (err) {
+      alert('Không thể kết nối tới server, vui lòng thử lại.');
+      btn.disabled = false;
+    }
+  }
 
   // ── Xóa 1 đơn hàng ──
   // CẢNH BÁO: không giới hạn trạng thái, có thể xóa cả đơn đang xử lý.

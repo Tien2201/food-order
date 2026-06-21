@@ -67,9 +67,19 @@
       <div style="font-size:13px; color:#9a4a1f;">📤 Đã gửi ảnh chuyển khoản. Đang chờ nhân viên xác minh...</div>
     </div>
 
-    <!-- Trạng thái: preparing và sau đó - đang làm món -->
+    <!-- Trạng thái: preparing - đang làm món -->
     <div id="state-preparing" class="status-box" style="display:none; background:#f7f1e3; border:1px solid #ddd0b8; border-radius:12px; padding:16px; text-align:center;">
       <div style="font-size:13px; color:#5c4a2a; font-weight:600;">👨‍🍳 Thanh toán đã xác nhận! Quán đang chuẩn bị món cho bạn.</div>
+    </div>
+
+    <!-- Trạng thái: delivering - nhân viên đã làm xong, đang giao tới khách -->
+    <div id="state-delivering" class="status-box" style="display:none; background:#fdf2ee; border:1px solid #f3ddd2; border-radius:12px; padding:16px; text-align:center;">
+      <div style="font-size:13px; color:#9a4a1f; font-weight:600;">🛵 Món ăn đã làm xong và đang được giao đến bạn!</div>
+    </div>
+
+    <!-- Trạng thái: delivered / completed - hoàn tất thật, khách đã nhận hàng -->
+    <div id="state-delivered" class="status-box" style="display:none; background:#eef6f0; border:1px solid #cfe8d8; border-radius:12px; padding:16px; text-align:center;">
+      <div style="font-size:13px; color:#246e48; font-weight:600;">✅ Đơn hàng đã hoàn tất. Cảm ơn bạn đã đặt món!</div>
     </div>
 
     <a href="/" class="btn-go-back mt-3" style="display:block; text-align:center;">← Quay lại menu</a>
@@ -88,7 +98,8 @@
     payment_submitted: "📤",
     preparing: "👨‍🍳",
     delivering: "🛵",
-    completed: "🎉",
+    delivered: "✅",
+    completed: "✅",
     cancelled: "❌"
   };
 
@@ -98,6 +109,7 @@
     payment_submitted: "Đã gửi ảnh thanh toán",
     preparing: "Đang chuẩn bị món",
     delivering: "Đang giao hàng",
+    delivered: "Hoàn tất",
     completed: "Hoàn tất",
     cancelled: "Đơn đã bị hủy"
   };
@@ -108,6 +120,7 @@
     payment_submitted: "Đang chờ nhân viên xác minh thanh toán.",
     preparing: "Quán đang chuẩn bị món ăn cho bạn.",
     delivering: "Món ăn đang được giao đến bạn.",
+    delivered: "Cảm ơn bạn đã đặt món!",
     completed: "Cảm ơn bạn đã đặt món!",
     cancelled: "Đơn hàng đã bị hủy."
   };
@@ -115,13 +128,14 @@
   function renderStatus(status) {
     document.querySelectorAll('.status-box').forEach(el => el.style.display = 'none');
 
-    const box = document.getElementById('state-' + status);
-    if (box) box.style.display = '';
-    else if (status === 'delivering' || status === 'completed') {
-      document.getElementById('state-preparing').style.display = '';
-    }
+    // "completed" là trạng thái cũ trước khi có "delivered" — đơn cũ trong DB
+    // (nếu có) vẫn cần hiển thị đúng là đã hoàn tất, dùng chung khối HTML này.
+    const normalizedStatus = status === 'completed' ? 'delivered' : status;
 
-    document.getElementById('statusIcon').textContent = icons[status] || '🎉';
+    const box = document.getElementById('state-' + normalizedStatus);
+    if (box) box.style.display = '';
+
+    document.getElementById('statusIcon').textContent = icons[status] || '✅';
     document.getElementById('statusTitle').textContent = titles[status] || 'Đặt món thành công!';
     document.getElementById('statusDesc').textContent = descs[status] || '';
   }
@@ -142,7 +156,7 @@
       }
 
       // Dừng polling khi đơn đã hoàn tất hoặc bị hủy
-      if (currentStatus === 'completed' || currentStatus === 'cancelled') {
+      if (currentStatus === 'delivered' || currentStatus === 'completed' || currentStatus === 'cancelled') {
         clearInterval(pollTimer);
       }
     } catch (e) {}

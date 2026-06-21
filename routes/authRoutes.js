@@ -11,7 +11,7 @@ router.get("/register", (req, res) => {
 
 router.post("/register", async (req, res) => {
   try {
-    const { fullname, email, password, confirmPassword } = req.body;
+    const { fullname, username, email, password, confirmPassword } = req.body;
 
     // Validate phía server — không chỉ dựa vào JS phía client, vì JS có thể
     // bị tắt hoặc bị bỏ qua khi gửi request trực tiếp.
@@ -23,16 +23,31 @@ router.post("/register", async (req, res) => {
       return res.render("register", { error: "Mật khẩu cần tối thiểu 6 ký tự" });
     }
 
-    const checkUser = await User.findOne({ email });
+    const cleanUsername = (username || "").trim();
 
-    if (checkUser) {
+    if (!cleanUsername || cleanUsername.length < 3) {
+      return res.render("register", { error: "Tên đăng nhập cần tối thiểu 3 ký tự" });
+    }
+
+    if (!/^[a-zA-Z0-9_.]+$/.test(cleanUsername)) {
+      return res.render("register", { error: "Tên đăng nhập chỉ gồm chữ, số, gạch dưới (_) hoặc chấm (.), không khoảng trắng" });
+    }
+
+    const checkEmail = await User.findOne({ email });
+    if (checkEmail) {
       return res.render("register", { error: "Email đã tồn tại" });
+    }
+
+    const checkUsername = await User.findOne({ username: cleanUsername });
+    if (checkUsername) {
+      return res.render("register", { error: "Tên đăng nhập đã được sử dụng" });
     }
 
     const hashPassword = await bcrypt.hash(password, 10);
 
     await User.create({
       fullname,
+      username: cleanUsername,
       email,
       password: hashPassword,
       role: "customer"
@@ -51,12 +66,23 @@ router.get("/login", (req, res) => {
 
 router.post("/login", async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { loginId, password } = req.body;
+    const cleanLoginId = (loginId || "").trim();
 
-    const user = await User.findOne({ email });
+    // Tự nhận diện: nếu có "@" thì coi là email, ngược lại coi là username.
+    // Tìm theo đúng field tương ứng để chính xác hơn so với việc $or cả 2 field.
+    const query = cleanLoginId.includes("@")
+      ? { email: cleanLoginId }
+      : { username: cleanLoginId };
+
+    const user = await User.findOne(query);
 
     if (!user) {
       return res.render("login", { error: "Tài khoản không tồn tại" });
+    }
+
+    if (!user.password) {
+      return res.render("login", { error: "Tài khoản này đăng nhập bằng Google, vui lòng dùng nút Đăng nhập với Google" });
     }
 
     const checkPassword = await bcrypt.compare(password, user.password);
@@ -68,6 +94,7 @@ router.post("/login", async (req, res) => {
     req.session.user = {
       _id: user._id,
       fullname: user.fullname,
+      username: user.username,
       email: user.email,
       role: user.role
     };
@@ -126,6 +153,7 @@ router.get(
     req.session.user = {
       _id: user._id,
       fullname: user.fullname,
+      username: user.username,
       email: user.email,
       role: user.role
     };

@@ -7,6 +7,17 @@ type: String,
 required: true
 },
 
+// ── Tên đăng nhập ──
+// Bắt buộc với tài khoản đăng ký thường (username + password). Tài khoản
+// tạo qua Google OAuth không có username vì khách chưa từng tự đặt.
+username: {
+    type: String,
+    unique: true,
+    sparse: true, // cho phép nhiều document có username = null (tài khoản Google) mà không vi phạm unique
+    required: function() {
+        return !this.googleId;
+    }
+},
 
 email: {
     type: String,

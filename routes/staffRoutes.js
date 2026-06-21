@@ -4,6 +4,7 @@ const router = express.Router();
 const Order = require("../models/Order");
 const Food = require("../models/Food");
 const { isStaff } = require("../middleware/auth");
+const { autoCompleteDeliveredOrders } = require("../utils/orderAutomation");
 
 // ── Dashboard ──
 router.get("/dashboard", isStaff, async (req, res) => {
@@ -88,6 +89,34 @@ router.post("/orders/verify-payment/:id", isStaff, async (req, res) => {
   }
 });
 
+// ── Bước 3: Nhân viên làm món xong -> chuyển sang "completed" ──
+// Hỗ trợ cả AJAX (trả JSON, dùng cho nút bấm trực tiếp tại từng đơn trong
+// danh sách, không reload trang) và submit form thường (redirect như cũ).
+// ── Nhân viên đã làm món xong -> chuyển sang "delivering" (Đang giao) ──
+// Sau đúng 1 giờ kể từ deliveringAt, hệ thống tự chuyển tiếp sang "delivered"
+// (Hoàn tất thật) thông qua autoCompleteDeliveredOrders(), không cần nhân
+// viên bấm thêm lần nào nữa.
+router.post("/orders/complete/:id", isStaff, async (req, res) => {
+  try {
+    await Order.findByIdAndUpdate(req.params.id, {
+      status: "delivering",
+      deliveringAt: new Date(),
+      deliveringBy: req.session.user._id
+    });
+
+    if (req.headers["x-requested-with"] === "XMLHttpRequest" || req.headers.accept?.includes("application/json")) {
+      return res.json({ success: true });
+    }
+    res.redirect("/staff/orders");
+  } catch (err) {
+    console.error(err);
+    if (req.headers["x-requested-with"] === "XMLHttpRequest" || req.headers.accept?.includes("application/json")) {
+      return res.status(500).json({ success: false, message: "Lỗi khi cập nhật đơn hàng" });
+    }
+    res.redirect("/staff/orders");
+  }
+});
+
 // ── Thông báo đơn mới (status = pending, chưa xác nhận) ──
 // ── Thông báo cho nhân viên: đơn mới + đơn vừa đổi trạng thái ──
 // Trang danh sách gửi lên "knownStatuses" (orderId:status hiện đang hiển thị)
@@ -95,6 +124,10 @@ router.post("/orders/verify-payment/:id", isStaff, async (req, res) => {
 // vừa gửi ảnh thanh toán: confirmed -> payment_submitted) mà trang chưa biết.
 router.get("/notifications", isStaff, async (req, res) => {
   try {
+    // Nhân lúc có người đang mở trang (đang polling), kiểm tra luôn các đơn
+    // "delivering" đã quá 1h để tự chuyển sang "delivered".
+    await autoCompleteDeliveredOrders();
+
     const newOrders = await Order.find({ status: "pending" });
 
     let hasChangedOrders = false;

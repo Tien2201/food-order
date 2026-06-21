@@ -36,12 +36,20 @@ status: {
         "confirmed",          // đã xác nhận, đang chờ khách thanh toán (QR đã hiện cho khách)
         "payment_submitted",  // khách đã upload ảnh chuyển khoản, chờ nhân viên xác minh
         "preparing",          // nhân viên đã xác minh thanh toán, đang làm món
-        "delivering",
-        "completed",
+        "delivering",         // nhân viên đã làm xong, đang giao tới khách (khách thấy "Đang giao")
+        "delivered",          // tự động chuyển sau 1h kể từ deliveringAt - hoàn tất thật
+        "completed",          // giữ lại để tương thích đơn cũ trong DB trước khi có "delivered"
         "cancelled"
     ],
 
     default: "pending"
+},
+
+// Thời điểm nhân viên bấm "Đã làm xong" (chuyển sang "delivering").
+// Dùng để tính mốc tự động chuyển sang "delivered" sau 1 giờ.
+deliveringAt: {
+    type: Date,
+    default: null
 },
 
 paymentCode: {
@@ -69,6 +77,13 @@ confirmedBy: {
 
 // Nhân viên xác minh thanh toán hợp lệ (có thể khác người đã confirm đơn ban đầu)
 paymentVerifiedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    default: null
+},
+
+// Nhân viên đánh dấu đã làm món xong, chuyển đơn sang "delivering"
+deliveringBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     default: null

@@ -57,14 +57,17 @@
     .password-toggle-btn:hover { color: #D85A30; }
 
     .field-error-msg {
-      font-size: 11.5px;
+      font-size: 10.5px;
       color: #c0392b;
-      margin: -10px 0 12px;
-      min-height: 14px;
-      display: none;
+      margin: 0 0 2px;
+      height: 10px;
+      visibility: hidden;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    .field-error-msg.show { display: block; }
+    .field-error-msg.show { visibility: visible; }
 
     .form-input-custom.input-invalid {
       border-color: #e0a39c;
@@ -77,7 +80,7 @@
 
     /* ── Thanh đo độ mạnh mật khẩu ── */
     .password-strength-wrap {
-      margin: -8px 0 12px;
+      margin: 0 0 3px;
     }
 
     .password-strength-bar {
@@ -114,7 +117,7 @@
       display: flex;
       align-items: center;
       gap: 12px;
-      margin: 18px 0;
+      margin: 10px 0;
       font-size: 12px;
       color: #b0a89e;
     }
@@ -136,8 +139,8 @@
       background: #fff;
       border: 1px solid #e3d8bf;
       border-radius: 10px;
-      padding: 11px;
-      font-size: 14px;
+      padding: 9px;
+      font-size: 13.5px;
       font-weight: 500;
       color: #3c3c3c;
       cursor: pointer;
@@ -182,7 +185,7 @@
   <div class="auth-card">
 
     <div class="text-center mb-1">
-      <img src="/images/logo.jpg" alt="Logo" style="width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid #e3d8bf;display:block;margin:0 auto;">
+      <img src="/images/logo.jpg" alt="Logo" style="width:42px;height:42px;border-radius:50%;object-fit:cover;border:2px solid #e3d8bf;display:block;margin:0 auto;">
     </div>
     <h2 class="text-center">Tạo tài khoản mới ✨</h2>
     <p class="text-center">Đăng ký để bắt đầu đặt món yêu thích</p>
@@ -214,6 +217,13 @@
         <input type="text" name="fullname" id="fullnameInput" class="form-input-custom" placeholder="Nguyễn Văn A" required>
       </div>
       <div class="field-error-msg" id="fullnameError">Vui lòng nhập họ tên</div>
+
+      <label class="form-label-custom">Tên đăng nhập</label>
+      <div class="input-with-icon">
+        <span class="input-icon">🆔</span>
+        <input type="text" name="username" id="usernameInput" class="form-input-custom" placeholder="vd: minhanh99" required>
+      </div>
+      <div class="field-error-msg" id="usernameError">Tối thiểu 3 ký tự, không khoảng trắng</div>
 
       <label class="form-label-custom">Email</label>
       <div class="input-with-icon">
@@ -252,9 +262,9 @@
       </button>
     </form>
 
-    <p class="text-center mt-3 mb-0" style="font-size:13px; color:#9ca3af;">
+    <p class="text-center auth-bottom-link mb-0">
       Đã có tài khoản?
-      <a href="/login" style="color:#D85A30; font-weight:600;">Đăng nhập</a>
+      <a href="/login">Đăng nhập</a>
     </p>
 
   </div>
@@ -278,6 +288,8 @@
   // ── Validate real-time ──
   const fullnameInput = document.getElementById('fullnameInput');
   const fullnameError = document.getElementById('fullnameError');
+  const usernameInput = document.getElementById('usernameInput');
+  const usernameError = document.getElementById('usernameError');
   const emailInput = document.getElementById('emailInput');
   const emailError = document.getElementById('emailError');
   const passwordInput = document.getElementById('passwordInput');
@@ -287,6 +299,10 @@
 
   function isValidEmail(value) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  }
+
+  function isValidUsername(value) {
+    return value.length >= 3 && /^[a-zA-Z0-9_.]+$/.test(value);
   }
 
   function markField(input, errorEl, valid, touched) {
@@ -299,6 +315,12 @@
   function validateFullname(touched) {
     const valid = fullnameInput.value.trim().length > 0;
     markField(fullnameInput, fullnameError, valid, touched);
+    return valid;
+  }
+
+  function validateUsername(touched) {
+    const valid = isValidUsername(usernameInput.value.trim());
+    markField(usernameInput, usernameError, valid, touched);
     return valid;
   }
 
@@ -322,6 +344,8 @@
 
   fullnameInput.addEventListener('input', () => validateFullname(true));
   fullnameInput.addEventListener('blur', () => validateFullname(true));
+  usernameInput.addEventListener('input', () => validateUsername(true));
+  usernameInput.addEventListener('blur', () => validateUsername(true));
   emailInput.addEventListener('input', () => validateEmail(true));
   emailInput.addEventListener('blur', () => validateEmail(true));
   confirmPasswordInput.addEventListener('input', () => validateConfirmPassword(true));
@@ -379,11 +403,12 @@
 
   registerForm.addEventListener('submit', (e) => {
     const fullnameOk = validateFullname(true);
+    const usernameOk = validateUsername(true);
     const emailOk = validateEmail(true);
     const passwordOk = validatePassword(true);
     const confirmOk = validateConfirmPassword(true);
 
-    if (!fullnameOk || !emailOk || !passwordOk || !confirmOk) {
+    if (!fullnameOk || !usernameOk || !emailOk || !passwordOk || !confirmOk) {
       e.preventDefault();
       return;
     }

@@ -30,6 +30,9 @@
           <p class="text-muted">
             <%= user.email %>
           </p>
+          <% if (user.username) { %>
+            <p class="text-muted" style="font-size:13px;">🆔 <%= user.username %></p>
+          <% } %>
 
         </div>
 
