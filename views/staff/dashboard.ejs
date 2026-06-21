@@ -131,9 +131,9 @@
               <th>Thao tác</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody id="recentOrdersBody">
             <% if (recentOrders.length === 0) { %>
-              <tr><td colspan="6" style="text-align:center; color:#9ca3af; padding:32px;">Chưa có đơn hàng nào</td></tr>
+              <tr id="emptyOrdersRow"><td colspan="6" style="text-align:center; color:#9ca3af; padding:32px;">Chưa có đơn hàng nào</td></tr>
             <% } else { %>
               <%
                 const statusBadges = {
@@ -149,7 +149,7 @@
               %>
               <% recentOrders.forEach(order => { %>
                 <% const badge = statusBadges[order.status] || statusBadges.pending; %>
-                <tr>
+                <tr data-order-id="<%= order._id %>">
                   <td><strong style="color:#111827"><%= order.customerName %></strong></td>
                   <td><%= order.phone %></td>
                   <td style="color:#D85A30; font-weight:700;"><%= order.totalPrice.toLocaleString('vi-VN') %> VNĐ</td>
@@ -219,6 +219,59 @@
     updateMuteBtn();
   }
 
+  // ── Dựng 1 dòng <tr> cho đơn mới, khớp đúng cấu trúc EJS đã render ──
+  const statusBadgesJs = {
+    pending: { cls: "badge-pending", text: "⏳ Chờ xác nhận" },
+    confirmed: { cls: "badge-pending", text: "💳 Chờ thanh toán" },
+    payment_submitted: { cls: "badge-pending", text: "📤 Chờ xác minh" },
+    preparing: { cls: "badge-confirmed", text: "👨‍🍳 Đang làm món" },
+    delivering: { cls: "badge-confirmed", text: "🛵 Đang giao" },
+    delivered: { cls: "badge-confirmed", text: "✅ Hoàn tất" },
+    completed: { cls: "badge-confirmed", text: "✅ Hoàn tất" },
+    cancelled: { cls: "badge-pending", text: "❌ Đã hủy" }
+  };
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str == null ? '' : String(str);
+    return div.innerHTML;
+  }
+
+  const knownDashboardOrderIds = new Set(
+    Array.from(document.querySelectorAll('#recentOrdersBody tr[data-order-id]')).map(tr => tr.dataset.orderId)
+  );
+
+  function insertNewOrderRow(order) {
+    const tbody = document.getElementById('recentOrdersBody');
+    if (!tbody) return;
+
+    // Đơn đầu tiên trong bảng — xóa dòng "Chưa có đơn hàng nào" nếu còn
+    const emptyRow = document.getElementById('emptyOrdersRow');
+    if (emptyRow) emptyRow.remove();
+
+    const badge = statusBadgesJs[order.status] || statusBadgesJs.pending;
+    const priceFormatted = (order.totalPrice || 0).toLocaleString('vi-VN');
+
+    const row = document.createElement('tr');
+    row.dataset.orderId = order._id;
+    row.innerHTML = `
+      <td><strong style="color:#111827">${escapeHtml(order.customerName)}</strong></td>
+      <td>${escapeHtml(order.phone)}</td>
+      <td style="color:#D85A30; font-weight:700;">${priceFormatted} VNĐ</td>
+      <td><span class="${badge.cls}">${badge.text}</span></td>
+      <td style="font-family:monospace; font-size:11px; color:#9ca3af;">${escapeHtml(order.paymentCode) || "Chưa có"}</td>
+      <td><a href="/staff/orders/${order._id}" class="btn-detail">Chi tiết</a></td>
+    `;
+
+    tbody.insertBefore(row, tbody.firstChild);
+
+    // Bảng chỉ hiện tối đa 5 đơn mới nhất — xóa dòng cuối nếu vượt quá
+    const allRows = tbody.querySelectorAll('tr[data-order-id]');
+    if (allRows.length > 5) {
+      allRows[allRows.length - 1].remove();
+    }
+  }
+
   async function checkStaffNotification() {
     try {
       const res = await fetch("/staff/notifications");
@@ -232,6 +285,16 @@
 
       lastCount = data.count;
       sessionStorage.setItem("lastOrderCount", lastCount);
+
+      // Chèn động các đơn mới (status "pending") vào bảng "Đơn hàng mới nhất",
+      // không reload trang, đồng bộ với cách trang Đơn hàng đã làm.
+      (data.orders || []).forEach(order => {
+        const orderIdStr = String(order._id);
+        if (!knownDashboardOrderIds.has(orderIdStr)) {
+          knownDashboardOrderIds.add(orderIdStr);
+          insertNewOrderRow(order);
+        }
+      });
     } catch (e) {}
   }
 
