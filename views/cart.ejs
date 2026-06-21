@@ -7,24 +7,26 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
   <link rel="icon" href="/images/logo.jpg">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Noto+Serif:wght@700&display=swap" rel="stylesheet">
   <style>
     body {
-      background: #faf9f7;
+      background: #F7F3EE;
       font-family: 'Poppins', sans-serif;
     }
 
     /* ── Page header ── */
     .cart-hero {
-      background: linear-gradient(135deg, #1a1a1a 0%, #2d1a0e 100%);
+      background: linear-gradient(135deg, #1A1410 0%, #2d1a0e 100%);
       padding: 40px 0 32px;
     }
 
     .cart-hero h1 {
-      font-size: 26px;
+      font-family: 'Noto Serif', Georgia, serif;
+      font-size: 27px;
       font-weight: 700;
       color: #fff;
       margin-bottom: 6px;
+      letter-spacing: 0.3px;
     }
 
     .cart-hero p {
@@ -54,55 +56,68 @@
     /* ── Empty state ── */
     .empty-cart-card {
       background: #fff;
-      border-radius: 20px;
-      border: 1px solid #f0ece8;
+      border-radius: 14px;
+      border: 1px solid #e3d8bf;
       padding: 64px 24px;
       text-align: center;
       margin-top: 32px;
     }
 
     .empty-cart-card .empty-icon { font-size: 56px; margin-bottom: 16px; }
-    .empty-cart-card h3 { font-size: 20px; font-weight: 600; color: #1a1a1a; margin-bottom: 8px; }
+    .empty-cart-card h3 { font-family: 'Noto Serif', Georgia, serif; font-size: 20px; font-weight: 700; color: #1a1410; margin-bottom: 8px; }
     .empty-cart-card p { font-size: 14px; color: #9e9e9e; }
 
     /* ── Cart items ── */
     .cart-section-title {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 1px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
       text-transform: uppercase;
-      color: #D85A30;
-      margin-bottom: 16px;
+      color: #1a1410;
+      margin-bottom: 18px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
+      padding-left: 12px;
+      position: relative;
+    }
+
+    .cart-section-title::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 1px;
+      bottom: 1px;
+      width: 4px;
+      background: #D85A30;
+      border-radius: 2px;
     }
 
     .cart-section-title::after {
       content: '';
       flex: 1;
       height: 1px;
-      background: #f0ece8;
+      background: #ddd0b8;
     }
 
     .cart-item-card {
       background: #fff;
-      border-radius: 16px;
-      border: 1px solid #f0ece8;
+      border-radius: 12px;
+      border: 1px solid #e3d8bf;
       padding: 16px 20px;
       margin-bottom: 12px;
       display: flex;
       align-items: center;
       gap: 16px;
-      transition: box-shadow 0.15s;
+      transition: box-shadow 0.15s, border-color 0.15s;
     }
 
-    .cart-item-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+    .cart-item-card:hover { box-shadow: 0 4px 16px rgba(26,20,16,0.08); border-color: #D85A30; }
 
     .cart-item-img {
       width: 72px;
       height: 72px;
-      border-radius: 12px;
+      border-radius: 8px;
       object-fit: cover;
       background: #f0ece8;
       flex-shrink: 0;
@@ -113,7 +128,7 @@
     .cart-item-name {
       font-size: 15px;
       font-weight: 600;
-      color: #1a1a1a;
+      color: #1a1410;
       margin-bottom: 3px;
       white-space: nowrap;
       overflow: hidden;
@@ -134,8 +149,8 @@
 
     .cart-item-qty {
       font-size: 12px;
-      color: #666;
-      background: #f9f6f3;
+      color: #6b5d47;
+      background: #f7f1e3;
       border-radius: 6px;
       padding: 3px 10px;
     }
@@ -150,7 +165,7 @@
       flex-shrink: 0;
       width: 36px;
       height: 36px;
-      border-radius: 10px;
+      border-radius: 8px;
       border: 1px solid #f5c6c0;
       background: transparent;
       color: #c0392b;
@@ -167,20 +182,21 @@
     /* ── Order summary card ── */
     .summary-card {
       background: #fff;
-      border-radius: 20px;
-      border: 1px solid #f0ece8;
+      border-radius: 14px;
+      border: 1px solid #e3d8bf;
       padding: 24px;
       position: sticky;
       top: 90px;
     }
 
     .summary-card h3 {
-      font-size: 17px;
+      font-family: 'Noto Serif', Georgia, serif;
+      font-size: 18px;
       font-weight: 700;
-      color: #1a1a1a;
+      color: #1a1410;
       margin-bottom: 20px;
       padding-bottom: 14px;
-      border-bottom: 1px solid #f0ece8;
+      border-bottom: 1px solid #e3d8bf;
     }
 
     .summary-row {
@@ -197,12 +213,12 @@
       justify-content: space-between;
       align-items: center;
       padding: 14px 0;
-      border-top: 1px solid #f0ece8;
-      border-bottom: 1px solid #f0ece8;
+      border-top: 1px solid #e3d8bf;
+      border-bottom: 1px solid #e3d8bf;
       margin: 14px 0 20px;
     }
 
-    .summary-total span { font-size: 14px; font-weight: 600; color: #1a1a1a; }
+    .summary-total span { font-size: 14px; font-weight: 600; color: #1a1410; }
     .summary-total strong { font-size: 20px; font-weight: 700; color: #D85A30; }
 
     /* ── Form inputs ── */
@@ -217,12 +233,12 @@
     .form-input-custom {
       width: 100%;
       padding: 10px 14px;
-      border: 1px solid #e8e2dc;
-      border-radius: 10px;
+      border: 1px solid #e3d8bf;
+      border-radius: 8px;
       font-size: 14px;
       font-family: 'Poppins', sans-serif;
-      color: #1a1a1a;
-      background: #faf9f7;
+      color: #1a1410;
+      background: #F7F3EE;
       outline: none;
       transition: border-color 0.15s;
       margin-bottom: 14px;
@@ -237,7 +253,7 @@
       background: #D85A30;
       color: #fff;
       border: none;
-      border-radius: 12px;
+      border-radius: 10px;
       padding: 14px;
       font-size: 15px;
       font-weight: 700;
@@ -252,7 +268,7 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: #1a1a1a;
+      background: #1a1410;
       color: #fff !important;
       border-radius: 10px;
       padding: 9px 18px;
@@ -262,7 +278,21 @@
       transition: background 0.15s;
     }
 
-    .btn-menu:hover { background: #333; }
+    .btn-menu:hover { background: #2d1a0e; }
+
+    /* ── Responsive: mobile ── */
+    @media (max-width: 575px) {
+      .cart-item-card {
+        padding: 12px 14px;
+        gap: 12px;
+      }
+      .cart-item-img {
+        width: 60px;
+        height: 60px;
+      }
+      .cart-item-name { font-size: 14px; }
+      .summary-card { position: static; }
+    }
   </style>
 </head>
 <body>

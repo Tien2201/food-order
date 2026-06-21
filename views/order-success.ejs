@@ -7,7 +7,13 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
   <link rel="icon" href="/images/logo.jpg">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Noto+Serif:wght@700&display=swap" rel="stylesheet">
+  <style>
+    #statusTitle {
+      font-family: 'Noto Serif', Georgia, serif;
+      font-weight: 700;
+    }
+  </style>
 </head>
 <body>
 
@@ -19,30 +25,30 @@
     <h2 class="text-center" id="statusTitle">Đặt món thành công!</h2>
     <p class="text-center" id="statusDesc">Đơn hàng của bạn đang chờ nhân viên xác nhận.</p>
 
-    <div style="background:#f9f6f3; border-radius:12px; padding:16px; margin:20px 0; font-size:13px;">
+    <div style="background:#f7f1e3; border-radius:12px; padding:16px; margin:20px 0; font-size:13px; border:1px solid #e3d8bf;">
       <div class="d-flex justify-content-between mb-2">
-        <span style="color:#9ca3af;">Mã đơn</span>
-        <span style="font-family:monospace; color:#1a1a1a;"><%= order._id %></span>
+        <span style="color:#9e9484;">Mã đơn</span>
+        <span style="font-family:monospace; color:#1a1410;"><%= order._id %></span>
       </div>
       <div class="d-flex justify-content-between">
-        <span style="color:#9ca3af;">Tổng tiền</span>
+        <span style="color:#9e9484;">Tổng tiền</span>
         <strong style="color:#D85A30;"><%= order.totalPrice.toLocaleString('vi-VN') %> VNĐ</strong>
       </div>
     </div>
 
     <!-- Trạng thái: pending - chờ xác nhận -->
-    <div id="state-pending" class="status-box" style="background:#fff8e8; border:1px solid #ffe9b0; border-radius:12px; padding:16px; text-align:center;">
-      <div style="font-size:13px; color:#9a7416;">⏳ Đang chờ nhân viên xác nhận đơn hàng...</div>
+    <div id="state-pending" class="status-box" style="background:#fdf2ee; border:1px solid #f3ddd2; border-radius:12px; padding:16px; text-align:center;">
+      <div style="font-size:13px; color:#9a4a1f;">⏳ Đang chờ nhân viên xác nhận đơn hàng...</div>
     </div>
 
     <!-- Trạng thái: confirmed - hiện QR để khách thanh toán -->
     <div id="state-confirmed" class="status-box" style="display:none;">
-      <div style="background:#fff3ee; border:1px solid #ffd9c2; border-radius:12px; padding:16px; text-align:center; margin-bottom:16px;">
+      <div style="background:#fdf2ee; border:1px solid #f3ddd2; border-radius:12px; padding:16px; text-align:center; margin-bottom:16px;">
         <div style="font-size:13px; color:#9a4a1f; font-weight:600;">✅ Đơn đã được xác nhận! Vui lòng thanh toán theo mã QR bên dưới.</div>
       </div>
 
       <% if (qrImage) { %>
-        <img src="<%= qrImage %>" alt="QR thanh toán" style="width:100%; max-width:260px; display:block; margin:0 auto 16px; border-radius:12px; border:1px solid #f0ece8;">
+        <img src="<%= qrImage %>" alt="QR thanh toán" style="width:100%; max-width:260px; display:block; margin:0 auto 16px; border-radius:12px; border:1px solid #e3d8bf;">
       <% } else { %>
         <div class="empty-state" style="margin-bottom:16px;">
           <p style="font-size:13px;">Quán chưa cập nhật mã QR. Vui lòng liên hệ trực tiếp để thanh toán.</p>
@@ -57,13 +63,13 @@
     </div>
 
     <!-- Trạng thái: payment_submitted - đã gửi ảnh, chờ xác minh -->
-    <div id="state-payment_submitted" class="status-box" style="display:none; background:#eef2ff; border:1px solid #c7d2fe; border-radius:12px; padding:16px; text-align:center;">
-      <div style="font-size:13px; color:#3730a3;">📤 Đã gửi ảnh chuyển khoản. Đang chờ nhân viên xác minh...</div>
+    <div id="state-payment_submitted" class="status-box" style="display:none; background:#fdf2ee; border:1px solid #f3ddd2; border-radius:12px; padding:16px; text-align:center;">
+      <div style="font-size:13px; color:#9a4a1f;">📤 Đã gửi ảnh chuyển khoản. Đang chờ nhân viên xác minh...</div>
     </div>
 
     <!-- Trạng thái: preparing và sau đó - đang làm món -->
-    <div id="state-preparing" class="status-box" style="display:none; background:#d1fae5; border:1px solid #a7f3d0; border-radius:12px; padding:16px; text-align:center;">
-      <div style="font-size:13px; color:#065f46; font-weight:600;">👨‍🍳 Thanh toán đã xác nhận! Quán đang chuẩn bị món cho bạn.</div>
+    <div id="state-preparing" class="status-box" style="display:none; background:#f7f1e3; border:1px solid #ddd0b8; border-radius:12px; padding:16px; text-align:center;">
+      <div style="font-size:13px; color:#5c4a2a; font-weight:600;">👨‍🍳 Thanh toán đã xác nhận! Quán đang chuẩn bị món cho bạn.</div>
     </div>
 
     <a href="/" class="btn-go-back mt-3" style="display:block; text-align:center;">← Quay lại menu</a>

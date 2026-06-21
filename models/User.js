@@ -16,7 +16,18 @@ email: {
 
 password: {
     type: String,
-    required: true
+    required: function() {
+        // Bắt buộc có password trừ khi tài khoản được tạo qua Google OAuth
+        return !this.googleId;
+    }
+},
+
+// ── Đăng nhập Google (OAuth) ──
+// ID duy nhất Google trả về cho mỗi tài khoản. Nếu có giá trị này,
+// tài khoản được tạo/đăng nhập qua Google, không cần password.
+googleId: {
+    type: String,
+    default: null
 },
 
 phone: {

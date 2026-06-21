@@ -1,9 +1,15 @@
 <style>
     .custom-navbar {
         background: #fff;
-        border-bottom: 1px solid #f0ece8;
-        box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-        padding: 10px 0;
+        border-bottom: 1px solid #e3d8bf;
+        box-shadow: 0 2px 12px rgba(26,20,16,0.05);
+        padding: 12px 0;
+        transition: box-shadow 0.25s, padding 0.25s;
+    }
+
+    .custom-navbar.navbar-scrolled {
+        padding: 7px 0;
+        box-shadow: 0 6px 24px rgba(26,20,16,0.1);
     }
 
     .site-logo {
@@ -11,25 +17,33 @@
         height: 44px;
         border-radius: 50%;
         object-fit: cover;
-        border: 2px solid #f0ece8;
+        border: 2px solid #e3d8bf;
+        transition: width 0.25s, height 0.25s;
+    }
+
+    .navbar-scrolled .site-logo {
+        width: 36px;
+        height: 36px;
     }
 
     .logo-title {
-        font-size: 15px;
-        font-weight: 600;
-        color: #1a1a1a;
+        font-family: 'Noto Serif', Georgia, serif;
+        font-size: 16px;
+        font-weight: 700;
+        color: #1a1410;
         line-height: 1.3;
+        letter-spacing: 0.2px;
     }
 
     .logo-sub {
         font-size: 11px;
-        color: #9e9e9e;
+        color: #9e9484;
         letter-spacing: 0.3px;
     }
 
     .custom-navbar .nav-link {
         font-size: 14px;
-        color: #555;
+        color: #5a4f3f;
         font-weight: 500;
         padding: 6px 14px !important;
         border-radius: 8px;
@@ -49,8 +63,8 @@
         background: #D85A30;
         color: #fff !important;
         border: none;
-        border-radius: 20px;
-        padding: 8px 16px;
+        border-radius: 10px;
+        padding: 9px 16px;
         font-size: 14px;
         font-weight: 500;
         text-decoration: none;
@@ -67,7 +81,7 @@
         position: absolute;
         top: -6px;
         right: -6px;
-        background: #1a1a1a;
+        background: #1a1410;
         color: #fff;
         font-size: 10px;
         font-weight: 600;
@@ -78,86 +92,6 @@
         align-items: center;
         justify-content: center;
         border: 2px solid #fff;
-    }
-
-    .btn-account {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        background: transparent;
-        color: #333 !important;
-        border: 1px solid #e0dbd6;
-        border-radius: 20px;
-        padding: 7px 14px;
-        font-size: 14px;
-        font-weight: 500;
-        text-decoration: none;
-        transition: border-color 0.15s, background 0.15s;
-    }
-
-    .btn-account:hover {
-        border-color: #D85A30;
-        color: #D85A30 !important;
-        background: #fdf2ee;
-    }
-
-    .btn-logout {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        background: transparent;
-        color: #c0392b !important;
-        border: 1px solid #f5c6c0;
-        border-radius: 20px;
-        padding: 7px 14px;
-        font-size: 14px;
-        font-weight: 500;
-        text-decoration: none;
-        transition: background 0.15s;
-    }
-
-    .btn-logout:hover {
-        background: #fdf2ee;
-        border-color: #c0392b;
-    }
-
-    .btn-login {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        background: transparent;
-        color: #333 !important;
-        border: 1px solid #e0dbd6;
-        border-radius: 20px;
-        padding: 7px 14px;
-        font-size: 14px;
-        font-weight: 500;
-        text-decoration: none;
-        transition: border-color 0.15s;
-    }
-
-    .btn-login:hover {
-        border-color: #D85A30;
-        color: #D85A30 !important;
-    }
-
-    .btn-register {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        background: #1a1a1a;
-        color: #fff !important;
-        border: 1px solid #1a1a1a;
-        border-radius: 20px;
-        padding: 7px 16px;
-        font-size: 14px;
-        font-weight: 500;
-        text-decoration: none;
-        transition: background 0.15s;
-    }
-
-    .btn-register:hover {
-        background: #333;
     }
 
     .navbar-nav-actions {
@@ -172,9 +106,114 @@
             flex-wrap: wrap;
         }
     }
+
+    /* ── Menu tài khoản dạng hamburger/dropdown ── */
+    .btn-account-menu {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: transparent;
+        color: #5a4f3f;
+        border: 1px solid #d9cfb8;
+        border-radius: 10px;
+        padding: 8px 14px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: border-color 0.15s, background 0.15s, color 0.15s;
+    }
+
+    .btn-account-menu:hover,
+    .btn-account-menu:focus {
+        border-color: #D85A30;
+        color: #D85A30;
+        background: #fdf2ee;
+    }
+
+    .btn-account-menu .hamburger-icon {
+        font-size: 15px;
+        line-height: 1;
+    }
+
+    .account-dropdown-menu {
+        border: 1px solid #e3d8bf;
+        border-radius: 12px;
+        box-shadow: 0 16px 40px rgba(26,20,16,0.18);
+        padding: 10px;
+        min-width: 220px;
+        z-index: 1050;
+        margin-top: 8px !important;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .account-dropdown-menu .dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-radius: 8px;
+        padding: 10px 12px;
+        font-size: 14px;
+        color: #333;
+        font-weight: 500;
+        line-height: 1.3;
+    }
+
+    .account-dropdown-menu .dropdown-item:hover,
+    .account-dropdown-menu .dropdown-item:focus {
+        background: #fdf2ee;
+        color: #D85A30;
+    }
+
+    .account-dropdown-menu .dropdown-item.text-danger {
+        color: #c0392b;
+    }
+
+    .account-dropdown-menu .dropdown-item.text-danger:hover {
+        background: #fdf2ee;
+        color: #c0392b;
+    }
+
+    .account-dropdown-menu hr {
+        margin: 8px 6px;
+        border: none;
+        border-top: 1px solid #e3d8bf;
+        opacity: 1;
+    }
+
+    /* ── Mobile menu (collapse) nâng cấp ── */
+    @media (max-width: 991px) {
+        .navbar-collapse {
+            border-top: 1px solid #e3d8bf;
+            margin-top: 12px;
+            padding-top: 14px;
+        }
+
+        .navbar-nav {
+            margin-bottom: 4px;
+        }
+
+        .custom-navbar .nav-link {
+            padding: 11px 14px !important;
+            border-radius: 10px;
+        }
+
+        .navbar-nav .nav-item + .nav-item {
+            margin-top: 2px;
+        }
+    }
+
+    .navbar-toggler {
+        border: 1px solid #d9cfb8 !important;
+        border-radius: 8px !important;
+        padding: 6px 10px !important;
+    }
+
+    .navbar-toggler:focus {
+        box-shadow: 0 0 0 3px rgba(216,90,48,0.15) !important;
+    }
 </style>
 
-<nav class="navbar navbar-expand-lg custom-navbar sticky-top">
+<nav class="navbar navbar-expand-lg custom-navbar sticky-top" id="mainNavbar">
     <div class="container-fluid px-4">
 
         <a class="navbar-brand d-flex align-items-center gap-3" href="/">
@@ -210,21 +249,29 @@
                 </a>
 
                 <% if (user) { %>
-                    <a href="/my-orders" class="btn-account">
-                        📦 Đơn hàng
-                    </a>
-                    <a href="/profile" class="btn-account">
-                        👤 <%= user.fullname || 'Tài khoản' %>
-                    </a>
-                    <a href="/logout" class="btn-logout">
-                        Đăng xuất
-                    </a>
+                    <div class="dropdown">
+                        <button class="btn-account-menu dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span class="hamburger-icon">☰</span> <%= user.fullname || 'Tài khoản' %>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end account-dropdown-menu">
+                            <li><a class="dropdown-item" href="/my-orders">📦 Đơn hàng</a></li>
+                            <li><a class="dropdown-item" href="/profile">👤 Tài khoản</a></li>
+                            <li><hr></li>
+                            <li><a class="dropdown-item text-danger" href="/logout">🚪 Đăng xuất</a></li>
+                        </ul>
+                    </div>
                 <% } else { %>
-                    <a href="/track-order" class="btn-account">
-                        🔍 Tra cứu đơn hàng
-                    </a>
-                    <a href="/login" class="btn-login">Đăng nhập</a>
-                    <a href="/register" class="btn-register">Đăng ký</a>
+                    <div class="dropdown">
+                        <button class="btn-account-menu dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span class="hamburger-icon">☰</span> Tài khoản
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end account-dropdown-menu">
+                            <li><a class="dropdown-item" href="/track-order">🔍 Tra cứu đơn hàng</a></li>
+                            <li><hr></li>
+                            <li><a class="dropdown-item" href="/login">Đăng nhập</a></li>
+                            <li><a class="dropdown-item" href="/register">Đăng ký</a></li>
+                        </ul>
+                    </div>
                 <% } %>
 
             </div>
@@ -249,5 +296,24 @@
       }
       lastTouchEnd = now;
     }, { passive: false });
+  })();
+</script>
+
+<!-- ── Hiệu ứng cuộn cho navbar: thu nhỏ logo + tăng shadow khi cuộn xuống ── -->
+<script>
+  (function() {
+    const navbar = document.getElementById('mainNavbar');
+    if (!navbar) return;
+
+    const SCROLL_THRESHOLD = 20;
+
+    function handleScroll() {
+      const scrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
+      navbar.classList.toggle('navbar-scrolled', scrollY > SCROLL_THRESHOLD);
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    document.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
   })();
 </script>

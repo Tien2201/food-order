@@ -490,15 +490,28 @@ input, select, textarea, button {
 
 /* Section labels */
 .section-label {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 1px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
-  color: #D85A30;
-  margin-bottom: 16px;
+  color: #1a1410;
+  margin-bottom: 18px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  padding-left: 12px;
+  position: relative;
+}
+
+.section-label::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 1px;
+  bottom: 1px;
+  width: 4px;
+  background: #D85A30;
+  border-radius: 2px;
 }
 
 .section-label::after {
