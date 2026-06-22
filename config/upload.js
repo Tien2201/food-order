@@ -102,8 +102,23 @@ const avatarStorage = new CloudinaryStorage({
 
 const uploadAvatar = multer({ storage: avatarStorage, fileFilter: imageFileFilter });
 
+// Upload ảnh cho bài đăng thảo luận/feedback - mỗi bài có thể có nhiều ảnh
+// (tối đa 4), mỗi ảnh cần tên riêng. Dùng cả timestamp + số ngẫu nhiên để
+// tránh trùng tên khi nhiều ảnh được xử lý cùng lúc trong 1 request.
+const postImageStorage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: () => ({
+    folder: "food-order/discussion-posts",
+    public_id: "post-" + Date.now() + "-" + Math.round(Math.random() * 1e9),
+    resource_type: "image"
+  })
+});
+
+const uploadPostImages = multer({ storage: postImageStorage, fileFilter: imageFileFilter });
+
 module.exports = upload;
 module.exports.uploadQr = uploadQr;
 module.exports.uploadPaymentProof = uploadPaymentProof;
 module.exports.uploadAbout = uploadAbout;
 module.exports.uploadAvatar = uploadAvatar;
+module.exports.uploadPostImages = uploadPostImages;

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thảo luận - Đậu Hủ Thúi Nhà Họ La</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="/images/logo.jpg">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Noto+Serif:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<%- include("partials/header", { user: user }) %>
+
+<!-- Hero -->
+<div class="menu-hero">
+  <div class="container">
+    <h1>Thảo luận & Feedback 💬</h1>
+    <p>Chia sẻ trải nghiệm của bạn về món ăn tại quán</p>
+  </div>
+</div>
+
+<div class="container py-5" style="max-width:720px;">
+
+  <% if (error) { %>
+    <div class="alert alert-danger" id="discussionAlert" style="border-radius:10px; font-size:13px;"><%= error %></div>
+  <% } %>
+  <% if (success) { %>
+    <div class="alert alert-success" id="discussionAlert" style="border-radius:10px; font-size:13px;"><%= success %></div>
+  <% } %>
+
+  <!-- Form đăng bài - chỉ hiện nếu đã đăng nhập -->
+  <% if (user) { %>
+    <div class="discussion-form-card">
+      <form action="/discussion" method="POST" enctype="multipart/form-data" id="postForm">
+        <label class="form-label-custom">Chia sẻ cảm nhận của bạn</label>
+        <textarea name="content" class="form-input-custom" rows="3" placeholder="Món ăn thế nào, bạn thích điều gì..." required style="resize:vertical;"></textarea>
+
+        <label class="form-label-custom">Hình ảnh (tối đa 4 ảnh, không bắt buộc)</label>
+        <input type="file" name="images" id="postImagesInput" accept="image/jpeg,image/jpg,image/png,image/webp" multiple class="form-input-custom">
+        <div id="postImagePreview" class="discussion-image-preview"></div>
+
+        <button type="submit" class="btn-auth mt-2">📤 Đăng bài</button>
+        <p style="font-size:11.5px; color:#9e9484; margin:8px 0 0;">Bài đăng sẽ hiện công khai sau khi được admin duyệt.</p>
+      </form>
+    </div>
+  <% } else { %>
+    <div class="discussion-login-prompt">
+      <p style="margin-bottom:10px;">Đăng nhập để chia sẻ cảm nhận của bạn về món ăn</p>
+      <a href="/login" class="btn-auth" style="display:inline-block; width:auto; padding:10px 28px;">Đăng nhập</a>
+    </div>
+  <% } %>
+
+  <!-- Danh sách bài đã duyệt -->
+  <div class="discussion-section-label">Bài viết từ khách hàng</div>
+
+  <% if (posts.length === 0) { %>
+    <div class="empty-state">
+      <div style="font-size:40px; margin-bottom:8px;">💬</div>
+      <p>Chưa có bài viết nào. Hãy là người chia sẻ đầu tiên!</p>
+    </div>
+  <% } else { %>
+    <% posts.forEach(post => { %>
+      <div class="discussion-post-card">
+        <div class="discussion-post-header">
+          <% if (post.user && post.user.avatar && post.user.avatar !== "/images/default-avatar.png") { %>
+            <img src="<%= post.user.avatar %>" class="discussion-post-avatar" alt="Avatar">
+          <% } else { %>
+            <div class="discussion-post-avatar-fallback"><%= (post.user && post.user.fullname || '?').charAt(0).toUpperCase() %></div>
+          <% } %>
+          <div>
+            <div class="discussion-post-name"><%= post.user ? post.user.fullname : 'Khách' %></div>
+            <div class="discussion-post-time"><%= new Date(post.createdAt).toLocaleDateString('vi-VN') %></div>
+          </div>
+        </div>
+
+        <div class="discussion-post-content"><%= post.content %></div>
+
+        <% if (post.images && post.images.length > 0) { %>
+          <div class="discussion-post-images discussion-post-images-<%= Math.min(post.images.length, 4) %>">
+            <% post.images.forEach(img => { %>
+              <img src="<%= img %>" alt="Ảnh feedback">
+            <% }) %>
+          </div>
+        <% } %>
+      </div>
+    <% }) %>
+  <% } %>
+
+</div>
+
+<%- include("partials/footer") %>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  setTimeout(() => {
+    const box = document.getElementById('discussionAlert');
+    if (box) box.style.display = 'none';
+  }, 4000);
+
+  // Xem trước ảnh đã chọn trước khi đăng
+  const postImagesInput = document.getElementById('postImagesInput');
+  const postImagePreview = document.getElementById('postImagePreview');
+
+  if (postImagesInput) {
+    postImagesInput.addEventListener('change', () => {
+      postImagePreview.innerHTML = '';
+      const files = Array.from(postImagesInput.files).slice(0, 4);
+
+      if (postImagesInput.files.length > 4) {
+        alert('Chỉ được chọn tối đa 4 ảnh. Hệ thống sẽ chỉ lấy 4 ảnh đầu tiên.');
+      }
+
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          postImagePreview.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+  }
+</script>
+</body>
+</html>

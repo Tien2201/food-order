@@ -7,6 +7,7 @@ const Food = require("../models/Food");
 const Order = require("../models/Order");
 const User = require("../models/User");
 const Setting = require("../models/Setting");
+const Post = require("../models/Post");
 
 const upload = require("../config/upload");
 const cloudinary = require("../config/cloudinary");
@@ -644,6 +645,56 @@ router.get("/statistics/export", isAdmin, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).send("Lỗi khi xuất file Excel: " + err.message);
+  }
+});
+
+// ── Quản lý bài đăng thảo luận/feedback (duyệt trước khi hiện công khai) ──
+router.get("/discussions", isAdmin, async (req, res) => {
+  try {
+    const posts = await Post.find()
+      .populate("user", "fullname email")
+      .sort({ createdAt: -1 });
+
+    res.render("admin/discussions", { posts, user: req.session.user });
+  } catch (err) {
+    console.error(err);
+    res.redirect("/admin/dashboard");
+  }
+});
+
+router.post("/discussions/approve/:id", isAdmin, async (req, res) => {
+  try {
+    await Post.findByIdAndUpdate(req.params.id, {
+      status: "approved",
+      reviewedBy: req.session.user._id
+    });
+    res.redirect("/admin/discussions");
+  } catch (err) {
+    console.error(err);
+    res.redirect("/admin/discussions");
+  }
+});
+
+router.post("/discussions/reject/:id", isAdmin, async (req, res) => {
+  try {
+    await Post.findByIdAndUpdate(req.params.id, {
+      status: "rejected",
+      reviewedBy: req.session.user._id
+    });
+    res.redirect("/admin/discussions");
+  } catch (err) {
+    console.error(err);
+    res.redirect("/admin/discussions");
+  }
+});
+
+router.post("/discussions/delete/:id", isAdmin, async (req, res) => {
+  try {
+    await Post.findByIdAndDelete(req.params.id);
+    res.redirect("/admin/discussions");
+  } catch (err) {
+    console.error(err);
+    res.redirect("/admin/discussions");
   }
 });
 

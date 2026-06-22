@@ -7,6 +7,7 @@ const Order = require("../models/Order");
 const User = require("../models/User");
 const Review = require("../models/Review");
 const Setting = require("../models/Setting");
+const Post = require("../models/Post");
 const upload = require("../config/upload");
 const mongoose = require("mongoose");
 const { autoCompleteDeliveredOrders } = require("../utils/orderAutomation");
@@ -489,6 +490,64 @@ router.post("/review/:orderId/:foodId", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.redirect("/my-orders");
+  }
+});
+
+// ── Trang Thảo luận / Feedback công khai ──
+// Hiện các bài đã được Admin duyệt (status: "approved"), mới nhất trước.
+// Form đăng bài chỉ hiện trong view nếu khách đã đăng nhập (kiểm tra `user`).
+router.get("/discussion", async (req, res) => {
+  try {
+    const posts = await Post.find({ status: "approved" })
+      .populate("user", "fullname avatar")
+      .sort({ createdAt: -1 });
+
+    res.render("discussion", {
+      posts,
+      user: req.session.user || null,
+      error: req.query.error || null,
+      success: req.query.success || null
+    });
+  } catch (err) {
+    console.error(err);
+    res.render("discussion", { posts: [], user: req.session.user || null, error: null, success: null });
+  }
+});
+
+// ── Đăng bài thảo luận mới (cần đăng nhập, không cần đã từng mua hàng) ──
+router.post("/discussion", (req, res, next) => {
+  if (!req.session.user) {
+    return res.redirect("/login");
+  }
+
+  upload.uploadPostImages.array("images", 4)(req, res, (err) => {
+    if (err) {
+      console.error("LỖI UPLOAD ẢNH BÀI ĐĂNG:", err.message);
+      return res.redirect("/discussion?error=" + encodeURIComponent(err.message));
+    }
+    next();
+  });
+}, async (req, res) => {
+  try {
+    const content = (req.body.content || "").trim();
+
+    if (!content) {
+      return res.redirect("/discussion?error=" + encodeURIComponent("Vui lòng nhập nội dung bài đăng"));
+    }
+
+    const imagePaths = (req.files || []).map(f => f.path);
+
+    await Post.create({
+      user: req.session.user._id,
+      content,
+      images: imagePaths,
+      status: "pending"
+    });
+
+    res.redirect("/discussion?success=" + encodeURIComponent("Bài đăng của bạn đã được gửi, đang chờ admin duyệt"));
+  } catch (err) {
+    console.error(err);
+    res.redirect("/discussion?error=" + encodeURIComponent("Có lỗi xảy ra, vui lòng thử lại"));
   }
 });
 
