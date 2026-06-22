@@ -95,9 +95,13 @@
                  data-category="<%= food.category %>"
                  data-soup-type="<%= food.soupType %>"
                  data-ingredients='<%- JSON.stringify(food.ingredients || []) %>'>
-              <img src="<%= food.image %>" class="food-img" alt="<%= food.name %>">
+              <div class="food-img-wrap">
+                <img src="<%= food.image %>" class="food-img" alt="<%= food.name %>">
+                <span class="food-img-disclaimer">*Hình chỉ mang tính minh họa</span>
+              </div>
               <div class="card-body">
                 <div class="food-name"><%= food.name %></div>
+                <div class="food-img-disclaimer-mobile">*Hình minh họa</div>
                 <div class="food-tags">
                   <% if (food.spiceLevel === 'spicy') { %>
                     <span class="food-tag food-tag-spicy"><span class="food-tag-icon">🌶️</span>Cay</span>
@@ -143,9 +147,13 @@
                  data-category="<%= food.category %>"
                  data-soup-type="<%= food.soupType %>"
                  data-ingredients='<%- JSON.stringify(food.ingredients || []) %>'>
-              <img src="<%= food.image %>" class="food-img" alt="<%= food.name %>">
+              <div class="food-img-wrap">
+                <img src="<%= food.image %>" class="food-img" alt="<%= food.name %>">
+                <span class="food-img-disclaimer">*Hình chỉ mang tính minh họa</span>
+              </div>
               <div class="card-body">
                 <div class="food-name"><%= food.name %></div>
+                <div class="food-img-disclaimer-mobile">*Hình minh họa</div>
                 <div class="food-tags">
                   <% if (food.spiceLevel === 'spicy') { %>
                     <span class="food-tag food-tag-spicy"><span class="food-tag-icon">🌶️</span>Cay</span>

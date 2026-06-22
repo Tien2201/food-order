@@ -53,7 +53,7 @@ address: {
 
 avatar: {
     type: String,
-    default: "/images/default-avatar.png"
+    default: ""
 },
 
 role: {

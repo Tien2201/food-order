@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
+const bcrypt = require("bcryptjs");
 const Food = require("../models/Food");
 const Order = require("../models/Order");
 const User = require("../models/User");
@@ -262,7 +263,11 @@ router.get("/profile", async (req, res) => {
   if (!req.session.user) return res.redirect("/login");
   try {
     const user = await User.findById(req.session.user._id);
-    res.render("profile", { user });
+    res.render("profile", {
+      user,
+      error: req.query.error || null,
+      success: req.query.success || null
+    });
   } catch (err) {
     res.redirect("/");
   }
@@ -279,10 +284,72 @@ router.post("/profile", async (req, res) => {
     );
     req.session.user.fullname = updatedUser.fullname;
     req.session.user.phone = updatedUser.phone;
-    res.redirect("/profile");
+    res.redirect("/profile?success=Đã cập nhật thông tin thành công");
   } catch (err) {
     console.error(err);
-    res.redirect("/profile");
+    res.redirect("/profile?error=Có lỗi xảy ra, vui lòng thử lại");
+  }
+});
+
+// ── Đổi ảnh đại diện ──
+router.post("/profile/avatar", (req, res, next) => {
+  if (!req.session.user) return res.redirect("/login");
+
+  upload.uploadAvatar.single("avatar")(req, res, (err) => {
+    if (err) {
+      console.error("LỖI UPLOAD AVATAR:", err.message);
+      return res.redirect("/profile?error=" + encodeURIComponent(err.message));
+    }
+    next();
+  });
+}, async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.redirect("/profile?error=Vui lòng chọn ảnh để tải lên");
+    }
+
+    await User.findByIdAndUpdate(req.session.user._id, { avatar: req.file.path });
+    req.session.user.avatar = req.file.path;
+    res.redirect("/profile?success=Đã cập nhật ảnh đại diện");
+  } catch (err) {
+    console.error(err);
+    res.redirect("/profile?error=Có lỗi xảy ra, vui lòng thử lại");
+  }
+});
+
+// ── Đổi mật khẩu ──
+router.post("/profile/password", async (req, res) => {
+  if (!req.session.user) return res.redirect("/login");
+
+  try {
+    const { currentPassword, newPassword, confirmNewPassword } = req.body;
+
+    if (!newPassword || newPassword.length < 6) {
+      return res.redirect("/profile?error=" + encodeURIComponent("Mật khẩu mới cần tối thiểu 6 ký tự"));
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      return res.redirect("/profile?error=" + encodeURIComponent("Mật khẩu nhập lại không khớp"));
+    }
+
+    const user = await User.findById(req.session.user._id);
+
+    if (!user.password) {
+      return res.redirect("/profile?error=" + encodeURIComponent("Tài khoản này đăng nhập bằng Google, không thể đổi mật khẩu ở đây"));
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.redirect("/profile?error=" + encodeURIComponent("Mật khẩu hiện tại không đúng"));
+    }
+
+    user.password = await bcrypt.hash(newPassword, 10);
+    await user.save();
+
+    res.redirect("/profile?success=" + encodeURIComponent("Đã đổi mật khẩu thành công"));
+  } catch (err) {
+    console.error(err);
+    res.redirect("/profile?error=" + encodeURIComponent("Có lỗi xảy ra, vui lòng thử lại"));
   }
 });
 

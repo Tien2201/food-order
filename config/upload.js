@@ -89,7 +89,21 @@ const aboutStorage = new CloudinaryStorage({
 
 const uploadAbout = multer({ storage: aboutStorage, fileFilter: imageFileFilter });
 
+// Upload ảnh đại diện (avatar) cá nhân - mỗi user có public_id riêng theo
+// _id của họ, ghi đè đúng avatar cũ của chính mình khi đổi ảnh mới.
+const avatarStorage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: (req) => ({
+    folder: "food-order/avatars",
+    public_id: "avatar-" + req.session.user._id,
+    overwrite: true
+  })
+});
+
+const uploadAvatar = multer({ storage: avatarStorage, fileFilter: imageFileFilter });
+
 module.exports = upload;
 module.exports.uploadQr = uploadQr;
 module.exports.uploadPaymentProof = uploadPaymentProof;
 module.exports.uploadAbout = uploadAbout;
+module.exports.uploadAvatar = uploadAvatar;

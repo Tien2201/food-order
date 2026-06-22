@@ -539,10 +539,35 @@ input, select, textarea, button {
   border-color: #D85A30;
 }
 
+.food-card .food-img-wrap {
+  position: relative;
+  overflow: hidden;
+}
+
 .food-card .food-img {
   width: 100%;
   height: auto;
   display: block;
+}
+
+.food-img-disclaimer {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  background: rgba(26,20,16,0.55);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: 6px;
+  backdrop-filter: blur(2px);
+  pointer-events: none;
+  letter-spacing: 0.1px;
+}
+
+/* Trên PC: chỉ dùng overlay trên ảnh, ẩn dòng chữ riêng (chỉ dùng cho mobile) */
+.food-img-disclaimer-mobile {
+  display: none;
 }
 
 .food-card .card-body {
@@ -996,21 +1021,155 @@ input, select, textarea, button {
 /* ─────────────────────────────────────────
    PROFILE PAGE
 ───────────────────────────────────────── */
-.profile-card {
-  max-width: 700px;
-  margin: auto;
+.profile-hero-card {
   background: #fff;
-  padding: 35px;
-  border-radius: 24px;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+  border: 1.5px solid #e3d8bf;
+  border-radius: 16px;
+  padding: 32px 24px;
+  text-align: center;
+  margin-bottom: 20px;
+  box-shadow: 0 6px 20px rgba(26,20,16,0.06);
 }
 
-.profile-avatar {
-  width: 100px;
-  height: 100px;
+.profile-avatar-wrap {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  margin: 0 auto 14px;
+}
+
+.profile-avatar-img {
+  width: 96px;
+  height: 96px;
   border-radius: 50%;
   object-fit: cover;
-  border: 4px solid #f0ece8;
+  border: 3px solid #e3d8bf;
+  display: block;
+}
+
+.profile-avatar-fallback {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #e8693f 0%, #D85A30 100%);
+  color: #fff;
+  font-family: 'Noto Serif', Georgia, serif;
+  font-size: 38px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid #e3d8bf;
+}
+
+.profile-avatar-edit-btn {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  width: 30px;
+  height: 30px;
+  background: #1a1410;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  cursor: pointer;
+  border: 2px solid #fff;
+  transition: background 0.15s;
+}
+
+.profile-avatar-edit-btn:hover {
+  background: #D85A30;
+}
+
+.profile-name {
+  font-family: 'Noto Serif', Georgia, serif;
+  font-size: 21px;
+  font-weight: 700;
+  color: #1a1410;
+  margin-bottom: 2px;
+}
+
+.profile-email {
+  font-size: 13px;
+  color: #9e9484;
+  margin-bottom: 8px;
+}
+
+.profile-username-badge {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #5a4f3f;
+  background: #f7f1e3;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+.profile-section-card {
+  background: #fff;
+  border: 1.5px solid #e3d8bf;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 6px 20px rgba(26,20,16,0.06);
+}
+
+.profile-section-title {
+  font-family: 'Noto Serif', Georgia, serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1410;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e3d8bf;
+}
+
+.profile-section-card .form-input-custom {
+  border: 1.5px solid #ddd0b8;
+  background: #fbf9f4;
+}
+
+.profile-section-card .form-input-custom:focus {
+  border-color: #D85A30;
+  background: #fff;
+}
+
+.profile-section-card .input-with-icon {
+  position: relative;
+}
+
+.profile-section-card .input-icon {
+  position: absolute;
+  left: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 15px;
+  color: #b0a89e;
+  pointer-events: none;
+}
+
+.profile-section-card .field-error-msg {
+  font-size: 11px;
+  color: #c0392b;
+  margin: 0 0 6px;
+  height: 13px;
+  visibility: hidden;
+}
+
+.profile-section-card .field-error-msg.show {
+  visibility: visible;
+}
+
+.profile-section-card .form-input-custom.input-invalid {
+  border-color: #e0a39c;
+  background: #fdf5f3;
+}
+
+.profile-section-card .form-input-custom.input-valid {
+  border-color: #b9d9c8;
 }
 
 /* ─────────────────────────────────────────
@@ -2760,12 +2919,29 @@ input, select, textarea, button {
     box-shadow: none;
   }
 
-  .food-card .food-img {
+  .food-card .food-img-wrap {
     width: 104px;
     height: 104px;
     min-width: 104px;
+  }
+
+  .food-card .food-img {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
     border-radius: 0;
+  }
+
+  .food-img-disclaimer {
+    display: none;
+  }
+
+  .food-img-disclaimer-mobile {
+    display: block;
+    font-size: 10px;
+    color: #b0a89e;
+    font-style: italic;
+    margin: -2px 0 4px;
   }
 
   .food-card .card-body {

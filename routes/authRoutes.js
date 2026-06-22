@@ -96,7 +96,8 @@ router.post("/login", async (req, res) => {
       fullname: user.fullname,
       username: user.username,
       email: user.email,
-      role: user.role
+      role: user.role,
+      avatar: user.avatar
     };
 
     if (user.role === "admin") {
@@ -155,7 +156,8 @@ router.get(
       fullname: user.fullname,
       username: user.username,
       email: user.email,
-      role: user.role
+      role: user.role,
+      avatar: user.avatar
     };
 
     if (user.role === "admin") {
