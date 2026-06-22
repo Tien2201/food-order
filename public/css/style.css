@@ -1155,7 +1155,8 @@ input, select, textarea, button {
   font-size: 11px;
   color: #c0392b;
   margin: 0 0 6px;
-  height: 13px;
+  height: 14px;
+  line-height: 14px;
   visibility: hidden;
 }
 
