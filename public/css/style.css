@@ -3021,21 +3021,75 @@ input, select, textarea, button {
 /* ── Trang Thảo luận / Feedback (phía khách) ── */
 .discussion-form-card {
   background: #fff;
-  border: 1.5px solid #e3d8bf;
+  border: 1px solid #f0ece8;
   border-radius: 16px;
-  padding: 24px;
-  margin-bottom: 32px;
-  box-shadow: 0 6px 20px rgba(26,20,16,0.06);
+  padding: 16px;
+  margin-bottom: 24px;
 }
 
-.discussion-form-card textarea.form-input-custom {
-  border: 1.5px solid #ddd0b8;
-  background: #fbf9f4;
+.discussion-textarea {
+  border: 1px solid #f0ece8 !important;
+  background: #fbfaf9 !important;
+  border-radius: 12px !important;
+  padding: 12px 14px !important;
+  font-size: 14px !important;
+  margin-bottom: 0 !important;
+  resize: none;
+  min-height: 56px;
 }
 
-.discussion-form-card textarea.form-input-custom:focus {
-  border-color: #D85A30;
-  background: #fff;
+.discussion-textarea:focus {
+  border-color: #D85A30 !important;
+  background: #fff !important;
+}
+
+.discussion-form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.discussion-add-photo-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #5a4f3f;
+  background: #f7f1e3;
+  border-radius: 20px;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.discussion-add-photo-btn:hover {
+  background: #efe6d0;
+}
+
+.discussion-submit-btn {
+  background: #D85A30;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 9px 24px;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.discussion-submit-btn:hover {
+  background: #c44e26;
+}
+
+.discussion-form-hint {
+  font-size: 11px;
+  color: #b0a89e;
+  margin: 8px 0 0;
 }
 
 .discussion-image-preview {
@@ -3045,12 +3099,42 @@ input, select, textarea, button {
   margin: 10px 0 4px;
 }
 
-.discussion-image-preview img {
+.discussion-preview-item {
+  position: relative;
+  width: 72px;
+  height: 72px;
+}
+
+.discussion-preview-item img {
   width: 72px;
   height: 72px;
   object-fit: cover;
   border-radius: 10px;
   border: 1px solid #e3d8bf;
+  display: block;
+}
+
+.discussion-preview-remove {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #c0392b;
+  color: #fff;
+  border: 2px solid #fff;
+  font-size: 11px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+
+.discussion-preview-remove:hover {
+  background: #a83226;
 }
 
 .discussion-login-prompt {
@@ -3086,25 +3170,33 @@ input, select, textarea, button {
   border-radius: 2px;
 }
 
-.discussion-post-card {
+.discussion-feed {
   background: #fff;
-  border: 1.5px solid #e3d8bf;
+  border: 1px solid #f0ece8;
   border-radius: 16px;
-  padding: 20px;
-  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+.discussion-post-card {
+  padding: 16px 18px;
+  border-bottom: 1px solid #f0ece8;
+}
+
+.discussion-feed .discussion-post-card:last-child {
+  border-bottom: none;
 }
 
 .discussion-post-header {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
+  gap: 10px;
+  margin-bottom: 8px;
 }
 
 .discussion-post-avatar,
 .discussion-post-avatar-fallback {
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
@@ -3114,6 +3206,7 @@ input, select, textarea, button {
   background: linear-gradient(135deg, #e8693f 0%, #D85A30 100%);
   color: #fff;
   font-weight: 700;
+  font-size: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3121,40 +3214,88 @@ input, select, textarea, button {
 }
 
 .discussion-post-name {
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 600;
   color: #1a1410;
+  line-height: 1.3;
 }
 
 .discussion-post-time {
-  font-size: 11.5px;
+  font-size: 11px;
   color: #9e9484;
+  line-height: 1.3;
 }
 
 .discussion-post-content {
-  font-size: 14px;
+  font-size: 13.5px;
   color: #3a3a3a;
-  line-height: 1.6;
+  line-height: 1.5;
   white-space: pre-wrap;
-  margin-bottom: 12px;
+  margin: 0 0 8px 46px;
 }
 
 .discussion-post-images {
-  display: grid;
-  gap: 8px;
+  display: flex;
+  gap: 6px;
+  margin-left: 46px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: thin;
 }
 
-.discussion-post-images-1 { grid-template-columns: 1fr; }
-.discussion-post-images-2 { grid-template-columns: 1fr 1fr; }
-.discussion-post-images-3 { grid-template-columns: 1fr 1fr 1fr; }
-.discussion-post-images-4 { grid-template-columns: 1fr 1fr; }
-
 .discussion-post-images img {
-  width: 100%;
-  height: 160px;
+  width: 88px;
+  height: 88px;
   object-fit: cover;
-  border-radius: 10px;
-  border: 1px solid #e3d8bf;
+  border-radius: 8px;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.discussion-post-images img:hover {
+  opacity: 0.85;
+}
+
+@media (max-width: 480px) {
+  .discussion-post-content,
+  .discussion-post-images {
+    margin-left: 0;
+  }
+}
+
+/* ── Lightbox xem ảnh phóng to ── */
+.discussion-lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  z-index: 5000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.discussion-lightbox-overlay.show {
+  display: flex;
+}
+
+.discussion-lightbox-overlay img {
+  max-width: 100%;
+  max-height: 90vh;
+  border-radius: 8px;
+}
+
+.discussion-lightbox-close {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  color: #fff;
+  font-size: 28px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  line-height: 1;
 }
 
 /* ── Trang Admin: quản lý bài thảo luận ── */
