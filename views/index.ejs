@@ -693,5 +693,50 @@
     })();
   </script>
 
+  <!-- ── Popup cảnh báo dị ứng (đậu hủ thúi là món lên men) ──
+       Hiện 1 lần mỗi session (sessionStorage), chặn tương tác với trang
+       phía sau cho tới khi khách bấm xác nhận đã đọc. -->
+  <div class="allergy-warning-overlay" id="allergyWarningOverlay">
+    <div class="allergy-warning-card">
+      <div class="allergy-warning-icon">⚠️</div>
+      <h3>Lưu ý về món ăn lên men</h3>
+      <p>
+        Đậu hủ thúi là món ăn truyền thống được làm từ quá trình <strong>lên men</strong>,
+        có mùi và hương vị đặc trưng khác biệt so với đậu hủ thông thường.
+      </p>
+      <p>
+        Một số người có thể nhạy cảm hoặc dị ứng với thực phẩm lên men.
+        Nếu bạn có tiền sử dị ứng thực phẩm, đang mang thai, hoặc lần đầu
+        thử món này, vui lòng cân nhắc kỹ và hỏi nhân viên trước khi đặt.
+      </p>
+      <button type="button" class="allergy-warning-confirm-btn" id="allergyWarningConfirmBtn">
+        Tôi đã hiểu, tiếp tục
+      </button>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      const STORAGE_KEY = 'allergyWarningSeen';
+      const overlay = document.getElementById('allergyWarningOverlay');
+      const confirmBtn = document.getElementById('allergyWarningConfirmBtn');
+
+      if (!overlay) return;
+
+      const alreadySeen = sessionStorage.getItem(STORAGE_KEY) === 'true';
+
+      if (!alreadySeen) {
+        overlay.classList.add('show');
+        document.body.style.overflow = 'hidden';
+      }
+
+      confirmBtn.addEventListener('click', () => {
+        sessionStorage.setItem(STORAGE_KEY, 'true');
+        overlay.classList.remove('show');
+        document.body.style.overflow = '';
+      });
+    })();
+  </script>
+
 </body>
 </html>

@@ -3343,3 +3343,88 @@ input, select, textarea, button {
   display: flex;
   gap: 8px;
 }
+
+/* ── Popup cảnh báo dị ứng món lên men ── */
+.allergy-warning-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(20,15,12,0.7);
+  z-index: 6000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.allergy-warning-overlay.show {
+  display: flex;
+}
+
+.allergy-warning-card {
+  background: #fff;
+  border-radius: 18px;
+  max-width: 440px;
+  width: 100%;
+  padding: 32px 28px;
+  text-align: center;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+  animation: allergyCardIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes allergyCardIn {
+  from { transform: scale(0.9) translateY(10px); opacity: 0; }
+  to { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.allergy-warning-icon {
+  font-size: 40px;
+  margin-bottom: 12px;
+}
+
+.allergy-warning-card h3 {
+  font-family: 'Noto Serif', Georgia, serif;
+  font-size: 19px;
+  font-weight: 700;
+  color: #1a1410;
+  margin-bottom: 14px;
+}
+
+.allergy-warning-card p {
+  font-size: 13.5px;
+  color: #5a4f3f;
+  line-height: 1.6;
+  margin-bottom: 14px;
+  text-align: left;
+}
+
+.allergy-warning-card p:last-of-type {
+  margin-bottom: 22px;
+}
+
+.allergy-warning-card p strong {
+  color: #c0392b;
+}
+
+.allergy-warning-confirm-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #e8693f 0%, #D85A30 60%, #c44e26 100%);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 14.5px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(216,90,48,0.35);
+  transition: transform 0.15s;
+}
+
+.allergy-warning-confirm-btn:hover {
+  transform: translateY(-1px);
+}
+
+@media (max-width: 480px) {
+  .allergy-warning-card {
+    padding: 26px 22px;
+  }
+}
