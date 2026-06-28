@@ -106,11 +106,6 @@
                   <% if (food.spiceLevel === 'spicy') { %>
                     <span class="food-tag food-tag-spicy"><span class="food-tag-icon">🌶️</span>Cay</span>
                   <% } %>
-                  <% if (food.soupType === 'soup') { %>
-                    <span class="food-tag food-tag-soup"><span class="food-tag-icon">🍜</span>Soup</span>
-                  <% } else { %>
-                    <span class="food-tag food-tag-dry"><span class="food-tag-icon">🍲</span>Khô</span>
-                  <% } %>
                 </div>
                 <% if (food.description) { %>
                   <div class="food-desc"><%= food.description %></div>
@@ -157,11 +152,6 @@
                 <div class="food-tags">
                   <% if (food.spiceLevel === 'spicy') { %>
                     <span class="food-tag food-tag-spicy"><span class="food-tag-icon">🌶️</span>Cay</span>
-                  <% } %>
-                  <% if (food.soupType === 'soup') { %>
-                    <span class="food-tag food-tag-soup"><span class="food-tag-icon">🍜</span>Soup</span>
-                  <% } else { %>
-                    <span class="food-tag food-tag-dry"><span class="food-tag-icon">🍲</span>Khô</span>
                   <% } %>
                 </div>
                 <% if (food.description) { %>
@@ -693,25 +683,38 @@
     })();
   </script>
 
-  <!-- ── Popup cảnh báo dị ứng (đậu hủ thúi là món lên men) ──
+  <!-- ── Popup hướng dẫn ăn đậu hủ thúi đen Hồ Nam (đầy đủ lưu ý dị ứng/sức khỏe) ──
        Hiện 1 lần mỗi session (sessionStorage), chặn tương tác với trang
-       phía sau cho tới khi khách bấm xác nhận đã đọc. -->
+       phía sau cho tới khi khách bấm xác nhận đã đọc. Nội dung dài nên
+       phần giữa cuộn riêng, tiêu đề và nút xác nhận luôn cố định. -->
   <div class="allergy-warning-overlay" id="allergyWarningOverlay">
     <div class="allergy-warning-card">
-      <div class="allergy-warning-icon">⚠️</div>
-      <h3>Lưu ý về món ăn lên men</h3>
-      <p>
-        Đậu hủ thúi là món ăn truyền thống được làm từ quá trình <strong>lên men</strong>,
-        có mùi và hương vị đặc trưng khác biệt so với đậu hủ thông thường.
-      </p>
-      <p>
-        Một số người có thể nhạy cảm hoặc dị ứng với thực phẩm lên men.
-        Nếu bạn có tiền sử dị ứng thực phẩm, đang mang thai, hoặc lần đầu
-        thử món này, vui lòng cân nhắc kỹ và hỏi nhân viên trước khi đặt.
-      </p>
-      <button type="button" class="allergy-warning-confirm-btn" id="allergyWarningConfirmBtn">
-        Tôi đã hiểu, tiếp tục
-      </button>
+
+      <div class="allergy-warning-header">
+        <div class="allergy-warning-icon">⚠️</div>
+        <h3>Lưu ý về món ăn lên men</h3>
+      </div>
+
+      <div class="allergy-warning-body">
+        <p>
+          Đậu Hủ Thúi Đen Hồ Nam là món lên men tự nhiên, theo Đông Y cổ ghi chép
+          có tính hàn. Nếu mình có cơ địa nhạy cảm, dị ứng (tôm, gà, bò,...),
+          hoặc đang trong thai kỳ, người mới phẫu thuật xong, người đang điều
+          trị hormone, nội tiết thì không nên ăn.
+        </p>
+        <p>
+          Ngoài ra, món này theo khẩu vị Trung Quốc nên khá cay và nhiều dầu,
+          người có hệ tiêu hoá yếu hoặc vấn đề về dạ dày cũng nên cân nhắc khi
+          ăn nhé, quán thông tin tới mình.
+        </p>
+      </div>
+
+      <div class="allergy-warning-footer">
+        <button type="button" class="allergy-warning-confirm-btn" id="allergyWarningConfirmBtn">
+          Tôi đã hiểu, tiếp tục
+        </button>
+      </div>
+
     </div>
   </div>
 
